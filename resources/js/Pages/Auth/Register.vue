@@ -26,6 +26,7 @@ const submit = () => {
         <Head title="Register" />
 
         <form @submit.prevent="submit">
+
             <div>
                 <InputLabel for="first_name" value="First Name" />
 

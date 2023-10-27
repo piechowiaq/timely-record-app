@@ -6,6 +6,7 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
+import Icons from '@/Components/Icons.vue';
 
 const showingNavigationDropdown = ref(false);
 </script>
@@ -21,9 +22,11 @@ const showingNavigationDropdown = ref(false);
                             <!-- Logo -->
                             <div class="shrink-0 flex items-center">
                                 <Link :href="route('dashboard')">
-                                    <ApplicationLogo
-                                        class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200"
-                                    />
+                                    <div class="flex justify-start items-center">
+                                        <Icons :name="'logo'"  class="w-10 h-10"/>
+                                        <p class="ml-2 font-bold whitespace-nowrap tracking-widest text-gray-600"><span
+                                            class="text-cyan-600 ">TIMELY</span> RECORD</p>
+                                    </div>
                                 </Link>
                             </div>
 
@@ -45,7 +48,7 @@ const showingNavigationDropdown = ref(false);
                                                 type="button"
                                                 class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150"
                                             >
-                                                {{ $page.props.auth.user.name }}
+                                                {{ $page.props.auth.user.first_name }}  {{ $page.props.auth.user.last_name }}
 
                                                 <svg
                                                     class="ml-2 -mr-0.5 h-4 w-4"
