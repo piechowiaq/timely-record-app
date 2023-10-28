@@ -30,10 +30,10 @@ const showingNavigationDropdown = ref(false);
                             </div>
 
                             <!-- Navigation Links -->
-                            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                                    Dashboard
-                                </NavLink>
+                            <div class="hidden space-x-8 items-center sm:-my-px sm:ml-10 sm:flex">
+                                <Link :href="route('dashboard')">
+                                    Radisson Blu Hotel & Residences, Zakopane
+                                </Link>
                             </div>
                         </div>
 
@@ -143,11 +143,11 @@ const showingNavigationDropdown = ref(false);
                 <aside class="flex-shrink-0 hidden pt-2 sm:block w-56 bg-cyan-600">
                     <ul>
                         <li  class="pb-2" >
-                            <Link :href="route('dashboard')"
+                            <NavLink :href="route('dashboard')" :active="route().current(route('dashboard'))"
                                   class="flex items-center group">
-
+                                <i class="fa-solid fa-box-archive px-2 text-white group-hover:text-cyan-600"></i>
                                 <span class="group-hover:text-cyan-600"> Registries</span>
-                            </Link>
+                            </NavLink>
                         </li>
                         <li  class="pb-2" >
                             <Link :href="route('dashboard')"
@@ -183,3 +183,4 @@ const showingNavigationDropdown = ref(false);
         </div>
     </div>
 </template>
+
