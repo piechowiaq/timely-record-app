@@ -8,7 +8,7 @@ import { Head } from '@inertiajs/vue3';
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-gray-800 dark:text-gray-200 leading-tight">Dashboard</h2>
+            <h2 class="text-white dark:text-gray-700 leading-tight">Dashboard</h2>
         </template>
 
         <div class="p-2">

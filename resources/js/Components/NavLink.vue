@@ -14,8 +14,8 @@ const props = defineProps({
 
 const classes = computed(() =>
     props.active
-        ? 'block w-full pl-3 pr-4 py-3 text-left text-base font-medium text-cyan-600 bg-white focus:outline-none transition duration-150 ease-in-out'
-        : 'block w-full pl-3 pr-4 py-3 text-left text-base font-medium text-white hover:text-cyan-600 hover:bg-white focus:outline-none transition duration-150 ease-in-out'
+        ? 'block w-full pl-3 pr-4 py-2 text-left text-base font-medium text-sm text-gray-700 bg-gray-100 focus:outline-none transition duration-150 ease-in-out'
+        : 'block w-full pl-3 pr-4 py-2 text-left text-base font-medium text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition duration-150 ease-in-out'
 );
 </script>
 

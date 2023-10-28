@@ -6,8 +6,11 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
+import {useNavigationStore} from "@/Stores/NavigationStore.js";
 
 const showingNavigationDropdown = ref(false);
+
+const Navigation = useNavigationStore();
 </script>
 
 <template>
@@ -31,7 +34,7 @@ const showingNavigationDropdown = ref(false);
 
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 items-center sm:-my-px sm:ml-10 sm:flex">
-                                <Link :href="route('dashboard')">
+                                <Link :href="route('dashboard')" class="text-cyan-600 hover:text-cyan-700 text-sm">
                                     Radisson Blu Hotel & Residences, Zakopane
                                 </Link>
                             </div>
@@ -45,7 +48,7 @@ const showingNavigationDropdown = ref(false);
                                         <span class="inline-flex rounded-md">
                                             <button
                                                 type="button"
-                                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150"
+                                                class="whitespace-nowrap inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150"
                                             >
                                                 {{ $page.props.auth.user.first_name }}  {{ $page.props.auth.user.last_name }}
 
@@ -140,34 +143,19 @@ const showingNavigationDropdown = ref(false);
 
             <div class="flex flex-grow overflow-hidden">
                 <!-- Side Navigation Menu -->
-                <aside class="flex-shrink-0 hidden pt-2 sm:block w-56 bg-cyan-600">
+                <aside class="flex-shrink-0 hidden pt-2 sm:block w-56 p-2 bg-white">
                     <ul>
-                        <li  class="pb-2" >
-                            <NavLink :href="route('dashboard')" :active="route().current(route('dashboard'))"
-                                  class="flex items-center group">
-                                <i class="fa-solid fa-box-archive px-2 text-white group-hover:text-cyan-600"></i>
-                                <span class="group-hover:text-cyan-600"> Registries</span>
+                        <li  v-for="option in Navigation.options" :key="option.route" class="pb-2" >
+                            <NavLink :href="route(option.route)" :active="route().current(option.route)" class="flex items-center group">
+                                <i :class="['fa-solid', option.iconName, route().current(option.route) ? 'text-cyan-700' : '', 'px-2',  'text-cyan-600', 'dark:text-gray-400', 'group-hover:text-cyan-700', 'dark:group-hover:text-gray-300']"></i>
+                                <span>{{ option.name }}</span>
                             </NavLink>
-                        </li>
-                        <li  class="pb-2" >
-                            <Link :href="route('dashboard')"
-                                  class="flex items-center group">
-
-                                <span class="group-hover:text-cyan-600"> Traiinins</span>
-                            </Link>
-                        </li>
-                        <li  class="pb-2" >
-                            <Link :href="route('dashboard')"
-                                  class="flex items-center group">
-
-                                <span class="group-hover:text-cyan-600"> Workspaced</span>
-                            </Link>
                         </li>
                     </ul>
                 </aside>
                 <div class="flex-grow">
                     <!-- Page Heading -->
-                    <header class="bg-white dark:bg-gray-800 shadow m-2" v-if="$slots.header">
+                    <header class="dark:bg-white bg-gray-500 shadow m-2" v-if="$slots.header">
                         <div class="max-w-7xl mx-auto py-2 px-4">
                             <slot name="header" />
                         </div>
