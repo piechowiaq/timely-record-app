@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
-import Icons from '@/Components/Icons.vue';
+import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 
 defineProps({
     canLogin: {
@@ -45,7 +45,7 @@ defineProps({
         <div class="max-w-7xl mx-auto p-6 lg:p-8">
             <div class="px-10">
                 <div class="flex flex-col md:flex-row justify-center md:justify-start items-center">
-                    <Icons :name="'logo'"  class="w-20 h-20"/>
+                    <ApplicationLogo  class="w-20 h-20"/>
                     <p class="ml-2 text-2xl font-bold whitespace-nowrap tracking-widest text-gray-600"><span
                         class="text-cyan-600 ">TIMELY</span> RECORD</p>
                 </div>

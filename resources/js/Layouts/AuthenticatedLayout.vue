@@ -6,24 +6,23 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
-import Icons from '@/Components/Icons.vue';
 
 const showingNavigationDropdown = ref(false);
 </script>
 
 <template>
     <div>
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+        <div class="min-h-screen flex-col flex bg-gray-100 dark:bg-gray-900">
             <nav class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
                 <!-- Primary Navigation Menu -->
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class=" px-4 ">
                     <div class="flex justify-between h-16">
                         <div class="flex">
                             <!-- Logo -->
-                            <div class="shrink-0 flex items-center">
+                            <div class="shrink-0 flex items-center justify-center w-56 -ml-4">
                                 <Link :href="route('dashboard')">
                                     <div class="flex justify-start items-center">
-                                        <Icons :name="'logo'"  class="w-10 h-10"/>
+                                        <ApplicationLogo  class="w-10 h-10"/>
                                         <p class="ml-2 font-bold whitespace-nowrap tracking-widest text-gray-600"><span
                                             class="text-cyan-600 ">TIMELY</span> RECORD</p>
                                     </div>
@@ -139,17 +138,48 @@ const showingNavigationDropdown = ref(false);
                 </div>
             </nav>
 
-            <!-- Page Heading -->
-            <header class="bg-white dark:bg-gray-800 shadow" v-if="$slots.header">
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    <slot name="header" />
-                </div>
-            </header>
+            <div class="flex flex-grow overflow-hidden">
+                <!-- Side Navigation Menu -->
+                <aside class="flex-shrink-0 hidden pt-2 sm:block w-56 bg-cyan-600">
+                    <ul>
+                        <li  class="pb-2" >
+                            <Link :href="route('dashboard')"
+                                  class="flex items-center group">
 
-            <!-- Page Content -->
-            <main>
-                <slot />
-            </main>
+                                <span class="group-hover:text-cyan-600"> Registries</span>
+                            </Link>
+                        </li>
+                        <li  class="pb-2" >
+                            <Link :href="route('dashboard')"
+                                  class="flex items-center group">
+
+                                <span class="group-hover:text-cyan-600"> Traiinins</span>
+                            </Link>
+                        </li>
+                        <li  class="pb-2" >
+                            <Link :href="route('dashboard')"
+                                  class="flex items-center group">
+
+                                <span class="group-hover:text-cyan-600"> Workspaced</span>
+                            </Link>
+                        </li>
+                    </ul>
+                </aside>
+                <div class="flex-grow">
+                    <!-- Page Heading -->
+                    <header class="bg-white dark:bg-gray-800 shadow m-2" v-if="$slots.header">
+                        <div class="max-w-7xl mx-auto py-2 px-4">
+                            <slot name="header" />
+                        </div>
+                    </header>
+
+                    <!-- Page Content -->
+                    <main>
+                        <slot />
+                    </main>
+
+                </div>
+            </div>
         </div>
     </div>
 </template>
