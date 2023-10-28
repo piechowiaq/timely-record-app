@@ -148,7 +148,7 @@ const Navigation = useNavigationStore();
                         <li  v-for="option in Navigation.options" :key="option.route" class="pb-2" >
                             <NavLink :href="route(option.route)" :active="route().current(option.route)" class="flex items-center group">
                                 <i :class="['fa-solid', option.iconName, route().current(option.route) ? 'text-cyan-700' : '', 'px-2',  'text-cyan-600', 'dark:text-gray-400', 'group-hover:text-cyan-700', 'dark:group-hover:text-gray-300']"></i>
-                                <span>{{ option.name }}</span>
+                                <span class="px-2">{{ option.name }}</span>
                             </NavLink>
                         </li>
                     </ul>
