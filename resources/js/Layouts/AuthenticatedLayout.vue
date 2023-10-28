@@ -5,10 +5,12 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
+import {Link, usePage} from '@inertiajs/vue3';
 import {useNavigationStore} from "@/Stores/NavigationStore.js";
 
 const showingNavigationDropdown = ref(false);
+
+const projectId = usePage().props.auth.user.project_id;
 
 const Navigation = useNavigationStore();
 </script>
@@ -70,6 +72,7 @@ const Navigation = useNavigationStore();
 
                                     <template #content>
                                         <DropdownLink :href="route('profile.edit')"> Profile </DropdownLink>
+                                        <DropdownLink :href="route('projects.show', projectId)"> Project Settings </DropdownLink>
                                         <DropdownLink :href="route('logout')" method="post" as="button">
                                             Log Out
                                         </DropdownLink>
@@ -133,6 +136,7 @@ const Navigation = useNavigationStore();
 
                         <div class="mt-3 space-y-1">
                             <ResponsiveNavLink :href="route('profile.edit')"> Profile </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('projects.show', projectId)"> Project Settings </ResponsiveNavLink>
                             <ResponsiveNavLink :href="route('logout')" method="post" as="button">
                                 Log Out
                             </ResponsiveNavLink>

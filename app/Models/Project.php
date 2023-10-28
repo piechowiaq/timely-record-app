@@ -26,4 +26,12 @@ class Project extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    /**
+     * Get the workspaces for the project.
+     */
+    public function workspaces()
+    {
+        return $this->hasMany(Workspace::class);
+    }
 }

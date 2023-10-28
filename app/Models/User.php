@@ -53,4 +53,12 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsTo(Project::class);
     }
+
+    /**
+     * The workspaces that belong to the user.
+     */
+    public function workspaces()
+    {
+        return $this->belongsToMany(Workspace::class);
+    }
 }
