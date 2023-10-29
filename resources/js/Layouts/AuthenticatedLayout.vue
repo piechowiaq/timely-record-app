@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import {ref} from 'vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
@@ -13,6 +13,11 @@ const showingNavigationDropdown = ref(false);
 const projectId = usePage().props.auth.user.project_id;
 
 const Navigation = useNavigationStore();
+
+const user = usePage().props.auth.user;
+
+const userHasNoWorkspace = !user.workspaces || !user.workspaces.length
+
 </script>
 
 <template>
@@ -27,7 +32,7 @@ const Navigation = useNavigationStore();
                             <div class="shrink-0 flex items-center justify-center w-56 -ml-4">
                                 <Link :href="route('dashboard')">
                                     <div class="flex justify-start items-center">
-                                        <ApplicationLogo  class="w-10 h-10"/>
+                                        <ApplicationLogo class="w-10 h-10"/>
                                         <p class="ml-2 font-bold whitespace-nowrap tracking-widest text-gray-600"><span
                                             class="text-cyan-600 ">TIMELY</span> RECORD</p>
                                     </div>
@@ -52,7 +57,9 @@ const Navigation = useNavigationStore();
                                                 type="button"
                                                 class="whitespace-nowrap inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150"
                                             >
-                                                {{ $page.props.auth.user.first_name }}  {{ $page.props.auth.user.last_name }}
+                                                {{
+                                                    $page.props.auth.user.first_name
+                                                }}  {{ $page.props.auth.user.last_name }}
 
                                                 <svg
                                                     class="ml-2 -mr-0.5 h-4 w-4"
@@ -71,8 +78,9 @@ const Navigation = useNavigationStore();
                                     </template>
 
                                     <template #content>
-                                        <DropdownLink :href="route('profile.edit')"> Profile </DropdownLink>
-                                        <DropdownLink :href="route('projects.show', projectId)"> Project Settings </DropdownLink>
+                                        <DropdownLink :href="route('profile.edit')"> Profile</DropdownLink>
+                                        <DropdownLink :href="route('projects.show', projectId)"> Project Settings
+                                        </DropdownLink>
                                         <DropdownLink :href="route('logout')" method="post" as="button">
                                             Log Out
                                         </DropdownLink>
@@ -135,8 +143,9 @@ const Navigation = useNavigationStore();
                         </div>
 
                         <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink :href="route('profile.edit')"> Profile </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('projects.show', projectId)"> Project Settings </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('profile.edit')"> Profile</ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('projects.show', projectId)"> Project Settings
+                            </ResponsiveNavLink>
                             <ResponsiveNavLink :href="route('logout')" method="post" as="button">
                                 Log Out
                             </ResponsiveNavLink>
@@ -149,10 +158,12 @@ const Navigation = useNavigationStore();
                 <!-- Side Navigation Menu -->
                 <aside class="flex-shrink-0 hidden pt-2 sm:block w-56 p-2 bg-white">
                     <ul>
-                        <li  v-for="option in Navigation.options" :key="option.route" class="pb-2" >
-                            <NavLink :href="route(option.route)" :active="route().current(option.route)" class="flex items-center group">
-                                <i :class="['fa-solid', option.iconName, route().current(option.route) ? 'text-cyan-700' : '', 'px-2',  'text-cyan-600', 'dark:text-gray-400', 'group-hover:text-cyan-700', 'dark:group-hover:text-gray-300']"></i>
-                                <span class="px-2">{{ option.name }}</span>
+                        <li v-for="option in Navigation.options" :key="option.route" class="pb-2">
+                            <NavLink :disabled="userHasNoWorkspace" as="button"
+                                     :href="route(option.route)"
+                                     :active="route().current(option.route)"
+                                     :iconName="option.iconName">
+                               {{ option.name }}
                             </NavLink>
                         </li>
                     </ul>
@@ -160,14 +171,14 @@ const Navigation = useNavigationStore();
                 <div class="flex-grow">
                     <!-- Page Heading -->
                     <header class="dark:bg-white bg-gray-500 shadow m-2" v-if="$slots.header">
-                        <div class="max-w-7xl mx-auto py-2 px-4">
-                            <slot name="header" />
+                        <div class="py-2 px-4">
+                            <slot name="header"/>
                         </div>
                     </header>
 
                     <!-- Page Content -->
                     <main>
-                        <slot />
+                        <slot/>
                     </main>
 
                 </div>

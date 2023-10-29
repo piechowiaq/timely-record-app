@@ -17,7 +17,7 @@ const projectId = usePage().props.auth.user.project_id;
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-white dark:text-gray-700 leading-tight">Project</h2>
+            <h2 class="text-white dark:text-gray-700 leading-tight">Project Settings</h2>
         </template>
 
         <div class="px-2 pb-2">
