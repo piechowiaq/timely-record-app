@@ -1,21 +1,14 @@
 <script setup>
-import { reactive, watch, toRefs } from 'vue'
+import { watch, ref} from 'vue'
 import { usePage } from "@inertiajs/vue3";
 
-const state = reactive({
-    show: true
-})
-
+let show = ref(true);
 
 watch(() => usePage().props.flash, () => {
-    state.show = true
+    show = true
 }, { deep: true })
 
-// Exposing to template
-const { show } = toRefs(state)
 </script>
-
-
 
 <template>
     <div class="block whitespace-nowrap">

@@ -35,11 +35,14 @@ const projectId = usePage().props.auth.user.project_id;
                             <ul>
                                 <li class="text-red-400 italic text-sm" v-if="!workspaces.length">No workspaces created.</li>
                                 <li v-for="workspace in workspaces" :key="workspace.id">
-                                   {{ workspace.name }}
+                                    <Link :href="route('workspaces.edit', { project: projectId, workspace: workspace.id })"> {{ workspace.name }}
+
+                                    </Link>
+
                                 </li>
                             </ul>
                         </div>
-                        <Link :href="route('workspaces.create', projectId )" class="text-cyan-600 hover:text-cyan-700 text-sm">
+                        <Link :href="route('workspaces.create', { project: projectId })" class="text-cyan-600 hover:text-cyan-700 text-sm">
                             Create Workspace
                         </Link>
 

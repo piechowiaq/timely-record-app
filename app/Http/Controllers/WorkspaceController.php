@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreWorkspaceRequest;
 use App\Http\Requests\UpdateWorkspaceRequest;
+use App\Models\Project;
 use App\Models\Workspace;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -61,24 +62,28 @@ class WorkspaceController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Project $project, Workspace $workspace)
     {
-        //
+        return Inertia::render('Workspaces/Edit', [
+            'workspace' => $workspace,
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateWorkspaceRequest $request, Workspace $workspace)
+    public function update(UpdateWorkspaceRequest $request, Project $project, Workspace $workspace)
     {
         $validated = $request->validated();
 
-        $workspace = Workspace::findOrFail($workspace);
         $workspace->update($validated);
 
-        dd('Where to redirect?');
-
+        return redirect()->route('workspaces.edit', [
+            'project' => $project->id,
+            'workspace' => $workspace->id
+        ])->with('success', 'Workspace updated.');
     }
+
 
     /**
      * Remove the specified resource from storage.
