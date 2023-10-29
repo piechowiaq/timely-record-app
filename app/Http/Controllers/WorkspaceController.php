@@ -88,8 +88,15 @@ class WorkspaceController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, Project $project, Workspace $workspace)
     {
-        //
+        $request->validate([
+            'password' => ['required', 'current_password'],
+        ]);
+
+        $workspace->delete();
+
+        // Redirect to the projects.show route
+        return redirect()->route('projects.show', $project)->with('success', 'Workspace deleted.');
     }
 }

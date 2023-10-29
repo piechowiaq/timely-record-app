@@ -41,6 +41,7 @@ Route::middleware('auth', 'verified')->group(function () {
     Route::post('/projects/{project}/workspaces',[WorkspaceController::class, 'store'])->name('workspaces.store');
     Route::get('/projects/{project}/workspaces/{workspace}/edit',[WorkspaceController::class, 'edit'])->name('workspaces.edit');
     Route::put('/projects/{project}/workspaces/{workspace}',[WorkspaceController::class, 'update'])->name('workspaces.update');
+    Route::delete('/projects/{project}/workspaces/{workspace}/destroy',[WorkspaceController::class, 'destroy'])->name('workspaces.destroy');
 
 });
 
