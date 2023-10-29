@@ -19,16 +19,18 @@ const user = usePage().props.auth.user;
 
 const userHasNoWorkspace = !user.workspaces || !user.workspaces.length
 
-defineProps({
+const props = defineProps({
     workspace: {
         type: Object
-    }
+    },
 })
 
 const page = usePage().props.route;
 
-const regex = /\/workspaces\/[^/]+\/(?!edit$)/;
-const hasWorkspace = regex.test(page);
+const showWorkspaceNavigation = Boolean(props.workspace) && !page.endsWith('/edit');
+const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit') ||!Boolean(props.workspace)
+
+
 
 </script>
 
@@ -52,11 +54,12 @@ const hasWorkspace = regex.test(page);
                             </div>
 
                             <!-- Navigation Links -->
-                            <div v-if="hasWorkspace" class="hidden space-x-8 items-center sm:-my-px sm:ml-10 sm:flex">
-                                <Link :href="route('dashboard')" class="text-cyan-600 hover:text-cyan-700 text-sm">
+                            <div v-if="showWorkspaceNavigation" class="hidden space-x-8 items-center sm:-my-px sm:ml-10 sm:flex">
+                                <Link :href="route('workspaces.dashboard', { project: projectId, workspace: workspace.id })" class="text-cyan-600 hover:text-cyan-700 text-sm">
                                     {{ workspace.name }}
                                 </Link>
                             </div>
+
                         </div>
 
                         <div class="hidden sm:flex sm:items-center sm:ml-6">
@@ -139,7 +142,7 @@ const hasWorkspace = regex.test(page);
                     :class="{ block: showingNavigationDropdown, hidden: !showingNavigationDropdown }"
                     class="sm:hidden"
                 >
-                    <div v-if="hasWorkspace" class="pt-2 pb-3 space-y-1">
+                    <div v-if="showWorkspaceNavigation" class="pt-2 pb-3 space-y-1">
                         <ul>
                             <li v-for="option in navigation.workspaceOptions" :key="option.route">
                                 <ResponsiveNavLink :disabled="userHasNoWorkspace" as="button"
@@ -151,7 +154,7 @@ const hasWorkspace = regex.test(page);
                             </li>
                         </ul>
                     </div>
-                    <div v-else class="pt-2 pb-3 space-y-1">
+                    <div v-else-if="showProjectNavigation" class="pt-2 pb-3 space-y-1">
                         <ul>
                             <li v-for="option in navigation.projectOptions" :key="option.route">
                                 <ResponsiveNavLink :disabled="userHasNoWorkspace" as="button"
@@ -187,7 +190,7 @@ const hasWorkspace = regex.test(page);
 
             <div class="flex flex-grow overflow-hidden">
                 <!-- Side Navigation Menu -->
-                <aside v-if="hasWorkspace" class="flex-shrink-0 hidden pt-2 sm:block w-56 p-2 bg-white">
+                <aside v-if="showWorkspaceNavigation" class="flex-shrink-0 hidden pt-2 sm:block w-56 p-2 bg-white">
                     <ul>
                         <li v-for="option in navigation.workspaceOptions" :key="option.route" class="pb-2">
                             <NavLink :disabled="userHasNoWorkspace" as="button"
@@ -199,7 +202,7 @@ const hasWorkspace = regex.test(page);
                         </li>
                     </ul>
                 </aside>
-                <aside v-else class="flex-shrink-0 hidden pt-2 sm:block w-56 p-2 bg-white">
+                <aside v-else-if="showProjectNavigation" class="flex-shrink-0 hidden pt-2 sm:block w-56 p-2 bg-white">
                     <ul>
                         <li v-for="option in navigation.projectOptions" :key="option.route" class="pb-2">
                             <NavLink :disabled="userHasNoWorkspace" as="button"
