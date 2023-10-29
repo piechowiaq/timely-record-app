@@ -13,11 +13,22 @@ const showingNavigationDropdown = ref(false);
 
 const projectId = usePage().props.auth.user.project_id;
 
-const Navigation = useNavigationStore();
+const navigation = useNavigationStore();
 
 const user = usePage().props.auth.user;
 
 const userHasNoWorkspace = !user.workspaces || !user.workspaces.length
+
+defineProps({
+    workspace: {
+        type: Object
+    }
+})
+
+const page = usePage().props.route;
+
+const regex = /\/workspaces\/[^/]+\/(?!edit$)/;
+const hasWorkspace = regex.test(page);
 
 </script>
 
@@ -41,9 +52,9 @@ const userHasNoWorkspace = !user.workspaces || !user.workspaces.length
                             </div>
 
                             <!-- Navigation Links -->
-                            <div class="hidden space-x-8 items-center sm:-my-px sm:ml-10 sm:flex">
+                            <div v-if="hasWorkspace" class="hidden space-x-8 items-center sm:-my-px sm:ml-10 sm:flex">
                                 <Link :href="route('dashboard')" class="text-cyan-600 hover:text-cyan-700 text-sm">
-                                    Radisson Blu Hotel & Residences, Zakopane
+                                    {{ workspace.name }}
                                 </Link>
                             </div>
                         </div>
@@ -128,13 +139,25 @@ const userHasNoWorkspace = !user.workspaces || !user.workspaces.length
                     :class="{ block: showingNavigationDropdown, hidden: !showingNavigationDropdown }"
                     class="sm:hidden"
                 >
-                    <div class="pt-2 pb-3 space-y-1">
+                    <div v-if="hasWorkspace" class="pt-2 pb-3 space-y-1">
                         <ul>
-                            <li v-for="option in Navigation.options" :key="option.route">
+                            <li v-for="option in navigation.workspaceOptions" :key="option.route">
                                 <ResponsiveNavLink :disabled="userHasNoWorkspace" as="button"
-                                         :href="route(option.route)"
+                                         :href="route(option.route, { project: projectId, workspace: workspace.id})"
                                          :active="route().current(option.route)"
                                       >
+                                    {{ option.name }}
+                                </ResponsiveNavLink>
+                            </li>
+                        </ul>
+                    </div>
+                    <div v-else class="pt-2 pb-3 space-y-1">
+                        <ul>
+                            <li v-for="option in navigation.projectOptions" :key="option.route">
+                                <ResponsiveNavLink :disabled="userHasNoWorkspace" as="button"
+                                                   :href="route(option.route)"
+                                                   :active="route().current(option.route)"
+                                >
                                     {{ option.name }}
                                 </ResponsiveNavLink>
                             </li>
@@ -164,14 +187,26 @@ const userHasNoWorkspace = !user.workspaces || !user.workspaces.length
 
             <div class="flex flex-grow overflow-hidden">
                 <!-- Side Navigation Menu -->
-                <aside class="flex-shrink-0 hidden pt-2 sm:block w-56 p-2 bg-white">
+                <aside v-if="hasWorkspace" class="flex-shrink-0 hidden pt-2 sm:block w-56 p-2 bg-white">
                     <ul>
-                        <li v-for="option in Navigation.options" :key="option.route" class="pb-2">
+                        <li v-for="option in navigation.workspaceOptions" :key="option.route" class="pb-2">
+                            <NavLink :disabled="userHasNoWorkspace" as="button"
+                                     :href="route(option.route, { project: projectId, workspace: workspace.id})"
+                                     :active="route().current(option.route)"
+                                     :iconName="option.iconName">
+                               {{ option.name }}
+                            </NavLink>
+                        </li>
+                    </ul>
+                </aside>
+                <aside v-else class="flex-shrink-0 hidden pt-2 sm:block w-56 p-2 bg-white">
+                    <ul>
+                        <li v-for="option in navigation.projectOptions" :key="option.route" class="pb-2">
                             <NavLink :disabled="userHasNoWorkspace" as="button"
                                      :href="route(option.route)"
                                      :active="route().current(option.route)"
                                      :iconName="option.iconName">
-                               {{ option.name }}
+                                {{ option.name }}
                             </NavLink>
                         </li>
                     </ul>

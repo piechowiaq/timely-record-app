@@ -1,12 +1,17 @@
 import { defineStore } from "pinia";
 
-const NAVIGATION_OPTIONS = [
-    { name: 'Dashboard', route: 'dashboard', iconName: 'fa-gauge-simple-high' },
+const WORKSPACE_NAVIGATION_OPTIONS = [
+    { name: 'Dashboard', route: 'workspaces.dashboard', iconName: 'fa-gauge-simple-high' },
     { name: 'Registries', route: 'login', iconName: 'fa-box-archive' },
+];
+
+const PROJECT_NAVIGATION_OPTIONS = [
+    { name: 'Dashboard', route: 'dashboard', iconName: 'fa-gauge-simple-high' },
 ];
 
 export const useNavigationStore = defineStore("NavigationStore", {
     state: () => ({
-        options: NAVIGATION_OPTIONS
+        workspaceOptions: WORKSPACE_NAVIGATION_OPTIONS,
+        projectOptions: PROJECT_NAVIGATION_OPTIONS
     })
 })
