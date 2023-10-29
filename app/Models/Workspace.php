@@ -10,6 +10,17 @@ class Workspace extends Model
     use HasFactory;
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'name',
+        'location',
+        'project_id'
+    ];
+
+    /**
      * Get the project that owns the workspace.
      */
     public function project()

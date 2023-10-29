@@ -7,6 +7,7 @@ import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import {Link, usePage} from '@inertiajs/vue3';
 import {useNavigationStore} from "@/Stores/NavigationStore.js";
+import FlashMessages from "@/Components/FlashMessages.vue";
 
 const showingNavigationDropdown = ref(false);
 
@@ -128,9 +129,16 @@ const userHasNoWorkspace = !user.workspaces || !user.workspaces.length
                     class="sm:hidden"
                 >
                     <div class="pt-2 pb-3 space-y-1">
-                        <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                            Dashboard
-                        </ResponsiveNavLink>
+                        <ul>
+                            <li v-for="option in Navigation.options" :key="option.route">
+                                <ResponsiveNavLink :disabled="userHasNoWorkspace" as="button"
+                                         :href="route(option.route)"
+                                         :active="route().current(option.route)"
+                                      >
+                                    {{ option.name }}
+                                </ResponsiveNavLink>
+                            </li>
+                        </ul>
                     </div>
 
                     <!-- Responsive Settings Options -->
@@ -170,9 +178,10 @@ const userHasNoWorkspace = !user.workspaces || !user.workspaces.length
                 </aside>
                 <div class="flex-grow">
                     <!-- Page Heading -->
-                    <header class="dark:bg-white bg-gray-500 shadow m-2" v-if="$slots.header">
-                        <div class="py-2 px-4">
+                    <header class=" dark:bg-white bg-gray-500 shadow m-2  " v-if="$slots.header">
+                        <div class="container mx-auto px-4 py-2 sm:flex sm:h-10 justify-between  items-center ">
                             <slot name="header"/>
+                            <FlashMessages />
                         </div>
                     </header>
 

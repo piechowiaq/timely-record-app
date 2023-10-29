@@ -31,13 +31,14 @@ const projectId = usePage().props.auth.user.project_id;
                                 Create your project's workspace information.
                             </p>
                         </header>
-                        <ul>
-                            <li v-for="workspace in workspaces" :key="workspace.id">
-
-                                {{ workspace.id }} {{ workspace.name }}
-                            </li>
-                        </ul>
-
+                        <div class="py-4">
+                            <ul>
+                                <li class="text-red-400 italic text-sm" v-if="!workspaces.length">No workspaces created.</li>
+                                <li v-for="workspace in workspaces" :key="workspace.id">
+                                   {{ workspace.name }}
+                                </li>
+                            </ul>
+                        </div>
                         <Link :href="route('workspaces.create', projectId )" class="text-cyan-600 hover:text-cyan-700 text-sm">
                             Create Workspace
                         </Link>

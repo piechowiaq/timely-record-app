@@ -38,7 +38,7 @@ Route::middleware('auth', 'verified')->group(function () {
     })->name('dashboard');
     Route::get('/projects/{project}',[ProjectController::class, 'show'])->name('projects.show');
     Route::get('/projects/{project}/workspaces/create',[WorkspaceController::class, 'create'])->name('workspaces.create');
-    Route::get('/projects/{project}/workspaces',[WorkspaceController::class, 'create'])->name('workspaces.store');
+    Route::post('/projects/{project}/workspaces',[WorkspaceController::class, 'store'])->name('workspaces.store');
 
 });
 
