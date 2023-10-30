@@ -15,9 +15,19 @@ class RouteServiceProvider extends ServiceProvider
      *
      * Typically, users are redirected here after authentication.
      *
-     * @var string
+     *
+     * @return string
      */
-    public const HOME = '/dashboard';
+    public static function home()
+    {
+        if (auth()->check() && auth()->user()->project_id) {
+            return route('projects.dashboard', ['project' => auth()->user()->project_id]);
+        }
+
+        // Default fallback for unauthenticated users.
+        return '/';
+    }
+
 
     /**
      * Define your route model bindings, pattern filters, and other route configuration.

@@ -36,6 +36,7 @@ Route::middleware('auth', 'verified')->group(function () {
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
+    Route::get('/projects/{project}/dashboard',[ProjectController::class, 'dashboard'])->name('projects.dashboard');
     Route::get('/projects/{project}',[ProjectController::class, 'show'])->name('projects.show');
     Route::get('projects/{project}/workspaces/{workspace}/dashboard', [WorkspaceController::class, 'dashboard'])->name('workspaces.dashboard');
     Route::get('/projects/{project}/workspaces/create',[WorkspaceController::class, 'create'])->name('workspaces.create');
