@@ -34,7 +34,14 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(RouteServiceProvider::home());
+        // Assuming the User model has a relation to Workspace
+        if (auth()->user()->workspaces->isEmpty()) {
+            // No associated workspace, redirect to workspace creation
+            return redirect()->route('workspaces.create', ['project' => auth()->user()->project_id]);
+        } else {
+            // User has associated workspace(s), redirect to the project dashboard
+            return redirect()->intended(RouteServiceProvider::home());
+        }
     }
 
     /**

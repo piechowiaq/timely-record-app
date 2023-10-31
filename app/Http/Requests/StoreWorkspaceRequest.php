@@ -23,7 +23,7 @@ class StoreWorkspaceRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'location' => ['nullable','string', 'max:255'],
+            'location' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

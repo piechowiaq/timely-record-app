@@ -47,8 +47,8 @@ class WorkspaceController extends Controller
         // Associating the authenticated user with the created workspace
         Auth::user()->workspaces()->attach($workspace->id);
 
-//        return redirect()->route('projects.show', $project)->with('success', 'Workspace created.');
-        return redirect()->route('workspaces.dashboard', [ 'project' => $project, 'workspace' => $workspace ])->with('success', 'Workspace created.');
+        //        return redirect()->route('projects.show', $project)->with('success', 'Workspace created.');
+        return redirect()->route('workspaces.dashboard', ['project' => $project, 'workspace' => $workspace])->with('success', 'Workspace created.');
 
     }
 
@@ -81,10 +81,9 @@ class WorkspaceController extends Controller
 
         return redirect()->route('workspaces.edit', [
             'project' => $project->id,
-            'workspace' => $workspace->id
+            'workspace' => $workspace->id,
         ])->with('success', 'Workspace updated.');
     }
-
 
     /**
      * Remove the specified resource from storage.
@@ -100,6 +99,7 @@ class WorkspaceController extends Controller
         // Redirect to the projects.show route
         return redirect()->route('projects.show', $project)->with('success', 'Workspace deleted.');
     }
+
     /**
      * Show the dashboard for the specified resource.
      */

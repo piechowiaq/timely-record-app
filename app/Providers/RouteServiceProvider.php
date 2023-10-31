@@ -28,7 +28,6 @@ class RouteServiceProvider extends ServiceProvider
         return '/';
     }
 
-
     /**
      * Define your route model bindings, pattern filters, and other route configuration.
      */

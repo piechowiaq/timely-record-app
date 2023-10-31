@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\User;
-use App\Providers\RouteServiceProvider;
 
 test('registration screen can be rendered', function () {
     $response = $this->get('/register');
@@ -20,7 +19,8 @@ test('new users can register', function () {
 
     $this->assertAuthenticated();
 
-    $projectId = User::latest()->first()->project_id;
-    $response->assertRedirect("/projects/{$projectId}/dashboard");
+    $project = User::latest()->first()->project_id;
+
+    $response->assertRedirect(route('workspaces.create', compact('project')));
 
 });

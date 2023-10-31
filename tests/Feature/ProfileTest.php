@@ -15,8 +15,6 @@ test('profile page is displayed', function () {
 test('profile information can be updated', function () {
     $user = User::factory()->create();
 
-
-
     $response = $this
         ->actingAs($user)
         ->patch('/profile', [
@@ -69,7 +67,6 @@ test('user can soft delete their account', function () {
         ->assertRedirect('/');
 
     $this->assertGuest();
-
 
     $this->assertTrue($user->fresh()->trashed());
 });

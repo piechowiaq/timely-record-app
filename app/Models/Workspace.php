@@ -17,7 +17,7 @@ class Workspace extends Model
     protected $fillable = [
         'name',
         'location',
-        'project_id'
+        'project_id',
     ];
 
     /**
@@ -35,5 +35,4 @@ class Workspace extends Model
     {
         return $this->belongsToMany(User::class);
     }
-
 }
