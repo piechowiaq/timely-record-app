@@ -3,7 +3,6 @@
 use App\Models\Project;
 use App\Models\User;
 use App\Models\Workspace;
-use App\Providers\RouteServiceProvider;
 
 test('login screen can be rendered', function () {
     $response = $this->get('/login');
@@ -21,10 +20,11 @@ test('users can authenticate using the login screen', function () {
 
     $this->assertAuthenticated();
 
+    $response->assertRedirect(route('workspaces.create', ['project' => $user->project]));
+
 });
 
-
-it('redirects authenticated user with no workspaces to workspaces.create route', function () {
+it('redirects authenticated user with workspace to projects.dashboard route', function () {
 
     $project = Project::factory()->create();
 
@@ -41,29 +41,21 @@ it('redirects authenticated user with no workspaces to workspaces.create route',
 
     $this->assertAuthenticated();
 
-
-//    $user =  User::factory()->create();
-//    $workspace = \App\Models\Workspace::factory()->create();
-//    $user->workspaces()->attach($workspace->id);
-
+    //    $user =  User::factory()->create();
+    //    $workspace = \App\Models\Workspace::factory()->create();
+    //    $user->workspaces()->attach($workspace->id);
 
     // Ensure the user has no workspaces.
     $response->assertRedirect(route('projects.dashboard', ['project' => $project->id]));
 
-
-
-
     // Make a request that should redirect if the user has no workspaces.
     // This might be a get request to a dashboard, for instance.
-//    test()->get(route('workspaces.create', ['project' => $user->project_id]));
+    //    test()->get(route('workspaces.create', ['project' => $user->project_id]));
 
     // Assert that there was a redirect to the intended route.
-//    $this->assertRedirect(route('workspaces.create', ['project' => $user->project_id]));
+    //    $this->assertRedirect(route('workspaces.create', ['project' => $user->project_id]));
 
 });
-
-
-
 
 test('users can not authenticate with invalid password', function () {
     $user = User::factory()->create();
