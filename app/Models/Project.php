@@ -10,6 +10,8 @@ class Project extends Model
 {
     use HasFactory, SoftDeletes;
 
+    public mixed $workspaces;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -22,7 +24,7 @@ class Project extends Model
     /**
      * Get the users for the project.
      */
-    public function users()
+    public function users(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(User::class);
     }
@@ -30,7 +32,7 @@ class Project extends Model
     /**
      * Get the workspaces for the project.
      */
-    public function workspaces()
+    public function workspaces(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Workspace::class);
     }
