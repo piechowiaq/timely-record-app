@@ -1,8 +1,8 @@
 <?php
 
-use App\Models\Project;
 use App\Models\User;
-use App\Models\Workspace;
+
+use function Pest\Laravel\post;
 
 test('login screen can be rendered', function () {
     $response = $this->get('/login');
@@ -11,9 +11,10 @@ test('login screen can be rendered', function () {
 });
 
 test('users can authenticate using the login screen', function () {
+
     $user = User::factory()->create();
 
-    $response = $this->post('/login', [
+    $this->post('/login', [
         'email' => $user->email,
         'password' => 'password',
     ]);
@@ -24,39 +25,23 @@ test('users can authenticate using the login screen', function () {
 
 it('redirects authenticated user with no workspace to workspaces.creat route', function () {
 
-    $project = Project::factory()->create();
+    $user = User::factory()->create();
 
-    $user = User::factory()->for($project, 'project')->create(); // set the project for the user
-
-    $response = $this->post('/login', [
+    post('/login', [
         'email' => $user->email,
         'password' => 'password',
-    ]);
-
-    $this->assertAuthenticated();
-
-    $response->assertRedirect(route('workspaces.create', ['project' => $user->project]));
+    ])->assertRedirect(route('workspaces.create', ['project' => $user->project]));
 
 });
 
 it('redirects authenticated user with workspace to projects.dashboard route', function () {
 
-    $project = Project::factory()->create();
+    $user = User::factory()->withWorkspaces()->create();
 
-    $user = User::factory()->for($project, 'project')->create();
-
-    $workspace = Workspace::factory()->for($project, 'project')->create();
-
-    $user->workspaces()->attach($workspace->id);
-
-    $response = $this->post('/login', [
+    post('/login', [
         'email' => $user->email,
         'password' => 'password',
-    ]);
-
-    $this->assertAuthenticated();
-
-    $response->assertRedirect(route('projects.dashboard', ['project' => $project->id]));
+    ])->assertRedirect(route('projects.dashboard', ['project' => $user->project_id]));
 
 });
 

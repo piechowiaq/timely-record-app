@@ -40,6 +40,7 @@ class WorkspaceController extends Controller
         $project = Auth::user()->project;
 
         $validated = $request->validated();
+
         $validated['project_id'] = $project->id;
 
         $workspace = Workspace::create($validated);
@@ -47,9 +48,19 @@ class WorkspaceController extends Controller
         // Associating the authenticated user with the created workspace
         Auth::user()->workspaces()->attach($workspace->id);
 
-        //        return redirect()->route('projects.show', $project)->with('success', 'Workspace created.');
-        return redirect()->route('workspaces.dashboard', ['project' => $project, 'workspace' => $workspace])->with('success', 'Workspace created.');
+        // Determine if this is the user's only workspace
+        $redirectToDashboard = Auth::user()->workspaces()->count() === 1;
 
+        // Redirect to the appropriate route
+        if ($redirectToDashboard) {
+            // If it's their first workspace, redirect to the workspace dashboard
+            return redirect()->route('workspaces.dashboard', ['project' => $project->id, 'workspace' => $workspace->id])
+                ->with('success', 'Workspace created.');
+        } else {
+            // Handle redirection for users who already have other workspaces, if needed
+            return redirect()->route('projects.show', ['project' => $project])
+                ->with('success', 'Workspace created.');
+        }
     }
 
     /**

@@ -3,11 +3,14 @@
 namespace Database\Factories;
 
 use App\Models\Project;
+use App\Models\User;
+use App\Models\Workspace;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ * @extends Factory<User>
  */
 class UserFactory extends Factory
 {
@@ -24,7 +27,7 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'project_id' => Project::factory()->create()->id,
             'email_verified_at' => now(),
-            'password' => bcrypt('12345678'),
+            'password' => Hash::make('password'),
             'remember_token' => Str::random(10),
         ];
     }
@@ -37,5 +40,21 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+
+    /**
+     * Configure the factory to add workspaces to the user after creating it.
+     *
+     * @param  int  $count The number of workspaces to create and attach.
+     */
+    public function withWorkspaces(int $count = 1): Factory
+    {
+        return $this->afterCreating(function (User $user) use ($count) {
+            $workspaces = Workspace::factory()->count($count)->create([
+                'project_id' => $user->project_id,
+            ]);
+
+            $user->workspaces()->attach($workspaces);
+        });
     }
 }
