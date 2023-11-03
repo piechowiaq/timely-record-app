@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link, usePage} from '@inertiajs/vue3';
+import {Head, Link, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 defineProps({
@@ -40,7 +40,8 @@ const projectId = usePage().props.auth.user.project_id;
                             </li>
                         </ul>
 
-                        <Link :href="route('workspaces.create', projectId )" class="text-cyan-600 hover:text-cyan-700 text-sm">
+                        <Link :href="route('workspaces.create', projectId )"
+                              class="text-cyan-600 hover:text-cyan-700 text-sm">
                             Create Workspace
                         </Link>
 

@@ -96,7 +96,7 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
 
                                     <template #content>
                                         <DropdownLink :href="route('profile.edit')"> Profile</DropdownLink>
-                                        <DropdownLink :href="route('projects.dashboard', projectId)"> Project Settings
+                                        <DropdownLink :href="route('projects.show', projectId)"> Project Settings
                                         </DropdownLink>
                                         <DropdownLink :href="route('logout')" method="post" as="button">
                                             Log Out
@@ -160,7 +160,7 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
                         <ul>
                             <li v-for="option in navigation.projectOptions" :key="option.route">
                                 <ResponsiveNavLink :disabled="userHasNoWorkspace" as="button"
-                                                   :href="route(option.route)"
+                                                   :href="route(option.route, { project: projectId})"
                                                    :active="route().current(option.route)"
                                 >
                                     {{ option.name }}
@@ -180,7 +180,7 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
 
                         <div class="mt-3 space-y-1">
                             <ResponsiveNavLink :href="route('profile.edit')"> Profile</ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('projects.dashboard', projectId)"> Project Settings
+                            <ResponsiveNavLink :href="route('projects.show', projectId)"> Project Settings
                             </ResponsiveNavLink>
                             <ResponsiveNavLink :href="route('logout')" method="post" as="button">
                                 Log Out
@@ -208,7 +208,7 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
                     <ul>
                         <li v-for="option in navigation.projectOptions" :key="option.route" class="pb-2">
                             <NavLink :disabled="userHasNoWorkspace" as="button"
-                                     :href="route(option.route)"
+                                     :href="route(option.route, { project: projectId})"
                                      :active="route().current(option.route)"
                                      :iconName="option.iconName">
                                 {{ option.name }}

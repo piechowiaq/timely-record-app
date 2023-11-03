@@ -7,7 +7,7 @@ use function Pest\Laravel\actingAs;
 use function Pest\Laravel\patch;
 use function Pest\Laravel\post;
 
-it('user with no workspace can store a workspace', function () {
+it('can store a first workspace', function () {
 
     $user = User::factory()->create();
     actingAs($user);
@@ -32,7 +32,7 @@ it('user with no workspace can store a workspace', function () {
         ->project_id->toBeInt()->tobe($user->project_id);
 });
 
-it('user with workspaces can store a workspace', function () {
+it('can store a another workspace', function () {
 
     $user = User::factory()->withWorkspaces()->create();
     actingAs($user);

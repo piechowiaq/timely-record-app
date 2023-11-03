@@ -23,7 +23,7 @@ const form = useForm({
 </script>
 
 <template>
-    <section >
+    <section>
         <header>
             <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Workspace Information</h2>
 
@@ -32,7 +32,8 @@ const form = useForm({
             </p>
         </header>
 
-        <form @submit.prevent="form.put(route('workspaces.update', { project: projectId, workspace: workspace.id }))" method="post"
+        <form @submit.prevent="form.patch(route('workspaces.update', { project: projectId, workspace: workspace.id }))"
+              method="post"
               class="mt-6 space-y-6">
             <div>
                 <InputLabel for="name" value="Name"/>
