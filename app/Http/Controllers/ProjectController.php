@@ -12,6 +12,7 @@ class ProjectController extends Controller
      */
     public function dashboard(Project $project): \Inertia\Response
     {
+        dd($project->workspaces);
         $workspaces = $project->workspaces;
 
         return Inertia::render('Projects/Show', [

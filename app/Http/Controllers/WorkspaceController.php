@@ -90,10 +90,7 @@ class WorkspaceController extends Controller
 
         $workspace->update($validated);
 
-        return redirect()->route('workspaces.edit', [
-            'project' => $project->id,
-            'workspace' => $workspace->id,
-        ])->with('success', 'Workspace updated.');
+        return redirect()->route('workspaces.edit', ['project' => $project, 'workspace' => $workspace])->with('success', 'Workspace updated.');
     }
 
     /**

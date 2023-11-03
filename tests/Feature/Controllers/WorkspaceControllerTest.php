@@ -60,6 +60,8 @@ it('can update a workspace', function () {
     $user = User::factory()->withWorkspaces()->create();
     actingAs($user);
 
+    usleep(1000000);
+
     $workspace = Workspace::latest()->first();
 
     $updatedData = [
@@ -68,11 +70,15 @@ it('can update a workspace', function () {
     ];
 
     patch(route('workspaces.update', ['project' => $user->project_id, 'workspace' => $workspace->id]), $updatedData)
-        ->assertRedirect(route('projects.show', [
+        ->assertRedirect(route('workspaces.edit', [
             'project' => $user->project_id,
+            'workspace' => $workspace->id,
         ]))->assertSessionHas('success', 'Workspace updated.');
+
+    $workspace->refresh();
 
     expect($workspace->name)->toBe($updatedData['name'])
         ->and($workspace->location)->toBe($updatedData['location']);
 });
+
 todo('can delete a workspace');
