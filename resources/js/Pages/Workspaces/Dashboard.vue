@@ -35,7 +35,7 @@ const page = usePage();
                             </p>
                         </header>
                         <div class="py-4">
-                            <p>Hello from dashboard {{  }}</p>
+                            <p>Hello from dashboard {{ workspace.name }}</p>
                         </div>
 
                     </section>

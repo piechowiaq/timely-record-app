@@ -4,6 +4,7 @@ use App\Models\User;
 use App\Models\Workspace;
 
 use function Pest\Laravel\actingAs;
+use function Pest\Laravel\patch;
 use function Pest\Laravel\post;
 
 it('user with no workspace can store a workspace', function () {
@@ -14,8 +15,8 @@ it('user with no workspace can store a workspace', function () {
     usleep(1000000);
 
     $response = post(route('workspaces.store', ['project' => $user->project_id]), [
-        'name' => fake()->company,
-        'location' => fake()->city,
+        'name' => fake()->company(),
+        'location' => fake()->city(),
     ]);
 
     $workspace = Workspace::latest()->first();
@@ -38,14 +39,15 @@ it('user with workspaces can store a workspace', function () {
 
     usleep(1000000);
 
-    $response = post(route('workspaces.store', ['project' => $user->project_id]), [
-        'name' => fake()->company,
-        'location' => fake()->city,
-    ]);
+    $data = [
+        'name' => fake()->company(),
+        'location' => fake()->city(),
+    ];
 
-    $response->assertRedirect(route('projects.show', [
-        'project' => $user->project_id,
-    ]))->assertSessionHas('success', 'Workspace created.');
+    post(route('workspaces.store', ['project' => $user->project_id]), $data)
+        ->assertRedirect(route('projects.show', [
+            'project' => $user->project_id,
+        ]))->assertSessionHas('success', 'Workspace created.');
 
     expect(Workspace::latest()->first())
         ->name->toBeString()->not->toBeEmpty()
@@ -53,5 +55,24 @@ it('user with workspaces can store a workspace', function () {
         ->project_id->toBeInt()->tobe($user->project_id);
 });
 
-todo('can update a workspace');
+it('can update a workspace', function () {
+
+    $user = User::factory()->withWorkspaces()->create();
+    actingAs($user);
+
+    $workspace = Workspace::latest()->first();
+
+    $updatedData = [
+        'name' => fake()->company(),
+        'location' => fake()->city(),
+    ];
+
+    patch(route('workspaces.update', ['project' => $user->project_id, 'workspace' => $workspace->id]), $updatedData)
+        ->assertRedirect(route('projects.show', [
+            'project' => $user->project_id,
+        ]))->assertSessionHas('success', 'Workspace updated.');
+
+    expect($workspace->name)->toBe($updatedData['name'])
+        ->and($workspace->location)->toBe($updatedData['location']);
+});
 todo('can delete a workspace');

@@ -1,14 +1,20 @@
 <?php
 
+use App\Models\User;
 use App\Models\Workspace;
 
+use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 
 it('shows workspace name', function () {
 
-    $workspace = Workspace::factory()->create();
+    $user = User::factory()->withWorkspaces()->create();
+    actingAs($user);
 
-    get('workspaces.dashboard', ['project' => $workspace->project_id, 'workspace' => $workspace->id])
+    $workspace = Workspace::first();
+
+    get(route('workspaces.dashboard', ['project' => $user->project_id, 'workspace' => $workspace->id]))
         ->assertOk()
-        ->assertSeeText([$workspace->name]);
+        ->assertSee($workspace->name);
+
 });
