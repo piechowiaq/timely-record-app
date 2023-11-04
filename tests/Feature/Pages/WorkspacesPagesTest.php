@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use App\Models\Workspace;
+use Inertia\Testing\AssertableInertia as Assert;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -13,8 +14,12 @@ it('shows workspace name', function () {
 
     $workspace = Workspace::first();
 
-    get(route('workspaces.dashboard', ['project' => $user->project_id, 'workspace' => $workspace->id]))
-        ->assertOk()
-        ->assertSee($workspace->name);
+    $response = get(route('workspaces.dashboard', ['project' => $user->project_id, 'workspace' => $workspace->id]));
+
+    expect($response->status())->toBe(200);
+
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('Workspaces/Dashboard')
+        ->where('workspace.name', $workspace->name));
 
 });
