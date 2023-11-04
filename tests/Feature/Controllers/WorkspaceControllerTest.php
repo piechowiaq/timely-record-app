@@ -4,6 +4,7 @@ use App\Models\User;
 use App\Models\Workspace;
 
 use function Pest\Laravel\actingAs;
+use function Pest\Laravel\delete;
 use function Pest\Laravel\patch;
 use function Pest\Laravel\post;
 
@@ -81,4 +82,22 @@ it('can update a workspace', function () {
         ->and($workspace->location)->toBe($updatedData['location']);
 });
 
-todo('can delete a workspace');
+it('can delete a workspace', function () {
+
+    $user = User::factory()->withWorkspaces()->create();
+    $password = 'password';
+    $user->password = bcrypt($password);
+
+    actingAs($user);
+
+    $workspace = Workspace::latest()->first();
+
+    delete(route('workspaces.destroy', [
+        'project' => $user->project,
+        'workspace' => $workspace,
+    ]), [
+        'password' => $password,
+    ])->assertRedirect(route('projects.show', $user->project_id))->assertSessionHas('success', 'Workspace deleted.');
+
+    expect(Workspace::find($workspace->id))->toBeNull();
+});
