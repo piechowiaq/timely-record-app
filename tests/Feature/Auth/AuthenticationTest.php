@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Database\Seeders\RolesAndPermissionsSeeder;
 
 use function Pest\Laravel\post;
 
@@ -46,11 +47,15 @@ it('redirects authenticated user with workspace to projects.dashboard route', fu
 });
 
 it('assigns Admin role to newly registered user ', function () {
+
+    // Run the roles and permissions seeder
+    $this->seed(RolesAndPermissionsSeeder::class);
+
     $user = User::factory()->create();
 
-    $user->assignRole('Admin');
+    $user->assignRole('admin');
 
-    expect($user->hasRole('Admin'))->toBeTrue();
+    expect($user->hasRole('admin'))->toBeTrue();
 
 });
 

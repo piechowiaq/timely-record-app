@@ -15,16 +15,14 @@ class EnsureProjectAccess
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Retrieve the project ID from the route parameter
-        $projectId = $request->route('project');
+        $projectId = (int) $request->route('project');
 
-        // Check if the authenticated user has access to the project
-        if (! auth()->check() || ! auth()->user()->hasProjectAccess($projectId)) {
-            // If the user is not authenticated or does not have access, return a 403 Forbidden response or redirect
-            return response('Forbidden', 403);
+        $userProjectId = auth()->user()->project?->id;
+
+        if ($projectId !== $userProjectId) {
+            return redirect()->route('login')->with('error', 'Unauthorized access!');
         }
 
-        // If the user has access, proceed with the request
         return $next($request);
     }
 }

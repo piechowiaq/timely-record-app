@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Database\Seeders\RolesAndPermissionsSeeder;
 
 test('registration screen can be rendered', function () {
     $response = $this->get('/register');
@@ -9,6 +10,9 @@ test('registration screen can be rendered', function () {
 });
 
 test('new users can register', function () {
+
+    $this->seed(RolesAndPermissionsSeeder::class);
+
     $response = $this->post('/register', [
         'first_name' => 'Test User',
         'last_name' => 'Test User',

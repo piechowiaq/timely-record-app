@@ -62,14 +62,4 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsToMany(Workspace::class);
     }
-
-    /**
-     * Check if the user has access to the given project.
-     *
-     * @param  int  $projectId
-     */
-    public function hasProjectAccess($projectId): bool
-    {
-        return $this->project()->where('id', $projectId)->exists();
-    }
 }
