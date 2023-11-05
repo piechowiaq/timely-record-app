@@ -7,6 +7,7 @@ const WORKSPACE_NAVIGATION_OPTIONS = [
 
 const PROJECT_NAVIGATION_OPTIONS = [
     {name: 'Dashboard', route: 'projects.dashboard', iconName: 'fa-gauge-simple-high'},
+    {name: 'Users', route: 'users.index', iconName: 'fa-gauge-simple-high'},
 ];
 
 export const useNavigationStore = defineStore("NavigationStore", {

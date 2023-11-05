@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\WorkspaceController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -36,6 +37,11 @@ Route::middleware('auth', 'verified', 'project.access')->group(function () {
     })->name('dashboard');
     Route::get('/projects/{project}/dashboard', [ProjectController::class, 'dashboard'])->name('projects.dashboard');
     Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
+
+    Route::get('projects/{project}/users', [UserController::class, 'index'])->name('users.index');
+    Route::get('projects/{project}/users/create', [UserController::class, 'create'])->name('users.create');
+    Route::post('projects/{project}/users', [UserController::class, 'store'])->name('users.store');
+
     Route::get('projects/{project}/workspaces/{workspace}/dashboard', [WorkspaceController::class, 'dashboard'])->name('workspaces.dashboard');
     Route::get('/projects/{project}/workspaces/create', [WorkspaceController::class, 'create'])->name('workspaces.create');
     Route::post('/projects/{project}/workspaces', [WorkspaceController::class, 'store'])->name('workspaces.store');
