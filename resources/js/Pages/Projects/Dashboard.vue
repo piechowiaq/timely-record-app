@@ -24,7 +24,8 @@ const projectId = usePage().props.auth.user.project_id;
 
 
             <div class="grid md:grid-cols-2 gap-2 grid-cols-1">
-                <section v-if="!workspaces.length" class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow flex-grow">
+                <section v-if="!workspaces.length"
+                         class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow flex-grow">
 
                     <p class="italic text-red-400 text-xs mb-4">
                         No
