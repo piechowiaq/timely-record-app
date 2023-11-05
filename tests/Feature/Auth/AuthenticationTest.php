@@ -45,6 +45,15 @@ it('redirects authenticated user with workspace to projects.dashboard route', fu
 
 });
 
+it('assigns Admin role to newly registered user ', function () {
+    $user = User::factory()->create();
+
+    $user->assignRole('Admin');
+
+    expect($user->hasRole('Admin'))->toBeTrue();
+
+});
+
 test('users can not authenticate with invalid password', function () {
     $user = User::factory()->create();
 

@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    use HasApiTokens, HasFactory, HasRoles, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -60,5 +61,15 @@ class User extends Authenticatable implements MustVerifyEmail
     public function workspaces()
     {
         return $this->belongsToMany(Workspace::class);
+    }
+
+    /**
+     * Check if the user has access to the given project.
+     *
+     * @param  int  $projectId
+     */
+    public function hasProjectAccess($projectId): bool
+    {
+        return $this->project()->where('id', $projectId)->exists();
     }
 }
