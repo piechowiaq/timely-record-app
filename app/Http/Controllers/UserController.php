@@ -33,8 +33,21 @@ class UserController extends Controller
     {
         $roles = Role::whereNotIn('name', ['super-admin'])->pluck('name');
 
+        // Get the user's project and then the associated workspaces
+        //        $workspaces = optional(auth()->user()->project)->workspaces()->get() ?? collect();
+        //        $workspaces = optional(auth()->user()->project)->workspaces()->pluck('name')->values()->toArray() ?? [];
+
+        // Get the user's project and then the associated workspaces
+        $workspaces = optional(auth()->user()->project)->workspaces->map(function ($workspace) {
+            return [
+                'id' => $workspace->id,
+                'name' => $workspace->name,
+            ];
+        }) ?? collect();
+
         return Inertia::render('Users/Create', [
             'roles' => $roles,
+            'workspaces' => $workspaces,
         ]);
     }
 
@@ -48,6 +61,9 @@ class UserController extends Controller
             'last_name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'role' => 'required|exists:roles,name',
+            'workspacesIds' => 'required|array',
+            'workspacesIds.*' => 'required|exists:workspaces,id',
+
         ]);
 
         $project = auth()->user()->project;
@@ -59,6 +75,8 @@ class UserController extends Controller
             'project_id' => $project->id,
             'password' => Hash::make(Str::random(10)),
         ]);
+
+        $user->workspaces()->sync($request->workspacesIds);
 
         $user->assignRole($request->role);
 

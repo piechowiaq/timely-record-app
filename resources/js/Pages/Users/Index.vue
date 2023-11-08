@@ -22,8 +22,7 @@ const projectId = usePage().props.auth.user.project_id;
         </template>
 
         <div class="px-2 pb-2">
-
-            <div v-if="!users.length">
+            <div v-if="!users">
                 <section
                     class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow flex-grow">
 
@@ -51,6 +50,61 @@ const projectId = usePage().props.auth.user.project_id;
                     </header>
                 </section>
             </div>
+        </div>
+
+
+        <div class="mb-6 flex items-center">
+            <input type="text" name="search" placeholder="Search…"
+                   class="text-sm w-1/4 h-8 px-6 py-3 border-gray-200 ">
+            <button type="button" class="ml-3 text-sm text-gray-500 hover:text-gray-700 focus:text-cyan-600"
+                    @click="">Reset
+            </button>
+        </div>
+
+        <div class="shadow overflow-x-auto p-2">
+            <table class="w-full">
+                <thead>
+                <tr>
+                    <th class="text-start flex p-2" @click="">
+                        Imię
+                        <!--                        <Icon name="sorting" class="block m-auto ml-2 text-gray-300"/>-->
+                    </th>
+                    <th class="p-2"></th>
+                    <th class="p-2 flex" @click="sort('expiry_date')">
+                        Wygasa dnia | za
+                        <!--                        <Icon name="sorting" class="block m-auto ml-2 text-gray-300"/>-->
+                    </th>
+                    <th class="p-2">Pobierz</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="user in users" :key="user.id">
+                    <td class="border-b p-2 w-2/3 truncate ...">
+
+                        {{ user.first_name }}
+
+
+                    </td>
+                    <td class="border-b p-2 px-2 w-16">
+
+                    </td>
+                    <td class="border-b p-2 text-sm truncate ... ">
+                        Hello
+                    </td>
+                    <td class="border-b p-2 w-24">
+
+                        ikona
+
+
+                    </td>
+                </tr>
+                <tr v-if="!users">
+                    <td class="p-2 border-t text-red-600" colspan="4">No registries assigned.</td>
+                </tr>
+
+                </tbody>
+            </table>
+            <!--            <Pagination :links="registries.links" class="flex flex-wrap pt-2"></Pagination>-->
         </div>
     </AuthenticatedLayout>
 

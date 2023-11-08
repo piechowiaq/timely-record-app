@@ -7,21 +7,56 @@ import {Head, useForm, usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import SelectInput from "@/Components/SelectInput.vue";
+import {computed, ref, watch} from 'vue';
 
-defineProps({
+
+const props = defineProps({
     roles: {
+        type: Array,
+    },
+    workspaces: {
         type: Array,
     }
 });
 
 const projectId = usePage().props.auth.user.project_id;
 
+
 const form = useForm({
     first_name: '',
     last_name: '',
     email: '',
-    role: ''
+    role: '',
+    workspacesIds: [],
 });
+
+const selectedItems = ref([]);
+
+const selectAll = computed({
+    get: () => selectedItems.value.length === props.workspaces.length,
+    set: (newValue) => {
+        if (newValue) {
+            selectedItems.value = props.workspaces.map(workspace => workspace.id);
+        } else {
+            selectedItems.value = [];
+        }
+    }
+});
+
+// Update form.workspaces whenever selectedItems changes
+watch(selectedItems, (newSelectedItems) => {
+    form.workspacesIds = newSelectedItems;
+});
+
+// A method to update all selections. This changes selectedItems, which will in turn update form.workspaces via the watch.
+function toggleSelectAll() {
+    if (selectedItems.value.length === props.workspaces.length) {
+        selectedItems.value = [];
+    } else {
+        selectedItems.value = props.workspaces.map(workspace => workspace.id);
+    }
+}
+
 
 </script>
 
@@ -47,6 +82,7 @@ const form = useForm({
 
                         <form @submit.prevent="form.post(route('users.store', projectId))" method="post"
                               class="mt-6 space-y-6">
+
                             <div>
                                 <InputLabel for="name" value="First Name"/>
 
@@ -79,6 +115,7 @@ const form = useForm({
                                 <InputError class="mt-2" :message="form.errors.last_name"/>
                             </div>
 
+
                             <div>
                                 <InputLabel for="email" value="Email"/>
 
@@ -110,6 +147,36 @@ const form = useForm({
                                 <InputError class="mt-2" :message="form.errors.role"/>
                             </div>
 
+                            <div>
+                                <InputLabel for="workspaces" value="Workspaces"/>
+                                <div class="mb-2 mt-1">
+                                    <input
+                                        type="checkbox"
+                                        id="select-all"
+                                        :checked="selectAll"
+                                        @change="toggleSelectAll"
+                                        class="border-gray-300 text-cyan-600 shadow-sm"
+                                    />
+                                    <label for="select-all" class="text-sm ml-2">
+                                        Select All
+                                    </label>
+                                </div>
+
+                                <div v-for="workspace in workspaces" :key="workspace.id">
+                                    <input
+                                        type="checkbox"
+                                        :id="`checkbox-${workspace.id}`"
+                                        :value="workspace.id"
+                                        v-model="selectedItems"
+                                        class="border-gray-300 text-cyan-600 shadow-sm"
+                                    />
+                                    <label :for="`checkbox-${workspace.id}`" class="ml-2 text-sm ">
+                                        {{ workspace.name }}
+                                    </label>
+                                </div>
+                                <InputError class="mt-2" :message="form.errors.workspaceIds"/>
+                            </div>
+
                             <div class="flex items-center gap-4">
                                 <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
 
@@ -123,6 +190,7 @@ const form = useForm({
                                         Saved.</p>
                                 </Transition>
                             </div>
+
                         </form>
                     </section>
                 </div>
@@ -131,6 +199,7 @@ const form = useForm({
     </AuthenticatedLayout>
 
 </template>
+
 
 <style scoped>
 
