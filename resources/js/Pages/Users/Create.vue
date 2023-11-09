@@ -6,7 +6,6 @@ import TextInput from "@/Components/TextInput.vue";
 import {Head, useForm, usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import SelectInput from "@/Components/SelectInput.vue";
 import {computed, ref, watch} from 'vue';
 
 
@@ -131,51 +130,78 @@ function toggleSelectAll() {
                                 <InputError class="mt-2" :message="form.errors.email"/>
                             </div>
 
+
+                            <!--Role-->
                             <div>
                                 <InputLabel for="role" value="Role"/>
+                                <div class="border px-2 mt-1 shadow-sm">
 
-                                <SelectInput
-                                    id="role"
-                                    class="mt-1 block w-full"
-                                    v-model="form.role"
-                                    :options="roles"
-                                    required
-                                    autofocus
-                                    autocomplete="role"
-                                />
 
-                                <InputError class="mt-2" :message="form.errors.role"/>
+                                    <div v-for="(role, index) in roles" :key="role"
+                                         :class="{'border-b': index !== roles.length - 1}"
+                                         class="flex items-center py-2">
+                                        <input
+                                            type="radio"
+                                            :id="`radio-${role}`"
+                                            :value="role"
+                                            v-model="form.role"
+                                            class="border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
+                                        />
+                                        <label :for="`radio-${role}`" class="ml-2 cursor-pointer text-sm">
+                                            {{ role }}
+                                        </label>
+                                    </div>
+
+                                    <InputError class="mt-2" :message="form.errors.role"/>
+                                </div>
                             </div>
 
+                            <!--Workspaces-->
                             <div>
                                 <InputLabel for="workspaces" value="Workspaces"/>
-                                <div class="mb-2 mt-1">
-                                    <input
-                                        type="checkbox"
-                                        id="select-all"
-                                        :checked="selectAll"
-                                        @change="toggleSelectAll"
-                                        class="border-gray-300 text-cyan-600 shadow-sm"
-                                    />
-                                    <label for="select-all" class="text-sm ml-2">
-                                        Select All
-                                    </label>
-                                </div>
+                                <div class="border px-2 mt-1 shadow-sm">
+                                    <div class="flex items-center pt-2 pb-4">
+                                        <input
+                                            type="checkbox"
+                                            id="select-all"
+                                            :checked="selectAll"
+                                            @change="toggleSelectAll"
+                                            class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
+                                        />
+                                        <label for="select-all" class="text-sm ml-2">
+                                            Select All
+                                        </label>
+                                    </div>
 
-                                <div v-for="workspace in workspaces" :key="workspace.id">
-                                    <input
-                                        type="checkbox"
-                                        :id="`checkbox-${workspace.id}`"
-                                        :value="workspace.id"
-                                        v-model="selectedItems"
-                                        class="border-gray-300 text-cyan-600 shadow-sm"
-                                    />
-                                    <label :for="`checkbox-${workspace.id}`" class="ml-2 text-sm ">
-                                        {{ workspace.name }}
-                                    </label>
+                                    <div v-for="(workspace, index) in workspaces" :key="workspace.id"
+                                         :class="{'border-b': index !== workspaces.length - 1}"
+                                         class="flex items-center py-2"> <!-- Adjusted classes here -->
+
+                                        <input
+                                            type="checkbox"
+                                            :id="`checkbox-${workspace.id}`"
+                                            :value="workspace.id"
+                                            v-model="selectedItems"
+                                            class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
+                                        />
+
+                                        <div class="text-sm flex flex-col justify-center">
+                                            <!-- Adjusted classes here -->
+                                            <label :for="`checkbox-${workspace.id}`"
+                                                   class="font-medium text-gray-900 dark:text-gray-300 ml-2">
+                                                {{ workspace.name }}
+                                                <span v-if="workspace.location"
+                                                      class="text-xs font-normal text-gray-500 dark:text-gray-300">
+                                                             {{ workspace.location }}
+                                                         </span>
+                                            </label>
+                                        </div>
+
+                                    </div>
+                                    <InputError class="mt-2" :message="form.errors.workspaceIds"/>
                                 </div>
-                                <InputError class="mt-2" :message="form.errors.workspaceIds"/>
                             </div>
+
 
                             <div class="flex items-center gap-4">
                                 <PrimaryButton :disabled="form.processing">Save</PrimaryButton>

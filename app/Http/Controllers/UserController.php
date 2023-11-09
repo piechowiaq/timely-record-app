@@ -42,6 +42,7 @@ class UserController extends Controller
             return [
                 'id' => $workspace->id,
                 'name' => $workspace->name,
+                'location' => $workspace->location ?? '',
             ];
         }) ?? collect();
 
