@@ -6,14 +6,14 @@ import TextInput from "@/Components/TextInput.vue";
 import {Head, Link, useForm, usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import {computed, onMounted} from 'vue';
+import {computed, watch, watchEffect} from 'vue';
 import {useWorkspacesStore} from "@/Stores/WorkspacesStore.js";
 
 const props = defineProps({
     roles: {
         type: Array,
     },
-    workspaces: {
+    paginatedWorkspaces: {
         type: Object,
     },
     workspacesIds: {
@@ -27,33 +27,13 @@ const form = useForm({
     email: '',
     role: '',
     workspacesIds: [],
-    selectAll: false,
 });
+
+const projectId = usePage().props.auth.user.project_id;
 
 const workspacesStore = useWorkspacesStore();
 
-const {url} = usePage();
-
-onMounted(() => {
-    if (props.workspaces && props.workspaces.data) {
-        workspacesStore.setWorkspacesData(props.workspaces.data);
-    }
-
-    if (props.workspacesIds) {
-        workspacesStore.setAllWorkspaceIds(props.workspacesIds);
-    }
-});
-
 const selectedWorkspacesIds = computed(() => workspacesStore.selectedWorkspacesIds);
-
-function toggleWorkspaceSelection(workspaceId) {
-    if (selectedWorkspacesIds.value.includes(workspaceId)) {
-        workspacesStore.deselectWorkspace(workspaceId);
-    } else {
-        // console.log('selecting', workspaceId);
-        workspacesStore.selectWorkspace(workspaceId);
-    }
-}
 
 const isAllSelected = computed({
     get: () => workspacesStore.isAllSelected,
@@ -66,9 +46,28 @@ const isAllSelected = computed({
     }
 });
 
+watchEffect(() => {
+    if (props.paginatedWorkspaces?.data) {
+        workspacesStore.setWorkspacesData(props.paginatedWorkspaces.data);
+    }
+    if (props.workspacesIds) {
+        workspacesStore.setAllWorkspaceIds(props.workspacesIds);
+    }
+});
+
+watch(selectedWorkspacesIds, (newSelectedIds) => {
+    form.workspacesIds = newSelectedIds;
+}, {deep: true});
+
+function toggleWorkspaceSelection(workspaceId) {
+    if (selectedWorkspacesIds.value.includes(workspaceId)) {
+        workspacesStore.deselectWorkspace(workspaceId);
+    } else {
+        workspacesStore.selectWorkspace(workspaceId);
+    }
+}
 
 </script>
-
 
 <template>
     <Head title="Workspace"/>
@@ -83,10 +82,10 @@ const isAllSelected = computed({
                 <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow">
                     <section class="max-w-xl">
                         <header>
-                            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Users Information</h2>
+                            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Create User Form</h2>
 
                             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                                Your project's users information.
+                                Please provide required data to create new user.
                             </p>
                         </header>
                         <form @submit.prevent="form.post(route('users.store', projectId))" method="post"
@@ -155,8 +154,9 @@ const isAllSelected = computed({
                                         </label>
                                     </div>
 
-                                    <InputError class="mt-2" :message="form.errors.role"/>
+
                                 </div>
+                                <InputError class="mt-2" :message="form.errors.role"/>
                             </div>
                             <!--Workspaces-->
                             <div>
@@ -180,15 +180,16 @@ const isAllSelected = computed({
 
                                         <nav>
                                             <ul class="flex space-x-1">
-                                                <li v-for="link in workspaces.links" :key="link.label"
+                                                <li v-for="link in paginatedWorkspaces.links" :key="link.label"
                                                     class="flex items-center">
                                                     <template v-if="link.url">
                                                         <Link
+                                                            preserve-scroll
                                                             :href="link.url"
                                                             v-html="link.label"
 
                                                             :class="`px-2 py-1 text-xs disabled:opacity-50 disabled:cursor-not-allowed ${link.active ? 'bg-gray-600 text-white' : 'bg-white hover:bg-gray-100 text-gray-600'}`"
-                                                            preserve-scroll></Link>
+                                                        ></Link>
                                                     </template>
                                                     <template v-else>                                                                                                <span
                                                         v-html="link.label"
@@ -210,6 +211,7 @@ const isAllSelected = computed({
                                             :id="`checkbox-${workspace.id}`"
                                             :value="workspace.id"
                                             :checked="workspacesStore.selectedWorkspacesIds.includes(workspace.id)"
+                                            v-model="form.workspacesIds"
                                             @change="() => toggleWorkspaceSelection(workspace.id)"
                                             class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
                                         />
@@ -225,14 +227,9 @@ const isAllSelected = computed({
                                         </div>
                                     </div>
 
-                                    <!-- ... Other elements ... -->
                                 </div>
-
-
+                                <InputError class="mt-2" :message="form.errors.workspacesIds"/>
                             </div>
-
-                            <br>
-
 
                             <div class="flex items-center gap-4">
                                 <PrimaryButton :disabled="form.processing">Save</PrimaryButton>

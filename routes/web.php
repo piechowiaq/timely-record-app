@@ -49,7 +49,6 @@ Route::middleware('auth', 'verified', 'web')->group(function () {
     Route::get('/projects/{project}/workspaces/{workspace}/edit', [WorkspaceController::class, 'edit'])->name('workspaces.edit');
     Route::patch('/projects/{project}/workspaces/{workspace}', [WorkspaceController::class, 'update'])->name('workspaces.update');
     Route::delete('/projects/{project}/workspaces/{workspace}', [WorkspaceController::class, 'destroy'])->name('workspaces.destroy');
-    Route::post('/workspaces/toggle-select-all', [WorkspaceController::class, 'toggleSelectAll'])->name('toggleSelectAll');
 
 });
 

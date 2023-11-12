@@ -7,7 +7,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
         // Object to track selected workspaces per page
         selectedWorkspaces: new Set(), // Initial
         workspacesData: [],
-        allWorkspaceIds: [],
+        allWorkspaceIds: new Set(),
 
     }),
     actions: {
@@ -26,25 +26,11 @@ export const useWorkspacesStore = defineStore('workspaces', {
             this.allWorkspaceIds = new Set(ids);
         },
         selectAllWorkspaces() {
-            if (!this.allWorkspaceIds) {
-                // Initialize as an empty set if undefined
-                this.allWorkspaceIds = new Set();
-            }
-
-            // Now you can safely use forEach
-            this.allWorkspaceIds.forEach(workspaceId => {
-                if (!this.selectedWorkspaces) {
-                    this.selectedWorkspaces = new Set();
-                }
-                this.selectedWorkspaces.add(workspaceId);
-            });
-
+            this.selectedWorkspaces = new Set(this.allWorkspaceIds);
         },
-
-
         deselectAllWorkspaces() {
-            this.selectedWorkspaces = new Set();
-        }
+            this.selectedWorkspaces.clear();
+        },
     },
     getters: {
 

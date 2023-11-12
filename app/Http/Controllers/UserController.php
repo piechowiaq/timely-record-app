@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
 
@@ -53,7 +54,7 @@ class UserController extends Controller
 
         return Inertia::render('Users/Create', [
             'roles' => $roles,
-            'workspaces' => $workspaces,
+            'paginatedWorkspaces' => $workspaces,
             'workspacesIds' => $workspacesIds, // Pass all workspace IDs from the current paginated set
         ]);
     }
@@ -63,14 +64,17 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        $project = auth()->user()->project;
 
         $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'role' => 'required|exists:roles,name',
-            'workspacesIds' => 'array',
-            'workspacesIds.*' => 'exists:workspaces,id',
+            'workspacesIds' => ['required', 'array', Rule::exists('workspaces', 'id')->where(function ($query) use ($project) {
+                $query->where('project_id', $project->id);
+            })],
+            'workspacesIds.*' => 'required|exists:workspaces,id',
 
         ]);
 
