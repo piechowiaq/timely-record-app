@@ -31,7 +31,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::middleware('auth', 'verified', 'project.access')->group(function () {
+Route::middleware('auth', 'verified', 'web')->group(function () {
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
@@ -49,6 +49,7 @@ Route::middleware('auth', 'verified', 'project.access')->group(function () {
     Route::get('/projects/{project}/workspaces/{workspace}/edit', [WorkspaceController::class, 'edit'])->name('workspaces.edit');
     Route::patch('/projects/{project}/workspaces/{workspace}', [WorkspaceController::class, 'update'])->name('workspaces.update');
     Route::delete('/projects/{project}/workspaces/{workspace}', [WorkspaceController::class, 'destroy'])->name('workspaces.destroy');
+    Route::post('/workspaces/toggle-select-all', [WorkspaceController::class, 'toggleSelectAll'])->name('toggleSelectAll');
 
 });
 

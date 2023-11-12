@@ -33,22 +33,28 @@ class UserController extends Controller
     {
         $roles = Role::whereNotIn('name', ['super-admin'])->pluck('name');
 
-        // Get the user's project and then the associated workspaces
-        //        $workspaces = optional(auth()->user()->project)->workspaces()->get() ?? collect();
-        //        $workspaces = optional(auth()->user()->project)->workspaces()->pluck('name')->values()->toArray() ?? [];
+        $workspacesQuery = optional(auth()->user()->project)->workspaces();
 
-        // Get the user's project and then the associated workspaces
-        $workspaces = optional(auth()->user()->project)->workspaces->map(function ($workspace) {
+        $workspacesIds = [];
+
+        // Paginate the workspaces and use tap to get the workspace IDs
+        $workspaces = $workspacesQuery->tap(function ($query) use (&$workspacesIds) {
+            $workspacesIds = $query->pluck('id')->toArray();
+        })->paginate(5);
+
+        // Transform the paginated workspaces collection
+        $workspaces->getCollection()->transform(function ($workspace) {
             return [
                 'id' => $workspace->id,
                 'name' => $workspace->name,
                 'location' => $workspace->location ?? '',
             ];
-        }) ?? collect();
+        });
 
         return Inertia::render('Users/Create', [
             'roles' => $roles,
             'workspaces' => $workspaces,
+            'workspacesIds' => $workspacesIds, // Pass all workspace IDs from the current paginated set
         ]);
     }
 
@@ -57,13 +63,14 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+
         $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'role' => 'required|exists:roles,name',
-            'workspacesIds' => 'required|array',
-            'workspacesIds.*' => 'required|exists:workspaces,id',
+            'workspacesIds' => 'array',
+            'workspacesIds.*' => 'exists:workspaces,id',
 
         ]);
 
@@ -77,7 +84,15 @@ class UserController extends Controller
             'password' => Hash::make(Str::random(10)),
         ]);
 
-        $user->workspaces()->sync($request->workspacesIds);
+        if (session('selectAllWorkspaces', false)) {
+            // Get IDs of all workspaces associated with the user's project
+            $workspaceIds = optional(auth()->user()->project)->workspaces->pluck('id')->toArray();
+
+            $user->workspaces()->sync($workspaceIds);
+        } else {
+            // Apply the action only to the specific IDs passed from the client
+            $user->workspaces()->sync($request->workspacesIds);
+        }
 
         $user->assignRole($request->role);
 

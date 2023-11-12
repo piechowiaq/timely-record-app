@@ -3,23 +3,23 @@
 import InputError from "@/Components/InputError.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
-import {Head, useForm, usePage} from "@inertiajs/vue3";
+import {Head, Link, useForm, usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import {computed, ref, watch} from 'vue';
-
+import {computed, onMounted} from 'vue';
+import {useWorkspacesStore} from "@/Stores/WorkspacesStore.js";
 
 const props = defineProps({
     roles: {
         type: Array,
     },
     workspaces: {
+        type: Object,
+    },
+    workspacesIds: {
         type: Array,
-    }
+    },
 });
-
-const projectId = usePage().props.auth.user.project_id;
-
 
 const form = useForm({
     first_name: '',
@@ -27,37 +27,48 @@ const form = useForm({
     email: '',
     role: '',
     workspacesIds: [],
+    selectAll: false,
 });
 
-const selectedItems = ref([]);
+const workspacesStore = useWorkspacesStore();
 
-const selectAll = computed({
-    get: () => selectedItems.value.length === props.workspaces.length,
-    set: (newValue) => {
-        if (newValue) {
-            selectedItems.value = props.workspaces.map(workspace => workspace.id);
+const {url} = usePage();
+
+onMounted(() => {
+    if (props.workspaces && props.workspaces.data) {
+        workspacesStore.setWorkspacesData(props.workspaces.data);
+    }
+
+    if (props.workspacesIds) {
+        workspacesStore.setAllWorkspaceIds(props.workspacesIds);
+    }
+});
+
+const selectedWorkspacesIds = computed(() => workspacesStore.selectedWorkspacesIds);
+
+function toggleWorkspaceSelection(workspaceId) {
+    if (selectedWorkspacesIds.value.includes(workspaceId)) {
+        workspacesStore.deselectWorkspace(workspaceId);
+    } else {
+        // console.log('selecting', workspaceId);
+        workspacesStore.selectWorkspace(workspaceId);
+    }
+}
+
+const isAllSelected = computed({
+    get: () => workspacesStore.isAllSelected,
+    set: (value) => {
+        if (value) {
+            workspacesStore.selectAllWorkspaces();
         } else {
-            selectedItems.value = [];
+            workspacesStore.deselectAllWorkspaces();
         }
     }
 });
 
-// Update form.workspaces whenever selectedItems changes
-watch(selectedItems, (newSelectedItems) => {
-    form.workspacesIds = newSelectedItems;
-});
-
-// A method to update all selections. This changes selectedItems, which will in turn update form.workspaces via the watch.
-function toggleSelectAll() {
-    if (selectedItems.value.length === props.workspaces.length) {
-        selectedItems.value = [];
-    } else {
-        selectedItems.value = props.workspaces.map(workspace => workspace.id);
-    }
-}
-
 
 </script>
+
 
 <template>
     <Head title="Workspace"/>
@@ -78,10 +89,8 @@ function toggleSelectAll() {
                                 Your project's users information.
                             </p>
                         </header>
-
                         <form @submit.prevent="form.post(route('users.store', projectId))" method="post"
                               class="mt-6 space-y-6">
-
                             <div>
                                 <InputLabel for="name" value="First Name"/>
 
@@ -97,7 +106,6 @@ function toggleSelectAll() {
 
                                 <InputError class="mt-2" :message="form.errors.first_name"/>
                             </div>
-
                             <div>
                                 <InputLabel for="last_name" value="Last Name"/>
 
@@ -113,8 +121,6 @@ function toggleSelectAll() {
 
                                 <InputError class="mt-2" :message="form.errors.last_name"/>
                             </div>
-
-
                             <div>
                                 <InputLabel for="email" value="Email"/>
 
@@ -129,13 +135,10 @@ function toggleSelectAll() {
 
                                 <InputError class="mt-2" :message="form.errors.email"/>
                             </div>
-
-
                             <!--Role-->
                             <div>
                                 <InputLabel for="role" value="Role"/>
                                 <div class="border px-2 mt-1 shadow-sm">
-
 
                                     <div v-for="(role, index) in roles" :key="role"
                                          :class="{'border-b': index !== roles.length - 1}"
@@ -155,57 +158,84 @@ function toggleSelectAll() {
                                     <InputError class="mt-2" :message="form.errors.role"/>
                                 </div>
                             </div>
-
                             <!--Workspaces-->
                             <div>
                                 <InputLabel for="workspaces" value="Workspaces"/>
                                 <div class="border px-2 mt-1 shadow-sm">
-                                    <div class="flex items-center pt-2 pb-4">
-                                        <input
-                                            type="checkbox"
-                                            id="select-all"
-                                            :checked="selectAll"
-                                            @change="toggleSelectAll"
-                                            class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
-                                        />
-                                        <label for="select-all" class="text-sm ml-2">
-                                            Select All
-                                        </label>
+                                    <div class="flex pt-2 pb-4 justify-between items-center">
+
+                                        <div class="flex">
+                                            <input
+                                                type="checkbox"
+                                                id="select-all"
+                                                :checked="isAllSelected"
+                                                @change="isAllSelected = $event.target.checked"
+                                                class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
+
+                                            />
+                                            <label for="select-all" class="text-sm ml-2">
+                                                Select All
+                                            </label>
+                                        </div>
+
+                                        <nav>
+                                            <ul class="flex space-x-1">
+                                                <li v-for="link in workspaces.links" :key="link.label"
+                                                    class="flex items-center">
+                                                    <template v-if="link.url">
+                                                        <Link
+                                                            :href="link.url"
+                                                            v-html="link.label"
+
+                                                            :class="`px-2 py-1 text-xs disabled:opacity-50 disabled:cursor-not-allowed ${link.active ? 'bg-gray-600 text-white' : 'bg-white hover:bg-gray-100 text-gray-600'}`"
+                                                            preserve-scroll></Link>
+                                                    </template>
+                                                    <template v-else>                                                                                                <span
+                                                        v-html="link.label"
+                                                        class="px-2 py-1 bg-white text-gray-200 text-xs"
+                                                    ></span>
+                                                    </template>
+                                                </li>
+                                            </ul>
+                                        </nav>
                                     </div>
 
-                                    <div v-for="(workspace, index) in workspaces" :key="workspace.id"
-                                         :class="{'border-b': index !== workspaces.length - 1}"
-                                         class="flex items-center py-2"> <!-- Adjusted classes here -->
 
+                                    <div v-for="(workspace, index) in workspacesStore.workspacesData"
+                                         :key="workspace.id"
+                                         :class="{'border-b': index !== workspacesStore.workspacesData.length - 1}"
+                                         class="flex items-center py-2">
                                         <input
                                             type="checkbox"
                                             :id="`checkbox-${workspace.id}`"
                                             :value="workspace.id"
-                                            v-model="selectedItems"
+                                            :checked="workspacesStore.selectedWorkspacesIds.includes(workspace.id)"
+                                            @change="() => toggleWorkspaceSelection(workspace.id)"
                                             class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
                                         />
-
                                         <div class="text-sm flex flex-col justify-center">
-                                            <!-- Adjusted classes here -->
                                             <label :for="`checkbox-${workspace.id}`"
                                                    class="font-medium text-gray-900 dark:text-gray-300 ml-2">
                                                 {{ workspace.name }}
                                                 <span v-if="workspace.location"
                                                       class="text-xs font-normal text-gray-500 dark:text-gray-300">
-                                                             {{ workspace.location }}
-                                                         </span>
+                                                {{ workspace.location }}
+                                            </span>
                                             </label>
                                         </div>
-
                                     </div>
-                                    <InputError class="mt-2" :message="form.errors.workspaceIds"/>
+
+                                    <!-- ... Other elements ... -->
                                 </div>
+
+
                             </div>
+
+                            <br>
 
 
                             <div class="flex items-center gap-4">
                                 <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
-
                                 <Transition
                                     enter-active-class="transition ease-in-out"
                                     enter-from-class="opacity-0"
@@ -223,7 +253,6 @@ function toggleSelectAll() {
             </div>
         </div>
     </AuthenticatedLayout>
-
 </template>
 
 

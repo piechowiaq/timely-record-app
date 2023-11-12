@@ -6,6 +6,7 @@ use App\Http\Requests\StoreWorkspaceRequest;
 use App\Http\Requests\UpdateWorkspaceRequest;
 use App\Models\Project;
 use App\Models\Workspace;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -117,5 +118,14 @@ class WorkspaceController extends Controller
             'project' => $project,
             'workspace' => $workspace,
         ]);
+    }
+
+    public function toggleSelectAll(Request $request): RedirectResponse
+    {
+        $selectAll = $request->input('selectAll');
+        session(['selectAllWorkspaces' => $selectAll]); // Storing the flag in the session
+
+        return redirect()->back();
+
     }
 }
