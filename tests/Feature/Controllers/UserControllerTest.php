@@ -16,6 +16,7 @@ it('can store a user with roles and workspaces', function () {
     $project = $user->project;
 
     $workspaces = $user->workspaces;
+    $selectedWorkspaceIds = $workspaces->pluck('id')->take(3)->toArray();
 
     $role = Role::create(['name' => 'admin']);
 
@@ -23,7 +24,7 @@ it('can store a user with roles and workspaces', function () {
         'first_name' => 'John',
         'last_name' => 'Doe',
         'email' => 'john@example.com',
-        'workspacesIds' => $workspaces->pluck('id')->toArray(),
+        'workspacesIds' => $selectedWorkspaceIds,
         'role' => $role->name,
     ];
 
@@ -41,7 +42,7 @@ it('can store a user with roles and workspaces', function () {
         ->and($user->last_name)->toEqual('Doe')
         ->and($user->email)->toEqual('john@example.com')
         ->and($user->roles->pluck('name'))->toContain('admin')
-        ->and($user->workspaces)->toHaveCount(5);
+        ->and($user->workspaces)->toHaveCount(3);
 
 });
 
