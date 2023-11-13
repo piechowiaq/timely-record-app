@@ -3,11 +3,12 @@
 import InputError from "@/Components/InputError.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
-import {Head, Link, useForm, usePage} from "@inertiajs/vue3";
+import {Head, useForm, usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import {computed, watch, watchEffect} from 'vue';
 import {useWorkspacesStore} from "@/Stores/WorkspacesStore.js";
+import Pagination from "@/Components/Pagination.vue";
 
 const props = defineProps({
     roles: {
@@ -177,28 +178,8 @@ function toggleWorkspaceSelection(workspaceId) {
                                                 Select All
                                             </label>
                                         </div>
-
-                                        <nav>
-                                            <ul class="flex space-x-1">
-                                                <li v-for="link in paginatedWorkspaces.links" :key="link.label"
-                                                    class="flex items-center">
-                                                    <template v-if="link.url">
-                                                        <Link
-                                                            preserve-scroll
-                                                            :href="link.url"
-                                                            v-html="link.label"
-
-                                                            :class="`px-2 py-1 text-xs disabled:opacity-50 disabled:cursor-not-allowed ${link.active ? 'bg-gray-600 text-white' : 'bg-white hover:bg-gray-100 text-gray-600'}`"
-                                                        ></Link>
-                                                    </template>
-                                                    <template v-else>                                                                                                <span
-                                                        v-html="link.label"
-                                                        class="px-2 py-1 bg-white text-gray-200 text-xs"
-                                                    ></span>
-                                                    </template>
-                                                </li>
-                                            </ul>
-                                        </nav>
+                                        <Pagination :links="paginatedWorkspaces.links"
+                                                    class="flex items-center justify-end py-2"></Pagination>
                                     </div>
 
 

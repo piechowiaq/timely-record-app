@@ -2,12 +2,16 @@
 
 import {Head, Link, usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import {ref} from "vue";
+import Pagination from "@/Components/Pagination.vue";
 
-defineProps({
-    users: {
+const props = defineProps({
+    paginatedUsers: {
         type: Object,
     }
 });
+
+const users = ref(props.paginatedUsers.data);
 
 const projectId = usePage().props.auth.user.project_id;
 
@@ -64,7 +68,7 @@ const projectId = usePage().props.auth.user.project_id;
                                 {{ user.email }}
                             </td>
                             <td class="px-6 py-4">
-                                Manager
+                                {{ user.role }}
                             </td>
 
                         </tr>
@@ -73,11 +77,9 @@ const projectId = usePage().props.auth.user.project_id;
                     </table>
                 </div>
 
-
-                <!--            <Pagination :links="registries.links" class="flex flex-wrap pt-2"></Pagination>-->
+                <Pagination :links="paginatedUsers.links" class="flex items-center justify-end py-2"></Pagination>
             </div>
         </div>
-
 
     </AuthenticatedLayout>
 

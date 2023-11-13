@@ -18,12 +18,19 @@ class UserController extends Controller
      */
     public function index(Project $project)
     {
-        $users = $project->users->filter(function ($user) {
-            return $user->id !== auth()->id();
+        $users = User::where('project_id', $project->id)
+            ->where('id', '<>', auth()->id())
+            ->with('roles') // Eager load the roles relationship
+            ->paginate(10);
+
+        $users->each(function ($user) {
+            $roleName = $user->roles->first()->name ?? null; // Get the name of the first role
+            $user->role = $roleName; // Assign the role name to a new 'role' property
+            unset($user->roles); // Remove the roles collection
         });
 
         return Inertia::render('Users/Index', [
-            'users' => $users,
+            'paginatedUsers' => $users,
         ]);
     }
 
