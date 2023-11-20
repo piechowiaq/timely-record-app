@@ -124,7 +124,46 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $user = User::with('workspaces', 'roles')->findOrFail($id);
+
+        // Fetch roles excluding 'super-admin'
+        $roles = Role::whereNotIn('name', ['super-admin'])->pluck('name');
+
+        // Fetch all workspaces related to the user's project
+        $workspacesQuery = optional(auth()->user()->project)->workspaces();
+
+        $workspacesIds = [];
+
+        // Paginate the workspaces and use tap to get the workspace IDs
+        $workspaces = $workspacesQuery->tap(function ($query) use (&$workspacesIds) {
+            $workspacesIds = $query->pluck('id')->toArray();
+        })->paginate(5);
+
+        // Transform the paginated workspaces collection
+        $workspaces->getCollection()->transform(function ($workspace) {
+            return [
+                'id' => $workspace->id,
+                'name' => $workspace->name,
+                'location' => $workspace->location ?? '',
+            ];
+        });
+
+        // Prepare user data for the edit form
+        $userData = [
+            'id' => $user->id,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'email' => $user->email,
+            'role' => $user->roles->first()->name ?? null,
+            'workspacesIds' => $user->workspaces->pluck('id')->toArray(),
+        ];
+
+        return Inertia::render('Users/Edit', [
+            'user' => $userData,
+            'roles' => $roles,
+            'paginatedWorkspaces' => $workspaces,
+            'workspacesIds' => $workspacesIds, // Pass all workspace IDs from the current paginated set
+        ]);
     }
 
     /**

@@ -5,11 +5,14 @@ use Spatie\Permission\Models\Role;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\post;
+use function Pest\Laravel\put;
 
 it('can store a user with roles and workspaces', function () {
 
     $user = User::factory()->withWorkspaces(5)->create();
     actingAs($user);
+
+    // Set a delay so the test doesn't fail due to duplicate timestamps
 
     usleep(1000000);
 
@@ -70,4 +73,40 @@ it('does not create a new user with provided data', function () {
 
     $newUserCount = User::count();
     expect($newUserCount)->toEqual($initialUserCount);
+});
+
+it('can update a user with new roles and workspaces', function () {
+    // Arrange: Prepare the environment for the test
+    $user = User::factory()->withWorkspaces(5)->create();
+    actingAs($user);
+    $project = $user->project;
+
+    $newWorkspaces = \App\Models\Workspace::factory()->count(3)->create();
+    $newWorkspaceIds = $newWorkspaces->pluck('id')->toArray();
+
+    $role = Role::create(['name' => 'editor']);
+
+    $updatedUserData = [
+        'first_name' => 'Jane',
+        'last_name' => 'Smith',
+        'email' => 'jane@example.com',
+        'workspacesIds' => $newWorkspaceIds,
+        'role' => $role->name,
+    ];
+
+    // Act: Perform the action you want to test
+    // This assumes you have a route 'users.update' that handles the user update.
+    $response = put(route('users.update', ['project' => $project, 'user' => $user->id]), $updatedUserData);
+
+    // Assert: Check that the user was updated with the new data
+    $response->assertRedirect(route('users.edit', ['project' => $project, 'user' => $user->id]))
+        ->assertSessionHas('success', 'User updated.');
+
+    $user->refresh();
+
+    expect($user->first_name)->toEqual('Jane')
+        ->and($user->last_name)->toEqual('Smith')
+        ->and($user->email)->toEqual('jane@example.com')
+        ->and($user->roles->pluck('name'))->toContain('editor')
+        ->and($user->workspaces)->toHaveCount(3);
 });
