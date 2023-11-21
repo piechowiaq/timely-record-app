@@ -6,7 +6,7 @@ import TextInput from "@/Components/TextInput.vue";
 import {Head, useForm, usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import {computed, watch, watchEffect} from 'vue';
+import {computed, onMounted, watch, watchEffect} from 'vue';
 import {useWorkspacesStore} from "@/Stores/WorkspacesStore.js";
 import Pagination from "@/Components/Pagination.vue";
 
@@ -24,20 +24,28 @@ const props = defineProps({
         type: Object,
     }
 });
+const workspacesStore = useWorkspacesStore();
+
+const selectedWorkspacesIds = computed(() => workspacesStore.selectedWorkspacesIds);
 
 const form = useForm({
     first_name: props.user.first_name,
     last_name: props.user.last_name,
     email: props.user.email,
     role: props.user.role,
-    workspacesIds: props.user.workspaces?.map(workspace => workspace.id) || [],
+    workspacesIds: selectedWorkspacesIds.value,
 });
+
+onMounted(() => {
+    // Select each workspace ID from the props when the component is mounted
+    props.user.workspacesIds?.forEach(workspaceId => {
+        workspacesStore.selectWorkspace(workspaceId);
+    });
+});
+
 
 const projectId = usePage().props.auth.user.project_id;
 
-const workspacesStore = useWorkspacesStore();
-
-const selectedWorkspacesIds = computed(() => workspacesStore.selectedWorkspacesIds);
 
 const isAllSelected = computed({
     get: () => workspacesStore.isAllSelected,
@@ -51,20 +59,17 @@ const isAllSelected = computed({
 });
 
 watchEffect(() => {
-    console.log('User workspaces:', props.user.workspaces);
     if (props.paginatedWorkspaces?.data) {
         workspacesStore.setWorkspacesData(props.paginatedWorkspaces.data);
     }
-    if (props.user.workspacesIds) {
-        workspacesStore.setAllWorkspaceIds(props.user.workspacesIds);
+    if (props.workspacesIds) {
+        workspacesStore.setAllWorkspaceIds(props.workspacesIds);
     }
 });
 
-watch(() => props.user, (newUser) => {
-    console.log('New user data:', newUser);
-    form.workspacesIds = newUser.workspaces?.map(workspace => workspace.id) || [];
+watch(selectedWorkspacesIds, (newSelectedIds) => {
+    form.workspacesIds = newSelectedIds;
 }, {deep: true});
-
 
 function toggleWorkspaceSelection(workspaceId) {
     if (selectedWorkspacesIds.value.includes(workspaceId)) {
@@ -92,7 +97,7 @@ function toggleWorkspaceSelection(workspaceId) {
                             <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Edit User Form</h2>
 
                             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                                Please provide required data to edit user. {{ user }}
+                                Please provide required data to edit user.
                             </p>
                         </header>
                         <form @submit.prevent="form.post(route('users.store', projectId))" method="post"
@@ -166,6 +171,12 @@ function toggleWorkspaceSelection(workspaceId) {
                                 <InputError class="mt-2" :message="form.errors.role"/>
                             </div>
                             <!--Workspaces-->
+
+                            {{ roles }}
+                            <br>
+                            {{ form.role }}
+                            <br>
+                            {{ workspacesStore.selectedWorkspacesIds }}
                             <div>
                                 <InputLabel for="workspaces" value="Workspaces"/>
                                 <div class="border px-2 mt-1 shadow-sm">
@@ -193,14 +204,15 @@ function toggleWorkspaceSelection(workspaceId) {
                                          :key="workspace.id"
                                          :class="{'border-b': index !== workspacesStore.workspacesData.length - 1}"
                                          class="flex items-center py-2">
-                                        <input type="checkbox"
-                                               :id="`checkbox-${workspace.id}`"
-                                               :value="workspace.id"
-                                               v-model="form.workspacesIds"
-                                               :checked="form.workspacesIds.includes(workspace.id)"
-                                               @change="() => toggleWorkspaceSelection(workspace.id)"
-                                               class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"/>
-
+                                        <input
+                                            type="checkbox"
+                                            :id="`checkbox-${workspace.id}`"
+                                            :value="workspace.id"
+                                            :checked="workspacesStore.selectedWorkspacesIds.includes(workspace.id)"
+                                            v-model="form.workspacesIds"
+                                            @change="() => toggleWorkspaceSelection(workspace.id)"
+                                            class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
+                                        />
                                         <div class="text-sm flex flex-col justify-center">
                                             <label :for="`checkbox-${workspace.id}`"
                                                    class="font-medium text-gray-900 dark:text-gray-300 ml-2">
@@ -237,6 +249,7 @@ function toggleWorkspaceSelection(workspaceId) {
         </div>
     </AuthenticatedLayout>
 </template>
+
 
 <style scoped>
 
