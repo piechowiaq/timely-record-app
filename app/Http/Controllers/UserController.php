@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Models\Project;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
 
@@ -69,22 +69,8 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
-        $project = auth()->user()->project;
-
-        $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
-            'role' => 'required|exists:roles,name',
-            'workspacesIds' => ['required', 'array', Rule::exists('workspaces', 'id')->where(function ($query) use ($project) {
-                $query->where('project_id', $project->id);
-            })],
-            'workspacesIds.*' => 'required|exists:workspaces,id',
-
-        ]);
-
         $project = auth()->user()->project;
 
         $user = User::create([
@@ -169,9 +155,27 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateUserRequest $request, string $id)
     {
-        //
+        $project = auth()->user()->project;
+
+        // Find the user or fail
+        $user = User::findOrFail($id);
+
+        // Update the user
+        $user->update([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+        ]);
+
+        // Sync roles and workspaces
+        $user->syncRoles($request->role);
+        $user->workspaces()->sync($request->workspacesIds);
+
+        // Redirect back with success message
+        return redirect()->route('users.edit', ['project' => $project, 'user' => $user])
+            ->with('success', 'User updated successfully.');
     }
 
     /**

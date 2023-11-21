@@ -100,7 +100,7 @@ function toggleWorkspaceSelection(workspaceId) {
                                 Please provide required data to edit user.
                             </p>
                         </header>
-                        <form @submit.prevent="form.post(route('users.store', projectId))" method="post"
+                        <form @submit.prevent="form.put(route('users.update',  [ user.id, projectId  ]))" method="post"
                               class="mt-6 space-y-6">
                             <div>
                                 <InputLabel for="name" value="First Name"/>
@@ -172,11 +172,6 @@ function toggleWorkspaceSelection(workspaceId) {
                             </div>
                             <!--Workspaces-->
 
-                            {{ roles }}
-                            <br>
-                            {{ form.role }}
-                            <br>
-                            {{ workspacesStore.selectedWorkspacesIds }}
                             <div>
                                 <InputLabel for="workspaces" value="Workspaces"/>
                                 <div class="border px-2 mt-1 shadow-sm">
