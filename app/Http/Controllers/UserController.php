@@ -108,10 +108,8 @@ class UserController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Project $project, User $user)
     {
-        $user = User::with('workspaces', 'roles')->findOrFail($id);
-
         // Fetch roles excluding 'super-admin'
         $roles = Role::whereNotIn('name', ['super-admin'])->pluck('name');
 
@@ -155,13 +153,8 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateUserRequest $request, string $id)
+    public function update(UpdateUserRequest $request, Project $project, User $user)
     {
-        $project = auth()->user()->project;
-
-        // Find the user or fail
-        $user = User::findOrFail($id);
-
         // Update the user
         $user->update([
             'first_name' => $request->first_name,
@@ -172,6 +165,8 @@ class UserController extends Controller
         // Sync roles and workspaces
         $user->syncRoles($request->role);
         $user->workspaces()->sync($request->workspacesIds);
+
+        dd($user);
 
         // Redirect back with success message
         return redirect()->route('users.edit', ['project' => $project, 'user' => $user])

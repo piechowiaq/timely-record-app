@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Project;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -18,22 +20,35 @@ class UpdateUserRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
+        $project = Project::findOrFail($this->route('project'));
 
-        $project = auth()->user()->project;
+        dd($project);
 
         return [
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique('users')->ignore($this->route('user'))],
-            'role' => 'required|exists:roles,name',
-            'workspacesIds' => ['required', 'array', Rule::exists('workspaces', 'id')->where(function ($query) use ($project) {
-                $query->where('project_id', $project->id);
-            })],
-            'workspacesIds.*' => 'required|exists:workspaces,id',
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'email' => [
+                'required',
+                'string',
+                'lowercase',
+                'email',
+                'max:255',
+                Rule::unique('users')->ignore($this->route('user'), 'id'),
+            ],
+            'role' => ['required', 'exists:roles,name'],
+            'workspacesIds' => [
+                'required',
+                'array',
+                Rule::exists('workspaces', 'id')->where(function ($query) use ($project) {
+                    $query->where('project_id', $project->id);
+                }),
+            ],
+            'workspacesIds.*' => ['required', 'exists:workspaces,id'],
         ];
+
     }
 }

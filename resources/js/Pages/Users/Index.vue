@@ -62,7 +62,7 @@ const projectId = usePage().props.auth.user.project_id;
                             class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                             <th scope="row"
                                 class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                <Link :href="route('users.edit', [ user.id, projectId])"
+                                <Link :href="route('users.edit', [ projectId, user.id ])"
                                       class="text-cyan-600 hover:text-cyan-700">
                                     {{ user.first_name }} {{ user.last_name }}
                                 </Link>
