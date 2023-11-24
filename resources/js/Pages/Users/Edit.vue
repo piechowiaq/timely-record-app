@@ -3,7 +3,7 @@
 import InputError from "@/Components/InputError.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
-import {Head, useForm, usePage} from "@inertiajs/vue3";
+import {Head, router, useForm, usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import {computed, onMounted, watch, watchEffect} from 'vue';
@@ -78,6 +78,10 @@ function toggleWorkspaceSelection(workspaceId) {
         workspacesStore.selectWorkspace(workspaceId);
     }
 }
+
+function submit() {
+    router.patch(route('users.update', {project: projectId, user: props.user.id}), form)
+}
 </script>
 
 <template>
@@ -110,7 +114,8 @@ function toggleWorkspaceSelection(workspaceId) {
                         project {{ projectId }}
 
                         {{ route('users.update', [projectId, user.id]) }}
-                        <form @submit.prevent="form.put(route('users.update', [projectId, user.id]))" method="post"
+                        <form @submit.prevent="submit"
+                              method="post"
                               class="mt-6 space-y-6">
                             <div>
                                 <InputLabel for="name" value="First Name"/>

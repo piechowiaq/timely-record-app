@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
-use App\Http\Requests\UpdateUserRequest;
 use App\Models\Project;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -153,8 +153,9 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateUserRequest $request, Project $project, User $user)
+    public function update(Project $project, User $user, Request $request)
     {
+        dd($user);
         // Update the user
         $user->update([
             'first_name' => $request->first_name,
@@ -165,8 +166,6 @@ class UserController extends Controller
         // Sync roles and workspaces
         $user->syncRoles($request->role);
         $user->workspaces()->sync($request->workspacesIds);
-
-        dd($user);
 
         // Redirect back with success message
         return redirect()->route('users.edit', ['project' => $project, 'user' => $user])

@@ -42,7 +42,7 @@ Route::middleware('auth', 'verified', 'web')->group(function () {
     Route::get('projects/{project}/users/create', [UserController::class, 'create'])->name('users.create');
     Route::post('projects/{project}/users', [UserController::class, 'store'])->name('users.store');
     Route::get('projects/{project}/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
-    Route::put('projects/{project}/users/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::patch('projects/{project}/users/{user}', [UserController::class, 'update'])->name('users.update');
 
     Route::get('projects/{project}/workspaces/{workspace}/dashboard', [WorkspaceController::class, 'dashboard'])->name('workspaces.dashboard');
     Route::get('/projects/{project}/workspaces/create', [WorkspaceController::class, 'create'])->name('workspaces.create');
