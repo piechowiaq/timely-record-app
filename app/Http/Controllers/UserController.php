@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Models\Project;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -153,9 +153,8 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Project $project, User $user, Request $request)
+    public function update(Project $project, User $user, UpdateUserRequest $request)
     {
-        dd($user);
         // Update the user
         $user->update([
             'first_name' => $request->first_name,

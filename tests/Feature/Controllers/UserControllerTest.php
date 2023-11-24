@@ -4,8 +4,8 @@ use App\Models\User;
 use Spatie\Permission\Models\Role;
 
 use function Pest\Laravel\actingAs;
+use function Pest\Laravel\patch;
 use function Pest\Laravel\post;
-use function Pest\Laravel\put;
 
 it('can store a user with roles and workspaces', function () {
 
@@ -79,34 +79,54 @@ it('can update a user with new roles and workspaces', function () {
     // Arrange: Prepare the environment for the test
     $user = User::factory()->withWorkspaces(5)->create();
     actingAs($user);
+    // Set a delay so the test doesn't fail due to duplicate timestamps
+
+    usleep(1000000);
+
     $project = $user->project;
 
-    $newWorkspaces = \App\Models\Workspace::factory()->count(3)->create();
-    $newWorkspaceIds = $newWorkspaces->pluck('id')->toArray();
+    $workspaces = $user->workspaces;
+    $selectedWorkspaceIds = $workspaces->pluck('id')->take(3)->toArray();
 
-    $role = Role::create(['name' => 'editor']);
+    $role = Role::create(['name' => 'admin']);
+
+    $userData = [
+        'first_name' => 'John',
+        'last_name' => 'Doe',
+        'email' => 'john@example.com',
+        'workspacesIds' => $selectedWorkspaceIds,
+        'role' => $role->name,
+    ];
+
+    // Act: Perform the action you want to test
+    // This assumes you have a route 'user.store' that handles the user creation.
+    post(route('users.store', ['project' => $project->id]), $userData);
+
+    $updatedSelectedWorkspaceIds = $workspaces->pluck('id')->take(2)->toArray();
+
+    $role = Role::create(['name' => 'manager']);
 
     $updatedUserData = [
         'first_name' => 'Jane',
         'last_name' => 'Smith',
         'email' => 'jane@example.com',
-        'workspacesIds' => $newWorkspaceIds,
+        'workspacesIds' => $updatedSelectedWorkspaceIds,
         'role' => $role->name,
     ];
 
-    // Act: Perform the action you want to test
-    // This assumes you have a route 'users.update' that handles the user update.
-    $response = put(route('users.update', ['project' => $project, 'user' => $user->id]), $updatedUserData);
+    $response = patch(route('users.update', ['project' => $project, 'user' => $user->id]), $updatedUserData);
     //
     //    // Assert: Check that the user was updated with the new data
     //    $response->assertRedirect(route('users.edit', ['project' => $project, 'user' => $user->id]))
     //        ->assertSessionHas('success', 'User updated.');
+
+    $response->assertRedirect(route('users.edit', ['project' => $project, 'user' => $user->id]))->assertSessionHas('success', 'User updated successfully.');
 
     $user->refresh();
 
     expect($user->first_name)->toEqual('Jane')
         ->and($user->last_name)->toEqual('Smith')
         ->and($user->email)->toEqual('jane@example.com')
-        ->and($user->roles->pluck('name'))->toContain('editor')
-        ->and($user->workspaces)->toHaveCount(3);
+        ->and($user->roles->pluck('name'))->toContain('manager')
+        ->and($user->workspaces)->toHaveCount(2);
 });

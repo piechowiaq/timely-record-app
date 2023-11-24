@@ -91,13 +91,7 @@ function submit() {
         <template #header>
             <h2 class="text-white dark:text-gray-700 leading-tight">Edit User</h2>
         </template>
-        {{ roles }}
-        <br>
-        {{ paginatedWorkspaces.data }}
-        <br>
-        {{ user }}
-        <br>
-        {{ user.workspacesIds }}
+      
         <div class="px-2 pb-2">
             <div class="space-y-2">
                 <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow">
@@ -109,11 +103,6 @@ function submit() {
                                 Please provide required data to edit user.
                             </p>
                         </header>
-                        user {{ user.id }}
-                        <br>
-                        project {{ projectId }}
-
-                        {{ route('users.update', [projectId, user.id]) }}
                         <form @submit.prevent="submit"
                               method="post"
                               class="mt-6 space-y-6">

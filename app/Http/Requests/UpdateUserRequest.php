@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Project;
 use App\Models\User;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -25,9 +24,7 @@ class UpdateUserRequest extends FormRequest
      */
     public function rules(): array
     {
-        $project = Project::findOrFail($this->route('project'));
-
-        dd($project);
+        $project = $this->route('project');
 
         return [
             'first_name' => ['required', 'string', 'max:255'],
@@ -38,7 +35,7 @@ class UpdateUserRequest extends FormRequest
                 'lowercase',
                 'email',
                 'max:255',
-                Rule::unique(User::class)->ignore($this->user()->id),
+                Rule::unique(User::class)->ignore($this->route('user')),
             ],
             'role' => ['required', 'exists:roles,name'],
             'workspacesIds' => [
