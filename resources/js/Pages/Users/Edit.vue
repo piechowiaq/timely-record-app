@@ -3,7 +3,7 @@
 import InputError from "@/Components/InputError.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
-import {Head, router, useForm, usePage} from "@inertiajs/vue3";
+import {Head, useForm, usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import {computed, onMounted, watch, watchEffect} from 'vue';
@@ -80,7 +80,7 @@ function toggleWorkspaceSelection(workspaceId) {
 }
 
 function submit() {
-    router.patch(route('users.update', {project: projectId, user: props.user.id}), form)
+    form.patch(route('users.update', {project: projectId, user: props.user.id}), form)
 }
 </script>
 
@@ -91,7 +91,7 @@ function submit() {
         <template #header>
             <h2 class="text-white dark:text-gray-700 leading-tight">Edit User</h2>
         </template>
-      
+
         <div class="px-2 pb-2">
             <div class="space-y-2">
                 <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow">
@@ -114,7 +114,7 @@ function submit() {
                                     type="text"
                                     class="mt-1 block w-full"
                                     v-model="form.first_name"
-                                    required
+
                                     autofocus
                                     autocomplete="first_name"
                                 />
@@ -225,6 +225,7 @@ function submit() {
                                     </div>
 
                                 </div>
+                             
                                 <InputError class="mt-2" :message="form.errors.workspacesIds"/>
                             </div>
 

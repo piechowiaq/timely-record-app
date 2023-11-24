@@ -47,6 +47,5 @@ class UpdateUserRequest extends FormRequest
             ],
             'workspacesIds.*' => ['required', 'exists:workspaces,id'],
         ];
-
     }
 }
