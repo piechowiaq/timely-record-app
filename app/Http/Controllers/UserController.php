@@ -180,6 +180,7 @@ class UserController extends Controller
             'email' => $user->email,
             'role' => $user->roles->first()->name ?? null,
             'workspacesIds' => $user->workspaces->pluck('id')->toArray(),
+            'email_verified' => $user->hasVerifiedEmail(),
         ];
 
         return Inertia::render('Users/Edit', [

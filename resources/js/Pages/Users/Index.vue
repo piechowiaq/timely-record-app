@@ -89,7 +89,7 @@ const getSortIconClass = (field) => {
                                 Email
                                 <i :class="getSortIconClass('email')"></i>
                             </th>
-                            <th scope="col" class="px-6 py-3" @click="sort('email_verified_at')">
+                            <th scope="col" class="px-6 py-3 text-center" @click="sort('email_verified_at')">
                                 Verified
                                 <i :class="getSortIconClass('email_verified_at')"
                                 ></i>
@@ -97,8 +97,9 @@ const getSortIconClass = (field) => {
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="user in paginatedUsers.data" :key="user.id"
-                            class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                        <tr v-for="(user, index) in paginatedUsers.data" :key="user.id"
+                            :class="{'bg-white dark:bg-gray-800': true, 'border-b dark:border-gray-700': index !== paginatedUsers.data.length - 1}">
+                         
                             <th scope="row"
                                 class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                 <Link :href="route('users.edit', [ projectId, user.id])"
@@ -113,8 +114,11 @@ const getSortIconClass = (field) => {
                             <td class="px-6 py-4">
                                 {{ user.email }}
                             </td>
-                            <td class="px-6 py-4">
-                                {{ user.email_verified }}
+                            <td class="px-6 py-4 text-center">
+                                <i v-if="user.email_verified"
+                                   class="fa-regular fa-circle-check text-green-600"></i>
+                                <i v-else class="fa-regular fa-circle-xmark text-red-600"></i>
+
                             </td>
 
                         </tr>
