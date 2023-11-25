@@ -22,26 +22,38 @@ class UserController extends Controller
     {
         $search = $request->input('search');
         $sortField = $request->input('field'); // the field to sort by
-        $sortDirection = $request->input('direction'); // the direction of sorting
+        $sortDirection = $request->input('direction') ?? 'asc'; // the direction of sorting, default to 'asc'
 
-        $users = User::where('project_id', $project->id)
-            ->where('id', '<>', auth()->id())
-            ->when($search, function ($query, $search) {
-                return $query->where(function ($query) use ($search) {
-                    $query->where('first_name', 'like', "%{$search}%")
-                        ->orWhere('last_name', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%")
-                        ->orWhereHas('roles', function ($query) use ($search) {
-                            $query->where('name', 'like', "%{$search}%");
-                        });
-                });
-            })
-            ->when($sortField, function ($query) use ($sortField, $sortDirection) {
+        $query = User::query();
 
-                $sortDirection = $sortDirection ?? 'asc';
+        // Apply search conditions
+        if ($search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('first_name', 'like', "%{$search}%")
+                    ->orWhere('last_name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhereHas('roles', function ($query) use ($search) {
+                        $query->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
 
-                return $query->orderBy($sortField, $sortDirection);
-            })
+        // Apply sorting
+        if ($sortField) {
+            if ($sortField === 'role') {
+                // Adjust this line based on your database structure
+                $query->join('model_has_roles', 'users.id', '=', 'model_has_roles.model_id')
+                    ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
+                    ->orderBy('roles.name', $sortDirection)
+                    ->select('users.*'); // Avoid selecting columns from joined tables
+            } else {
+                $query->orderBy($sortField, $sortDirection);
+            }
+        }
+
+        // Filter by project and user ID, then paginate
+        $users = $query->where('project_id', $project->id)
+            ->where('users.id', '<>', auth()->id())
             ->with('roles')
             ->paginate(10)
             ->withQueryString()
@@ -50,7 +62,7 @@ class UserController extends Controller
                     'id' => $user->id,
                     'first_name' => $user->first_name,
                     'last_name' => $user->last_name,
-                    'role' => $user->roles->first()->name ?? null,
+                    'role' => $user->roles->pluck('name')->join(', '), // Adjust for multiple roles
                     'email' => $user->email,
                     'email_verified' => $user->hasVerifiedEmail(),
                 ];

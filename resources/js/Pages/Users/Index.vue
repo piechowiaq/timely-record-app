@@ -34,9 +34,9 @@ const sort = (field) => {
     index.value.direction = index.value.direction === 'asc' ? 'desc' : 'asc';
 }
 
-// const resetSearch = () => {
-//     search.value = '';
-// }
+const resetSearch = () => {
+    index.value.search = '';
+}
 
 </script>
 
@@ -47,15 +47,6 @@ const sort = (field) => {
         <template #header>
             <h2 class="text-white dark:text-gray-700 leading-tight">Users</h2>
         </template>
-
-        index: {{ index }}
-        <br>
-
-        fileter: {{ filters }}
-
-        <br>
-        <button @click="sort('first_name')">Button</button>
-
         <div class="px-2 pb-2 ">
             <div class="p-6 shadow overflow-x-auto bg-white">
                 <div class="flex items-center justify-between">
@@ -63,7 +54,8 @@ const sort = (field) => {
                         <input v-model="index.search" type="text" name="search" placeholder="Search…"
                                class="text-sm h-8 px-6 py-3 border-gray-200 ">
                         <button type="button"
-                                class="ml-3 text-sm text-gray-500 hover:text-gray-700 focus:text-cyan-600">Reset
+                                class="ml-3 text-sm text-gray-500 hover:text-gray-700 focus:text-cyan-600"
+                                @click="resetSearch">Reset
                         </button>
 
                     </div>
@@ -72,26 +64,20 @@ const sort = (field) => {
                         User
                     </Link>
                 </div>
-
-
-                <br>
-
-
                 <div class="relative overflow-x-auto">
                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
-                            <th scope="col" class="px-6 py-3">
+                            <th scope="col" class="px-6 py-3" @click="sort('last_name')">
                                 Imię i nazwisko
-
                             </th>
-                            <th scope="col" class="px-6 py-3">
+                            <th scope="col" class="px-6 py-3" @click="sort('role')">
                                 Role
                             </th>
-                            <th scope="col" class="px-6 py-3">
+                            <th scope="col" class="px-6 py-3" @click="sort('email')">
                                 Email
                             </th>
-                            <th scope="col" class="px-6 py-3">
+                            <th scope="col" class="px-6 py-3" @click="sort('email_verified_at')">
                                 Verified
                             </th>
                         </tr>
