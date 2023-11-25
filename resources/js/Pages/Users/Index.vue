@@ -18,25 +18,25 @@ const props = defineProps({
 
 const projectId = usePage().props.auth.user.project_id;
 
-const search = ref(props.filters.search);
+const index = ref({
+    search: props.filters.search,
+});
 
-// watch(search, (value) => {
-//     router.get(route('users.index', {project: projectId, search: value}), {
-//         preserveState: true,
-//         replace: true
-//     });
-// });
-
-watch(search, debounce(function (value) {
-    router.get(route('users.index', {project: projectId}), {search: value}, {
+watch(index.value, debounce(() => {
+    router.get(route('users.index', {project: projectId}), index.value, {
         preserveState: true,
         replace: true
     });
 }, 300));
 
-const resetSearch = () => {
-    search.value = '';
+const sort = (field) => {
+    index.value.field = field;
+    index.value.direction = index.value.direction === 'asc' ? 'desc' : 'asc';
 }
+
+// const resetSearch = () => {
+//     search.value = '';
+// }
 
 </script>
 
@@ -48,13 +48,21 @@ const resetSearch = () => {
             <h2 class="text-white dark:text-gray-700 leading-tight">Users</h2>
         </template>
 
+        index: {{ index }}
+        <br>
+
+        fileter: {{ filters }}
+
+        <br>
+        <button @click="sort('first_name')">Button</button>
+
         <div class="px-2 pb-2 ">
             <div class="p-6 shadow overflow-x-auto bg-white">
                 <div class="flex items-center justify-between">
                     <div class="mb-2 flex items-center">
-                        <input v-model="search" type="text" name="search" placeholder="Search…"
+                        <input v-model="index.search" type="text" name="search" placeholder="Search…"
                                class="text-sm h-8 px-6 py-3 border-gray-200 ">
-                        <button type="button" @click="resetSearch"
+                        <button type="button"
                                 class="ml-3 text-sm text-gray-500 hover:text-gray-700 focus:text-cyan-600">Reset
                         </button>
 
@@ -65,12 +73,17 @@ const resetSearch = () => {
                     </Link>
                 </div>
 
+
+                <br>
+
+
                 <div class="relative overflow-x-auto">
                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
                             <th scope="col" class="px-6 py-3">
                                 Imię i nazwisko
+
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Role

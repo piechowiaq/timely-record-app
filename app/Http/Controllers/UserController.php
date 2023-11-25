@@ -21,6 +21,8 @@ class UserController extends Controller
     public function index(Project $project, Request $request)
     {
         $search = $request->input('search');
+        $sortField = $request->input('field'); // the field to sort by
+        $sortDirection = $request->input('direction'); // the direction of sorting
 
         $users = User::where('project_id', $project->id)
             ->where('id', '<>', auth()->id())
@@ -33,6 +35,12 @@ class UserController extends Controller
                             $query->where('name', 'like', "%{$search}%");
                         });
                 });
+            })
+            ->when($sortField, function ($query) use ($sortField, $sortDirection) {
+
+                $sortDirection = $sortDirection ?? 'asc';
+
+                return $query->orderBy($sortField, $sortDirection);
             })
             ->with('roles')
             ->paginate(10)
@@ -50,7 +58,7 @@ class UserController extends Controller
 
         return Inertia::render('Users/Index', [
             'paginatedUsers' => $users,
-            'filters' => $request->only(['search']),
+            'filters' => $request->all(['search', 'field', 'direction']),
         ]);
     }
 
