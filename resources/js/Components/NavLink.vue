@@ -1,6 +1,6 @@
 <script setup>
-import { computed } from 'vue';
-import { Link } from '@inertiajs/vue3';
+import {computed} from 'vue';
+import {Link} from '@inertiajs/vue3';
 
 const props = defineProps({
     href: {
@@ -41,7 +41,7 @@ const classes = computed(() => {
     <Link :href="href" :class="classes" :disabled="disabled">
         <i :class="iconClasses"></i>
         <span class="px-2">
-            <slot />
+            <slot/>
         </span>
     </Link>
 </template>

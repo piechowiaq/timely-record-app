@@ -38,6 +38,14 @@ const resetSearch = () => {
     index.value.search = '';
 }
 
+const getSortIconClass = (field) => {
+    if (index.value.field !== field) {
+        return 'fa-solid fa-sort fa-xs ml-2'; // Default icon when the field is not the current sort field
+    }
+    return index.value.direction === 'asc' ? 'fa-solid fa-sort-down fa-xs ml-2' : 'fa-solid fa-sort-up fa-xs ml-2';
+};
+
+
 </script>
 
 <template>
@@ -70,15 +78,21 @@ const resetSearch = () => {
                         <tr>
                             <th scope="col" class="px-6 py-3" @click="sort('last_name')">
                                 Imię i nazwisko
+                                <i :class="getSortIconClass('last_name')"></i>
                             </th>
+
                             <th scope="col" class="px-6 py-3" @click="sort('role')">
                                 Role
+                                <i :class="getSortIconClass('role')"></i>
                             </th>
                             <th scope="col" class="px-6 py-3" @click="sort('email')">
                                 Email
+                                <i :class="getSortIconClass('email')"></i>
                             </th>
                             <th scope="col" class="px-6 py-3" @click="sort('email_verified_at')">
                                 Verified
+                                <i :class="getSortIconClass('email_verified_at')"
+                                ></i>
                             </th>
                         </tr>
                         </thead>
