@@ -4,6 +4,7 @@ use App\Models\User;
 use Spatie\Permission\Models\Role;
 
 use function Pest\Laravel\actingAs;
+use function Pest\Laravel\delete;
 use function Pest\Laravel\patch;
 use function Pest\Laravel\post;
 
@@ -115,10 +116,6 @@ it('can update a user with new roles and workspaces', function () {
     ];
 
     $response = patch(route('users.update', ['project' => $project, 'user' => $user->id]), $updatedUserData);
-    //
-    //    // Assert: Check that the user was updated with the new data
-    //    $response->assertRedirect(route('users.edit', ['project' => $project, 'user' => $user->id]))
-    //        ->assertSessionHas('success', 'User updated.');
 
     $response->assertRedirect(route('users.edit', ['project' => $project, 'user' => $user->id]))->assertSessionHas('success', 'User updated successfully.');
 
@@ -129,4 +126,43 @@ it('can update a user with new roles and workspaces', function () {
         ->and($user->email)->toEqual('jane@example.com')
         ->and($user->roles->pluck('name'))->toContain('manager')
         ->and($user->workspaces)->toHaveCount(2);
+});
+
+it('can delete a user', function () {
+    // Arrange: Prepare the environment for the test
+    $user = User::factory()->withWorkspaces(5)->create();
+    actingAs($user);
+    // Set a delay so the test doesn't fail due to duplicate timestamps
+
+    usleep(1000000);
+
+    $project = $user->project;
+
+    $workspaces = $user->workspaces;
+    $selectedWorkspaceIds = $workspaces->pluck('id')->take(3)->toArray();
+
+    $role = Role::create(['name' => 'admin']);
+
+    $userData = [
+        'first_name' => 'John',
+        'last_name' => 'Doe',
+        'email' => 'john@example.com',
+        'workspacesIds' => $selectedWorkspaceIds,
+        'role' => $role->name,
+    ];
+
+    // Act: Perform the action you want to test
+    // This assumes you have a route 'user.store' that handles the user creation.
+    post(route('users.store', ['project' => $project->id]), $userData);
+
+    $createdUser = User::latest()->first();
+
+    // Act: Perform the delete action
+    $response = delete(route('users.destroy', ['project' => $project->id, 'user' => $createdUser->id]), ['password' => 'password']);
+
+    // Assert: Check if the user was deleted
+    $response->assertRedirect(route('users.index', ['project' => $project]))
+        ->assertSessionHas('success', 'User deleted.');
+
+    $this->assertTrue($createdUser->fresh()->trashed());
 });

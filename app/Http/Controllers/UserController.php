@@ -6,7 +6,9 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\Project;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Spatie\Permission\Models\Role;
@@ -16,21 +18,39 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Project $project)
+    public function index(Project $project, Request $request)
     {
+        $search = $request->input('search');
+
         $users = User::where('project_id', $project->id)
             ->where('id', '<>', auth()->id())
-            ->with('roles') // Eager load the roles relationship
-            ->paginate(10);
-
-        $users->each(function ($user) {
-            $roleName = $user->roles->first()->name ?? null; // Get the name of the first role
-            $user->role = $roleName; // Assign the role name to a new 'role' property
-            unset($user->roles); // Remove the roles collection
-        });
+            ->when($search, function ($query, $search) {
+                return $query->where(function ($query) use ($search) {
+                    $query->where('first_name', 'like', "%{$search}%")
+                        ->orWhere('last_name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhereHas('roles', function ($query) use ($search) {
+                            $query->where('name', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->with('roles')
+            ->paginate(10)
+            ->withQueryString()
+            ->through(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'first_name' => $user->first_name,
+                    'last_name' => $user->last_name,
+                    'role' => $user->roles->first()->name ?? null,
+                    'email' => $user->email,
+                    'email_verified' => $user->hasVerifiedEmail(),
+                ];
+            });
 
         return Inertia::render('Users/Index', [
             'paginatedUsers' => $users,
+            'filters' => $request->only(['search']),
         ]);
     }
 
@@ -174,8 +194,15 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Project $project, User $user, Request $request)
     {
-        //
+        $request->validate([
+            'password' => ['required', 'current_password'],
+        ]);
+
+        $user->delete();
+
+        return Redirect::route('users.index', ['project' => $project])->with('success', 'User deleted.');
+
     }
 }

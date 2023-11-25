@@ -1,19 +1,42 @@
 <script setup>
 
-import {Head, Link, usePage} from "@inertiajs/vue3";
+import {Head, Link, router, usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import {ref} from "vue";
+import {ref, watch} from "vue";
 import Pagination from "@/Components/Pagination.vue";
+import {debounce} from "lodash";
 
 const props = defineProps({
     paginatedUsers: {
         type: Object,
-    }
+    },
+    filters: {
+        type: Object,
+    },
 });
 
-const users = ref(props.paginatedUsers.data);
 
 const projectId = usePage().props.auth.user.project_id;
+
+const search = ref(props.filters.search);
+
+// watch(search, (value) => {
+//     router.get(route('users.index', {project: projectId, search: value}), {
+//         preserveState: true,
+//         replace: true
+//     });
+// });
+
+watch(search, debounce(function (value) {
+    router.get(route('users.index', {project: projectId}), {search: value}, {
+        preserveState: true,
+        replace: true
+    });
+}, 300));
+
+const resetSearch = () => {
+    search.value = '';
+}
 
 </script>
 
@@ -29,18 +52,18 @@ const projectId = usePage().props.auth.user.project_id;
             <div class="p-6 shadow overflow-x-auto bg-white">
                 <div class="flex items-center justify-between">
                     <div class="mb-2 flex items-center">
-                        <input type="text" name="search" placeholder="Search…"
+                        <input v-model="search" type="text" name="search" placeholder="Search…"
                                class="text-sm h-8 px-6 py-3 border-gray-200 ">
-                        <button type="button" class="ml-3 text-sm text-gray-500 hover:text-gray-700 focus:text-cyan-600"
-                                @click="">Reset
+                        <button type="button" @click="resetSearch"
+                                class="ml-3 text-sm text-gray-500 hover:text-gray-700 focus:text-cyan-600">Reset
                         </button>
+
                     </div>
                     <Link :href="route('users.create', projectId)" class="text-cyan-600 hover:text-cyan-700 text-sm">
                         Create
                         User
                     </Link>
                 </div>
-
 
                 <div class="relative overflow-x-auto">
                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -50,28 +73,35 @@ const projectId = usePage().props.auth.user.project_id;
                                 Imię i nazwisko
                             </th>
                             <th scope="col" class="px-6 py-3">
+                                Role
+                            </th>
+                            <th scope="col" class="px-6 py-3">
                                 Email
                             </th>
                             <th scope="col" class="px-6 py-3">
-                                Role
+                                Verified
                             </th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="user in users" :key="user.id"
+                        <tr v-for="user in paginatedUsers.data" :key="user.id"
                             class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                             <th scope="row"
                                 class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                <Link :href="route('users.edit', [ projectId, user.id ])"
+                                <Link :href="route('users.edit', [ projectId, user.id])"
                                       class="text-cyan-600 hover:text-cyan-700">
                                     {{ user.first_name }} {{ user.last_name }}
                                 </Link>
                             </th>
+
+                            <td class="px-6 py-4">
+                                {{ user.role }}
+                            </td>
                             <td class="px-6 py-4">
                                 {{ user.email }}
                             </td>
                             <td class="px-6 py-4">
-                                {{ user.role }}
+                                {{ user.email_verified }}
                             </td>
 
                         </tr>
