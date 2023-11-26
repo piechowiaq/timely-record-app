@@ -11,7 +11,7 @@ class UserRegistrationNotificationController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function store(User $user): \Illuminate\Http\RedirectResponse
+    public function __invoke(User $user): \Illuminate\Http\RedirectResponse
     {
         $user->notify(new \App\Notifications\SendUserRegistrationNotification());
 

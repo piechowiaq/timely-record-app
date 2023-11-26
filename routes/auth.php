@@ -13,6 +13,8 @@ use App\Http\Controllers\Auth\UserRegistrationNotificationController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('user-registration/{token}', UserRegistrationController::class)->name('user.registration');
+
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
@@ -36,10 +38,10 @@ Route::middleware('guest')->group(function () {
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
 
-    Route::get('user-registration/{token}', UserRegistrationController::class)->name('user.registration');
 });
 
 Route::middleware('auth')->group(function () {
+
     Route::get('verify-email', EmailVerificationPromptController::class)
         ->name('verification.notice');
 
@@ -47,7 +49,7 @@ Route::middleware('auth')->group(function () {
         ->middleware(['signed', 'throttle:6,1'])
         ->name('verification.verify');
 
-    Route::post('email/registration-notification/{user}', [UserRegistrationNotificationController::class, 'store'])
+    Route::post('email/registration-notification/{user}', UserRegistrationNotificationController::class)
         ->middleware('throttle:6,1')
         ->name('registration.send');
 

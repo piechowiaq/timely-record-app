@@ -34,7 +34,7 @@ const sendRegistrationLink = () => {
     </header>
 
     <form @submit.prevent="sendRegistrationLink">
-      <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing" class="mx-2">
+      <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
         Send Registration Link
       </PrimaryButton>
     </form>
