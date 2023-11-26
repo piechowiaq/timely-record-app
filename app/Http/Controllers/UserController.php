@@ -54,6 +54,9 @@ class UserController extends Controller
         // Filter by project and user ID, then paginate
         $users = $query->where('project_id', $project->id)
             ->where('users.id', '<>', auth()->id())
+            ->whereDoesntHave('roles', function ($query) {
+                $query->where('name', 'project-admin');
+            })
             ->with('roles')
             ->paginate(10)
             ->withQueryString()
@@ -79,7 +82,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        $roles = Role::whereNotIn('name', ['super-admin'])->pluck('name');
+        $roles = Role::whereNotIn('name', ['super-admin', 'project-admin'])->pluck('name');
 
         $workspacesQuery = optional(auth()->user()->project)->workspaces();
 

@@ -41,6 +41,24 @@ class RolesAndPermissionsSeeder extends Seeder
         Role::create(['name' => 'super-admin'])
             ->givePermissionTo(Permission::all());
 
+        // Project Admin
+        Role::create(['name' => 'project-admin'])
+            ->givePermissionTo([
+                // User permissions
+                'view user',
+                'create user',
+                'update user',
+                'delete user',
+                // Project permissions
+                'view project',
+                'update project',
+                // Workspace permissions
+                'view workspace',
+                'create workspace',
+                'update workspace',
+                'delete workspace',
+            ]);
+
         // Admin
         Role::create(['name' => 'admin'])
             ->givePermissionTo([
@@ -56,7 +74,6 @@ class RolesAndPermissionsSeeder extends Seeder
                 'view workspace',
                 'create workspace',
                 'update workspace',
-                'delete workspace',
             ]);
 
         // Manager
