@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Workspace extends Model
 {
@@ -23,7 +25,7 @@ class Workspace extends Model
     /**
      * Get the project that owns the workspace.
      */
-    public function project()
+    public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
@@ -31,8 +33,16 @@ class Workspace extends Model
     /**
      * The users that belong to the workspace.
      */
-    public function users()
+    public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class);
+    }
+
+    /**
+     * The registries that belong to the workspace.
+     */
+    public function registries(): BelongsToMany
+    {
+        return $this->belongsToMany(Registry::class);
     }
 }
