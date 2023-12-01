@@ -2,16 +2,34 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Project;
+use App\Models\Workspace;
+use App\Services\RegistryService;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class RegistryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    private RegistryService $registryService;
+
+    public function __construct(RegistryService $registryService)
     {
-        //
+        $this->registryService = $registryService;
+    }
+
+    public function index(Request $request, Project $project, Workspace $workspace): Response
+    {
+
+        $registryQuery = $this->registryService->getWorkspaceRegistriesQuery($workspace);
+        $filteredRegistries = $this->registryService->applyFilters($registryQuery, $request);
+
+        return Inertia::render('Registries/Index', [
+            'paginatedRegistries' => $filteredRegistries->paginate(10)
+                ->withQueryString(),
+            'filters' => $request->all(['search', 'field', 'direction']),
+            'workspace' => $workspace,
+        ]);
     }
 
     /**
