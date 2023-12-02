@@ -5,6 +5,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RegistryController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WorkspaceController;
+use App\Http\Controllers\WorkspaceRegistryController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -46,6 +47,10 @@ Route::middleware('auth', 'verified', 'web')->group(function () {
     Route::patch('projects/{project}/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('projects/{project}/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
+    Route::get('projects/{project}/registries', [RegistryController::class, 'index'])->name('registries.index');
+    Route::get('projects/{project}/create-custom', [RegistryController::class, 'createCustom'])->name('registries.create.custom');
+    Route::get('projects/{project}/registries/{registry}', [RegistryController::class, 'edit'])->name('registries.edit');
+
     Route::get('projects/{project}/workspaces/{workspace}/dashboard', [WorkspaceController::class, 'dashboard'])->name('workspaces.dashboard');
     Route::get('/projects/{project}/workspaces/create', [WorkspaceController::class, 'create'])->name('workspaces.create');
     Route::post('/projects/{project}/workspaces', [WorkspaceController::class, 'store'])->name('workspaces.store');
@@ -53,7 +58,7 @@ Route::middleware('auth', 'verified', 'web')->group(function () {
     Route::patch('/projects/{project}/workspaces/{workspace}', [WorkspaceController::class, 'update'])->name('workspaces.update');
     Route::delete('/projects/{project}/workspaces/{workspace}', [WorkspaceController::class, 'destroy'])->name('workspaces.destroy');
 
-    Route::get('projects/{project}/workspaces/{workspace}/registries', [RegistryController::class, 'index'])->name('registries.index');
+    Route::get('projects/{project}/workspaces/{workspace}/registries', [WorkspaceRegistryController::class, 'index'])->name('workspace.registries.index');
 
 });
 

@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Registry;
+use App\Models\Project;
+use App\Models\Workspace;
 use App\Services\RegistryService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class RegistryController extends Controller
+class WorkspaceRegistryController extends Controller
 {
     private RegistryService $registryService;
 
@@ -17,16 +18,17 @@ class RegistryController extends Controller
         $this->registryService = $registryService;
     }
 
-    public function index(Request $request): Response
+    public function index(Request $request, Project $project, Workspace $workspace): Response
     {
-        $query = Registry::query();
-        $filteredQuery = $this->registryService->applyFilters($query, $request);
 
-        $paginatedRegistries = $filteredQuery->paginate(10)->withQueryString();
+        $registryQuery = $this->registryService->getWorkspaceRegistriesQuery($workspace);
+        $filteredRegistries = $this->registryService->applyFilters($registryQuery, $request);
 
         return Inertia::render('Registries/Index', [
-            'paginatedRegistries' => $filteredQuery->paginate(10)->withQueryString(),
+            'paginatedRegistries' => $filteredRegistries->paginate(10)
+                ->withQueryString(),
             'filters' => $request->all(['search', 'field', 'direction']),
+            'workspace' => $workspace,
         ]);
     }
 

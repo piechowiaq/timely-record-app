@@ -7,16 +7,13 @@ import Pagination from "@/Components/Pagination.vue";
 import {debounce} from "lodash";
 
 const props = defineProps({
-  workspace: {
-    type: Object,
-  },
   paginatedRegistries: {
     type: Object,
   },
   filters: {
-    type: Object
+    type: Object,
   },
-})
+});
 
 
 const projectId = usePage().props.auth.user.project_id;
@@ -26,7 +23,7 @@ const index = ref({
 });
 
 watch(index.value, debounce(() => {
-  router.get(route('registries.index', {project: projectId, workspace: props.workspace.id}), index.value, {
+  router.get(route('users.index', {project: projectId}), index.value, {
     preserveState: true,
     replace: true
   });
@@ -48,42 +45,6 @@ const getSortIconClass = (field) => {
   return index.value.direction === 'asc' ? 'fa-solid fa-sort-down fa-xs ml-2' : 'fa-solid fa-sort-up fa-xs ml-2';
 };
 
-const isRegistryExpired = (expiry_date) => {
-  const today = new Date();
-  const expiryDate = new Date(expiry_date);
-  return expiryDate <= today;
-}
-
-const isRegistryExpiringInLessThanAMonth = (expiry_date) => {
-  const today = new Date();
-  const expiryDate = new Date(expiry_date);
-  const diffTime = expiryDate - today;
-  const daysUntilExpiry = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return daysUntilExpiry > 0 && daysUntilExpiry < 30;
-}
-
-const timeLeftUntilExpiryDate = (expiry_date) => {
-  const today = new Date();
-  const expiryDate = new Date(!expiry_date ? today : expiry_date);
-  const diffTime = expiryDate - today;
-  let days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-  if (!expiry_date) {
-    return "Awaiting upload."
-  } else if (days <= 0) {
-    return "Expired";
-  } else if (days < 30) {
-    return `${days} day(s)`;
-  } else if (days < 365) {
-    const months = Math.floor(days / 30);
-    return `${months} month(s)`;
-  } else {
-    const years = Math.floor(days / 365);
-    const remainingMonths = Math.floor((days % 365) / 30);
-    return `${years} year(s) ${remainingMonths ? `${remainingMonths} month(s)` : ''}`.trim();
-  }
-};
-
 
 </script>
 
@@ -92,7 +53,7 @@ const timeLeftUntilExpiryDate = (expiry_date) => {
 
   <AuthenticatedLayout>
     <template #header>
-      <h2 class="text-white dark:text-gray-700 leading-tight">Registries</h2>
+      <h2 class="text-white dark:text-gray-700 leading-tight">Users</h2>
     </template>
     <div class="px-2 pb-2 ">
       <div class="p-6 shadow overflow-x-auto bg-white">
@@ -106,63 +67,44 @@ const timeLeftUntilExpiryDate = (expiry_date) => {
             </button>
 
           </div>
-          <Link :href="route('users.create', projectId)" class="text-cyan-600 hover:text-cyan-700 text-sm">
-            Upload Report
+          <Link :href="route('registries.create.custom', projectId)" class="text-cyan-600 hover:text-cyan-700 text-sm">
+            Create
+            Custom Registry
           </Link>
         </div>
         <div class="relative overflow-x-auto">
           <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-              <th scope="col" class="px-6 py-3" @click="sort('last_name')">
+              <th scope="col" class="px-6 py-3" @click="sort('name')">
                 Name
-                <i :class="getSortIconClass('last_name')"></i>
+                <i :class="getSortIconClass('name')"></i>
               </th>
 
-              <th scope="col" class="px-6 py-3">
+              <th scope="col" class="px-6 py-3" @click="sort('validity_period')">
+                Valid in months
+                <i :class="getSortIconClass('validity_period')"></i>
+              </th>
 
-              </th>
-              <th scope="col" class="px-6 py-3" @click="sort('email')">
-                Wygasa dnia | za
-                <i :class="getSortIconClass('email')"></i>
-              </th>
-              <th scope="col" class="px-6 py-3 text-center" @click="sort('email_verified_at')">
-                Pobierz
-                <i :class="getSortIconClass('email_verified_at')"
-                ></i>
-              </th>
             </tr>
             </thead>
             <tbody>
-            <tr v-for="registry of paginatedRegistries.data" :key="registry.id"
+            <tr v-for="(registry, index) in paginatedRegistries.data" :key="user.id"
                 :class="{'bg-white dark:bg-gray-800': true, 'border-b dark:border-gray-700': index !== paginatedRegistries.data.length - 1}">
 
               <th scope="row"
                   class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                <Link :href="route('reports.index', [ projectId, workspace.id, registry.id])"
+                <Link :href="route('registries.edit', [ projectId, registry.id])"
                       class="text-cyan-600 hover:text-cyan-700">
-                  {{ registry.name }}
+                  {{ registy.name }}
                 </Link>
               </th>
 
               <td class="px-6 py-4">
-                <i class="fa-solid fa-bell text-red-500" v-if="isRegistryExpired(registry.expiry_date)"></i>
-                <i class="fa-solid fa-bell text-yellow-500"
-                   v-else-if="isRegistryExpiringInLessThanAMonth(registry.expiry_date)"></i>
+                {{ registry.validity_period }}
+              </td>
 
-              </td>
-              <td class="px-6 py-4">
-                {{ registry.expiry_date }} <span
-                  class="ml-2 text-xs italic text-gray-400"> {{ timeLeftUntilExpiryDate(registry.expiry_date) }} </span>
-              </td>
-              <td class="px-6 py-4 text-center">
-                <i v-if="paginatedRegistries.expiry_date"
-                   class="fa-regular fa-circle-check text-green-600"></i>
-                <i v-else class="fa-regular fa-circle-xmark text-red-600"></i>
-              </td>
-            </tr>
-            <tr v-if="paginatedRegistries.data.length === 0">
-              <td class="p-2 border-t text-red-600" colspan="4">No registries assigned.</td>
+
             </tr>
 
             </tbody>

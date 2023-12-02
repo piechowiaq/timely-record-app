@@ -31,6 +31,9 @@ export const useWorkspacesStore = defineStore('workspaces', {
         deselectAllWorkspaces() {
             this.selectedWorkspaces.clear();
         },
+        resetSelection() {
+            this.selectedWorkspaces.clear();
+        }
     },
     getters: {
 
