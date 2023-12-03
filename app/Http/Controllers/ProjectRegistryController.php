@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreProjectRegistryRequest;
+use App\Http\Requests\UpdateProjectRegistryRequest;
 use App\Models\Project;
 use App\Models\Registry;
 use App\Services\RegistryService;
@@ -66,25 +67,35 @@ class ProjectRegistryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Project $project, Registry $registry)
     {
-        //
+        return Inertia::render('Registries/Show', [
+            'registry' => $registry,
+        ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Project $project, Registry $registry)
     {
-        //
+        return Inertia::render('Registries/Edit', [
+            'registry' => $registry,
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Project $project, Registry $registry, UpdateProjectRegistryRequest $request)
     {
-        //
+        $registry->name = $request->get('name');
+        $registry->description = $request->get('description');
+        $registry->validity_period = $request->get('validity_period');
+        $registry->save();
+
+        return Redirect::route('project.registries.edit', ['project' => $project->id, 'registry' => $registry->id])
+            ->with('success', 'Custom Registry updated successfully.');
     }
 
     /**
