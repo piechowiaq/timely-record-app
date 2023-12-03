@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreWorkspaceRequest;
 use App\Http\Requests\UpdateWorkspaceRequest;
 use App\Models\Project;
+use App\Models\Registry;
 use App\Models\Workspace;
+use App\Services\RegistryService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,6 +15,13 @@ use Inertia\Inertia;
 
 class WorkspaceController extends Controller
 {
+    private RegistryService $registryService;
+
+    public function __construct(RegistryService $registryService)
+    {
+        $this->registryService = $registryService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -81,7 +90,7 @@ class WorkspaceController extends Controller
                 ->with('success', 'Workspace created.');
         } else {
             // Handle redirection for users who already have other workspaces, if needed
-            return redirect()->route('projects.show', ['project' => $project])
+            return redirect()->route('workspaces.index', ['project' => $project])
                 ->with('success', 'Workspace created.');
         }
     }
@@ -97,10 +106,18 @@ class WorkspaceController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Project $project, Workspace $workspace)
+    public function edit(Request $request, Project $project, Workspace $workspace)
     {
+
+        $query = Registry::query();
+        $filteredQuery = $this->registryService->applyFilters($query, $request);
+
+        $paginatedRegistries = $filteredQuery->paginate(10)->withQueryString();
+
         return Inertia::render('Workspaces/Edit', [
             'workspace' => $workspace,
+            'paginatedRegistries' => $paginatedRegistries,
+            'filters' => $request->all(['search', 'field', 'direction']),
         ]);
     }
 
