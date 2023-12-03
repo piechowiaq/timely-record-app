@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
-use App\Http\Controllers\RegistryController;
+use App\Http\Controllers\ProjectRegistryController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WorkspaceController;
 use App\Http\Controllers\WorkspaceRegistryController;
@@ -47,9 +47,10 @@ Route::middleware('auth', 'verified', 'web')->group(function () {
     Route::patch('projects/{project}/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('projects/{project}/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
-    Route::get('projects/{project}/registries', [RegistryController::class, 'index'])->name('registries.index');
-    Route::get('projects/{project}/create-custom', [RegistryController::class, 'createCustom'])->name('registries.create.custom');
-    Route::get('projects/{project}/registries/{registry}', [RegistryController::class, 'edit'])->name('registries.edit');
+    Route::get('projects/{project}/registries', [ProjectRegistryController::class, 'index'])->name('project.registries.index');
+    Route::get('projects/{project}/create', [ProjectRegistryController::class, 'create'])->name('project.registries.create');
+    Route::post('projects/{project}/registries', [ProjectRegistryController::class, 'store'])->name('project.registries.store');
+    Route::get('projects/{project}/registries/{registry}', [ProjectRegistryController::class, 'edit'])->name('project.registries.edit');
 
     Route::get('projects/{project}/workspaces/{workspace}/dashboard', [WorkspaceController::class, 'dashboard'])->name('workspaces.dashboard');
     Route::get('/projects/{project}/workspaces/create', [WorkspaceController::class, 'create'])->name('workspaces.create');

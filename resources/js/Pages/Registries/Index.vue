@@ -23,7 +23,7 @@ const index = ref({
 });
 
 watch(index.value, debounce(() => {
-  router.get(route('users.index', {project: projectId}), index.value, {
+  router.get(route('registries.index', {project: projectId}), index.value, {
     preserveState: true,
     replace: true
   });
@@ -53,7 +53,7 @@ const getSortIconClass = (field) => {
 
   <AuthenticatedLayout>
     <template #header>
-      <h2 class="text-white dark:text-gray-700 leading-tight">Users</h2>
+      <h2 class="text-white dark:text-gray-700 leading-tight">Registries</h2>
     </template>
     <div class="px-2 pb-2 ">
       <div class="p-6 shadow overflow-x-auto bg-white">
@@ -67,7 +67,7 @@ const getSortIconClass = (field) => {
             </button>
 
           </div>
-          <Link :href="route('registries.create.custom', projectId)" class="text-cyan-600 hover:text-cyan-700 text-sm">
+          <Link :href="route('project.registries.create', projectId)" class="text-cyan-600 hover:text-cyan-700 text-sm">
             Create
             Custom Registry
           </Link>
@@ -86,21 +86,30 @@ const getSortIconClass = (field) => {
                 <i :class="getSortIconClass('validity_period')"></i>
               </th>
 
+              <th scope="col" class="px-6 py-3 text-center" @click="sort('type')">
+                Type
+                <i :class="getSortIconClass('type')"></i>
+              </th>
+
             </tr>
             </thead>
             <tbody>
-            <tr v-for="(registry, index) in paginatedRegistries.data" :key="user.id"
+            <tr v-for="(registry, index) in paginatedRegistries.data" :key="registry.id"
                 :class="{'bg-white dark:bg-gray-800': true, 'border-b dark:border-gray-700': index !== paginatedRegistries.data.length - 1}">
 
               <th scope="row"
                   class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                <Link :href="route('registries.edit', [ projectId, registry.id])"
+                <Link :href="route('project.registries.edit', [ projectId, registry.id])"
                       class="text-cyan-600 hover:text-cyan-700">
-                  {{ registy.name }}
+                  {{ registry.name }}
                 </Link>
+
               </th>
 
               <td class="px-6 py-4">
+                {{ registry.validity_period }}
+              </td>
+              <td class="px-6 py-4 text-center">
                 {{ registry.validity_period }}
               </td>
 

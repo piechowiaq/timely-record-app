@@ -16,7 +16,10 @@ return new class extends Migration
             $table->string('name');
             $table->longText('description')->nullable();
             $table->integer('validity_period')->nullable();
+            $table->unsignedBigInteger('project_id')->nullable();
             $table->timestamps();
+
+            $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
         });
     }
 

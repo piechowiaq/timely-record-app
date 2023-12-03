@@ -35,4 +35,12 @@ class Project extends Model
     {
         return $this->hasMany(Workspace::class);
     }
+
+    /**
+     * Get the custom registries for the project.
+     */
+    public function registries(): HasMany
+    {
+        return $this->hasMany(Registry::class);
+    }
 }
