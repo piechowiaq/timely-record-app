@@ -53,8 +53,10 @@ Route::middleware('auth', 'verified', 'web')->group(function () {
     Route::get('projects/{project}/registries/{registry}/edit', [ProjectRegistryController::class, 'edit'])->name('project.registries.edit');
     Route::get('projects/{project}/registries/{registry}', [ProjectRegistryController::class, 'show'])->name('project.registries.show');
     Route::patch('projects/{project}/registries/{registry}', [ProjectRegistryController::class, 'update'])->name('project.registries.update');
+    Route::delete('projects/{project}/registries/{registry}', [ProjectRegistryController::class, 'destroy'])->name('project.registries.destroy');
 
     Route::get('projects/{project}/workspaces/{workspace}/dashboard', [WorkspaceController::class, 'dashboard'])->name('workspaces.dashboard');
+    Route::get('projects/{project}/workspaces/index', [WorkspaceController::class, 'index'])->name('workspaces.index');
     Route::get('/projects/{project}/workspaces/create', [WorkspaceController::class, 'create'])->name('workspaces.create');
     Route::post('/projects/{project}/workspaces', [WorkspaceController::class, 'store'])->name('workspaces.store');
     Route::get('/projects/{project}/workspaces/{workspace}/edit', [WorkspaceController::class, 'edit'])->name('workspaces.edit');

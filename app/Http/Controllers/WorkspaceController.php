@@ -6,6 +6,7 @@ use App\Http\Requests\StoreWorkspaceRequest;
 use App\Http\Requests\UpdateWorkspaceRequest;
 use App\Models\Project;
 use App\Models\Workspace;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -15,9 +16,31 @@ class WorkspaceController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Project $project, Request $request)
     {
-        //
+        $query = Workspace::where('project_id', $project->id);
+
+        $filteredQuery = $this->applyFilters($query, $request);
+
+        $paginatedWorkspaces = $filteredQuery->paginate(10)->withQueryString();
+
+        return Inertia::render('Workspaces/Index', [
+            'paginatedWorkspaces' => $paginatedWorkspaces,
+            'filters' => $request->all(['search', 'field', 'direction']),
+        ]);
+    }
+
+    public function applyFilters($query, Request $request): Builder
+    {
+        if ($request->has('search')) {
+            $query->where('workspaces.name', 'like', '%'.$request->get('search').'%');
+        }
+
+        if ($request->has(['field', 'direction'])) {
+            $query->orderBy($request->get('field'), $request->get('direction'));
+        }
+
+        return $query;
     }
 
     /**

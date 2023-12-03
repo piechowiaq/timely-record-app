@@ -101,8 +101,14 @@ class ProjectRegistryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Project $project, Registry $registry, Request $request)
     {
-        //
+        $request->validate([
+            'password' => ['required', 'current_password'],
+        ]);
+
+        $registry->delete();
+
+        return Redirect::route('project.registries.index', ['project' => $project])->with('success', 'Registry deleted.');
     }
 }

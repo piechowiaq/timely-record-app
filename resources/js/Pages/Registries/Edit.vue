@@ -6,6 +6,7 @@ import TextInput from '@/Components/TextInput.vue';
 import {Head, useForm, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import TextArea from "@/Components/TextArea.vue";
+import DeleteRegistryForm from "@/Pages/Registries/Partials/DeleteRegistryForm.vue";
 
 const props = defineProps({
   registry: {
@@ -92,19 +93,22 @@ const form = useForm({
 
                 <InputError class="mt-2" :message="form.errors.validity_period"/>
               </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                  <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
 
-              <div class="flex items-center gap-4">
-                <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
+                  <Transition
+                      enter-active-class="transition ease-in-out"
+                      enter-from-class="opacity-0"
+                      leave-active-class="transition ease-in-out"
+                      leave-to-class="opacity-0"
+                  >
+                    <p v-if="form.recentlySuccessful" class="text-sm text-gray-600 dark:text-gray-400">
+                      Saved.</p>
+                  </Transition>
 
-                <Transition
-                    enter-active-class="transition ease-in-out"
-                    enter-from-class="opacity-0"
-                    leave-active-class="transition ease-in-out"
-                    leave-to-class="opacity-0"
-                >
-                  <p v-if="form.recentlySuccessful" class="text-sm text-gray-600 dark:text-gray-400">
-                    Saved.</p>
-                </Transition>
+                </div>
+                <DeleteRegistryForm :registry="registry" class="max-w-xl"/>
               </div>
             </form>
           </section>
