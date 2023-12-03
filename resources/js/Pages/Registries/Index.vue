@@ -5,6 +5,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import {ref, watch} from "vue";
 import Pagination from "@/Components/Pagination.vue";
 import {debounce} from "lodash";
+import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 
 const props = defineProps({
   paginatedRegistries: {
@@ -23,7 +24,7 @@ const index = ref({
 });
 
 watch(index.value, debounce(() => {
-  router.get(route('registries.index', {project: projectId}), index.value, {
+  router.get(route('project.registries.index', {project: projectId}), index.value, {
     preserveState: true,
     replace: true
   });
@@ -86,9 +87,9 @@ const getSortIconClass = (field) => {
                 <i :class="getSortIconClass('validity_period')"></i>
               </th>
 
-              <th scope="col" class="px-6 py-3 text-center" @click="sort('type')">
+              <th scope="col" class="px-6 py-3 text-center" @click="sort('project_id')">
                 Type
-                <i :class="getSortIconClass('type')"></i>
+                <i :class="getSortIconClass('project_id')"></i>
               </th>
 
             </tr>
@@ -109,8 +110,10 @@ const getSortIconClass = (field) => {
               <td class="px-6 py-4">
                 {{ registry.validity_period }}
               </td>
-              <td class="px-6 py-4 text-center">
-                {{ registry.validity_period }}
+              <td class="px-6 py-4 text-center flex justify-center">
+                <ApplicationLogo v-if="registry.project_id === null"
+                                 class="w-4 h-4 fill-white stroke-2"></ApplicationLogo>
+                <p v-else class="italic text-xs">custom</p>
               </td>
 
 
