@@ -18,6 +18,9 @@ const props = defineProps({
   filters: {
     type: Object,
   },
+  registriesIds: {
+    type: Array,
+  },
 })
 
 
@@ -38,7 +41,7 @@ const props = defineProps({
         </div>
         <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow">
           <UpdateWorkspaceRegistriesForm :workspace="workspace" :paginatedRegistries="paginatedRegistries"
-                                         :filters="filters" class="max-w-xl"/>
+                                         :filters="filters" :registriesIds="registriesIds"/>
         </div>
         <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow">
           <DeleteWorkspaceForm :workspace="workspace" class="max-w-xl"/>

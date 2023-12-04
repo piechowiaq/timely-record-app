@@ -108,7 +108,6 @@ class WorkspaceController extends Controller
      */
     public function edit(Request $request, Project $project, Workspace $workspace)
     {
-
         $query = Registry::query();
         $filteredQuery = $this->registryService->applyFilters($query, $request);
 
@@ -118,6 +117,7 @@ class WorkspaceController extends Controller
             'workspace' => $workspace,
             'paginatedRegistries' => $paginatedRegistries,
             'filters' => $request->all(['search', 'field', 'direction']),
+            'registriesIds' => $workspace->registries->pluck('id')->toArray(),
         ]);
     }
 
