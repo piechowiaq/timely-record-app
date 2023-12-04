@@ -236,8 +236,6 @@ function submit() {
 
                 <InputError class="mt-2" :message="form.errors.workspacesIds"/>
               </div>
-
-              <!-- end of workspaces -->
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-4">
                   <PrimaryButton :disabled="form.processing">Save</PrimaryButton>

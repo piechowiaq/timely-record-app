@@ -6,6 +6,7 @@ import {debounce} from "lodash";
 import Pagination from "@/Components/Pagination.vue";
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import {useRegistriesStore} from "@/Stores/RegistriesStore.js";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 
 
 const props = defineProps({
@@ -25,7 +26,7 @@ const props = defineProps({
 
 onMounted(() => {
   // Select each workspace ID from the props when the component is mounted
-  props.workspacesIds?.forEach(registryId => {
+  props.registriesIds?.forEach(registryId => {
     registriesStore.selectRegistry(registryId);
   });
 });
@@ -117,101 +118,116 @@ function toggleRegistrySelection(registryId) {
               class="ml-3 text-sm text-gray-500 hover:text-gray-700 focus:text-cyan-600"
               @click="resetSearch">Reset
       </button>
-
+      {{ registriesIds }}{{ isAllSelected }}{{ form.errors }} {{ form.registriesIds }}
     </div>
-    <Link :href="route('project.registries.create', projectId)" class="text-cyan-600 hover:text-cyan-700 text-sm">
-      Create
-      Custom Registry
-    </Link>
+    <Pagination :links="paginatedRegistries.links" class="flex items-center justify-end py-2"></Pagination>
   </div>
   <div class="relative overflow-x-auto">
-    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-      <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-      <tr>
+    <form
+        @submit.prevent="form.patch(route('workspaces.registries.update', { project: projectId, workspace: workspace.id }))"
+        method="post"
+        class="mt-6 space-y-6">
+      <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <tr>
 
-        <th scope="col" class="px-6 py-3">
-
-
-          <input
-              type="checkbox"
-              id="select-all"
-              :checked="isAllSelected"
-              @change="isAllSelected = $event.target.checked"
-              class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
-
-          />
+          <th scope="col" class="px-6 py-3">
 
 
-        </th>
+            <input
+                type="checkbox"
+                id="select-all"
+                :checked="isAllSelected"
+                @change="isAllSelected = $event.target.checked"
+                class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
 
-        <th scope="col" class="px-6 py-3" @click="sort('name')">
-          Name
-          <i :class="getSortIconClass('name')"></i>
-        </th>
-
-        <th scope="col" class="px-6 py-3" @click="sort('validity_period')">
-          Valid in months
-          <i :class="getSortIconClass('validity_period')"></i>
-        </th>
-
-        <th scope="col" class="px-6 py-3 text-center" @click="sort('project_id')">
-          Type
-          <i :class="getSortIconClass('project_id')"></i>
-        </th>
-
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-for="(registry, index) in paginatedRegistries.data" :key="registry.id"
-          :class="{'bg-white dark:bg-gray-800': true, 'border-b dark:border-gray-700': index !== paginatedRegistries.data.length - 1}">
+            />
 
 
-        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-          <input
-              type="checkbox"
-              :id="`checkbox-${registry.id}`"
-              :value="registry.id"
-              :checked="registriesStore.selectedRegistriesIds.includes(registry.id)"
-              v-model="form.registriesIds"
-              @change="() => toggleRegistrySelection(registry.id)"
-              class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
-          />
-        </th>
+          </th>
+
+          <th scope="col" class="px-6 py-3" @click="sort('name')">
+            Name
+            <i :class="getSortIconClass('name')"></i>
+          </th>
+
+          <th scope="col" class="px-6 py-3" @click="sort('validity_period')">
+            Valid in months
+            <i :class="getSortIconClass('validity_period')"></i>
+          </th>
+
+          <th scope="col" class="px-6 py-3 text-center" @click="sort('project_id')">
+            Type
+            <i :class="getSortIconClass('project_id')"></i>
+          </th>
+
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="(registry, index) in paginatedRegistries.data" :key="registry.id"
+            :class="{'bg-white dark:bg-gray-800': true, 'border-b dark:border-gray-700': index !== paginatedRegistries.data.length - 1}">
 
 
-        <th scope="row"
-            class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-          <Link v-if="registry.project_id === null"
-                :href="route('project.registries.show', [ projectId, registry.id])"
-                class="text-cyan-600 hover:text-cyan-700">
-            {{ registry.name }}
-          </Link>
-
-          <Link v-else :href="route('project.registries.edit', [ projectId, registry.id])"
-                class="text-cyan-600 hover:text-cyan-700">
-            {{ registry.name }}
-          </Link>
-
-
-        </th>
-
-        <td class="px-6 py-4">
-          {{ registry.validity_period }}
-        </td>
-        <td class="px-6 py-4 text-center flex justify-center">
-          <ApplicationLogo v-if="registry.project_id === null"
-                           class="w-4 h-4 fill-white stroke-2"></ApplicationLogo>
-          <p v-else class="italic text-xs">custom</p>
-        </td>
+          <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+            <input
+                type="checkbox"
+                :id="`checkbox-${registry.id}`"
+                :value="registry.id"
+                :checked="registriesStore.selectedRegistriesIds.includes(registry.id)"
+                v-model="form.registriesIds"
+                @change="() => toggleRegistrySelection(registry.id)"
+                class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
+            />
+          </th>
 
 
-      </tr>
+          <th scope="row"
+              class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+            <Link v-if="registry.project_id === null"
+                  :href="route('project.registries.show', [ projectId, registry.id])"
+                  class="text-cyan-600 hover:text-cyan-700">
+              {{ registry.name }}
+            </Link>
 
-      </tbody>
-    </table>
+            <Link v-else :href="route('project.registries.edit', [ projectId, registry.id])"
+                  class="text-cyan-600 hover:text-cyan-700">
+              {{ registry.name }}
+            </Link>
+
+
+          </th>
+
+          <td class="px-6 py-4">
+            {{ registry.validity_period }}
+          </td>
+          <td class="px-6 py-4 text-center flex justify-center">
+            <ApplicationLogo v-if="registry.project_id === null"
+                             class="w-4 h-4 fill-white stroke-2"></ApplicationLogo>
+            <p v-else class="italic text-xs">custom</p>
+          </td>
+
+
+        </tr>
+
+        </tbody>
+      </table>
+      <div class="flex items-center gap-4">
+        <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
+
+        <Transition
+            enter-active-class="transition ease-in-out"
+            enter-from-class="opacity-0"
+            leave-active-class="transition ease-in-out"
+            leave-to-class="opacity-0"
+        >
+          <p v-if="form.recentlySuccessful" class="text-sm text-gray-600 dark:text-gray-400">
+            Saved.</p>
+        </Transition>
+      </div>
+
+    </form>
+
   </div>
-
-  <Pagination :links="paginatedRegistries.links" class="flex items-center justify-end py-2"></Pagination>
 
 
 </template>

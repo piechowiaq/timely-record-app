@@ -126,9 +126,19 @@ class WorkspaceController extends Controller
      */
     public function update(UpdateWorkspaceRequest $request, Project $project, Workspace $workspace)
     {
+
         $validated = $request->validated();
 
         $workspace->update($validated);
+
+        return redirect()->route('workspaces.edit', ['project' => $project, 'workspace' => $workspace])->with('success', 'Workspace updated.');
+    }
+
+    public function registriesUpdate(Request $request, Project $project, Workspace $workspace): \Illuminate\Http\RedirectResponse
+    {
+        $registriesIds = $request->registriesIds ?? [];
+
+        $workspace->registries()->sync($registriesIds);
 
         return redirect()->route('workspaces.edit', ['project' => $project, 'workspace' => $workspace])->with('success', 'Workspace updated.');
     }
