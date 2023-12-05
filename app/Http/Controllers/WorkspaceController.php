@@ -108,16 +108,27 @@ class WorkspaceController extends Controller
      */
     public function edit(Request $request, Project $project, Workspace $workspace)
     {
-        $query = Registry::query();
-        $filteredQuery = $this->registryService->applyFilters($query, $request);
+        $registriesQuery = Registry::query()
+            ->where(function ($query) use ($project) {
+                $query->whereNull('project_id')
+                    ->orWhere('project_id', $project->id);
+            });
 
-        $paginatedRegistries = $filteredQuery->paginate(10)->withQueryString();
+        // Apply filters to the query before executing it
+        $filteredRegistriesQuery = $this->registryService->applyFilters($registriesQuery, $request);
+
+        // Fetch the IDs of the filtered registries
+        $registriesIds = $filteredRegistriesQuery->pluck('id')->toArray();
+
+        // Paginate the filtered registries
+        $paginatedRegistries = $filteredRegistriesQuery->paginate(10)->withQueryString();
 
         return Inertia::render('Workspaces/Edit', [
             'workspace' => $workspace,
             'paginatedRegistries' => $paginatedRegistries,
+            'workspaceRegistries' => $workspace->registries->pluck('id')->toArray(),
             'filters' => $request->all(['search', 'field', 'direction']),
-            'registriesIds' => $workspace->registries->pluck('id')->toArray(),
+            'registriesIds' => $registriesIds,
         ]);
     }
 

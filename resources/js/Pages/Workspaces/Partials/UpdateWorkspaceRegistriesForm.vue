@@ -22,16 +22,19 @@ const props = defineProps({
   registriesIds: {
     type: Array,
   },
+  workspaceRegistries: {
+    type: Array,
+  }
 });
+const registriesStore = useRegistriesStore();
 
 onMounted(() => {
   // Select each workspace ID from the props when the component is mounted
-  props.registriesIds?.forEach(registryId => {
+  props.workspaceRegistries?.forEach(registryId => {
     registriesStore.selectRegistry(registryId);
   });
 });
 
-const registriesStore = useRegistriesStore();
 
 const selectedRegistriesIds = computed(() => registriesStore.selectedRegistriesIds);
 
@@ -87,7 +90,7 @@ watchEffect(() => {
   if (props.paginatedRegistries?.data) {
     registriesStore.setRegistriesData(props.paginatedRegistries.data);
   }
-  if (props.workspacesIds) {
+  if (props.registriesIds) {
     registriesStore.setAllRegistryIds(props.registriesIds);
   }
 });
@@ -104,6 +107,9 @@ function toggleRegistrySelection(registryId) {
   }
 }
 
+function submit() {
+  form.patch(route('workspaces.registries.update', {project: projectId, workspace: props.workspace.id}));
+}
 
 </script>
 
@@ -118,13 +124,14 @@ function toggleRegistrySelection(registryId) {
               class="ml-3 text-sm text-gray-500 hover:text-gray-700 focus:text-cyan-600"
               @click="resetSearch">Reset
       </button>
-      {{ registriesIds }}{{ isAllSelected }}{{ form.errors }} {{ form.registriesIds }}
+
+
     </div>
     <Pagination :links="paginatedRegistries.links" class="flex items-center justify-end py-2"></Pagination>
   </div>
   <div class="relative overflow-x-auto">
     <form
-        @submit.prevent="form.patch(route('workspaces.registries.update', { project: projectId, workspace: workspace.id }))"
+        @submit.prevent="submit"
         method="post"
         class="mt-6 space-y-6">
       <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
