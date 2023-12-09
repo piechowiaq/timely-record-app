@@ -127,7 +127,8 @@ function submit() {
 
 
     </div>
-    <Pagination :links="paginatedRegistries.links" class="flex items-center justify-end py-2"></Pagination>
+    <Pagination :links="paginatedRegistries.links"
+                class="flex items-center justify-end py-2"></Pagination>
   </div>
   <div class="relative overflow-x-auto">
     <form

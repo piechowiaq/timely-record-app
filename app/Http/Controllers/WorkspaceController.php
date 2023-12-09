@@ -121,7 +121,7 @@ class WorkspaceController extends Controller
         $registriesIds = $filteredRegistriesQuery->pluck('id')->toArray();
 
         // Paginate the filtered registries
-        $paginatedRegistries = $filteredRegistriesQuery->paginate(10)->withQueryString();
+        $paginatedRegistries = $filteredRegistriesQuery->paginate(5)->withQueryString();
 
         return Inertia::render('Workspaces/Edit', [
             'workspace' => $workspace,
