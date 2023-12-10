@@ -8,7 +8,7 @@ const WORKSPACE_NAVIGATION_OPTIONS = [
 const PROJECT_NAVIGATION_OPTIONS = [
     {name: 'Dashboard', route: 'projects.dashboard', iconName: 'fa-gauge-simple-high'},
     {name: 'Users', route: 'users.index', iconName: 'fa-users'},
-    {name: 'Registries', route: 'project.registries.index', iconName: 'fa-box-archive'},
+    {name: 'Registries', route: 'registries.index', iconName: 'fa-box-archive'},
     {name: 'Workspaces', route: 'workspaces.index', iconName: 'fa-building-shield'},
 ];
 

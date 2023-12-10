@@ -45,7 +45,7 @@ const form = useForm({
               </p>
             </header>
 
-            <form @submit.prevent="form.patch(route('project.registries.update', [projectId, registry.id]))"
+            <form @submit.prevent="form.patch(route('registries.update', [projectId, registry.id]))"
                   method="post"
                   class="mt-6 space-y-6">
               <div>

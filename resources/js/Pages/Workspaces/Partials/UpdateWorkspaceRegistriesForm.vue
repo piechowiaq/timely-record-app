@@ -1,6 +1,6 @@
 <script setup>
 
-import {Link, router, useForm, usePage} from "@inertiajs/vue3";
+import {router, useForm, usePage} from "@inertiajs/vue3";
 import {computed, onMounted, ref, watch, watchEffect} from "vue";
 import {debounce} from "lodash";
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
@@ -111,6 +111,7 @@ function submit() {
   form.patch(route('workspaces.sync-registries', {project: projectId, workspace: props.workspace.id}));
 }
 
+const selectedRegistryId = null;
 </script>
 
 <template>
@@ -177,50 +178,52 @@ function submit() {
         </tr>
         </thead>
         <tbody>
-        <tr v-for="(registry, index) in paginatedRegistries.data" :key="registry.id"
-            :class="{'bg-white dark:bg-gray-800': true, 'border-b dark:border-gray-700': index !== paginatedRegistries.data.length - 1}">
+        <template v-for="(registry, index) in paginatedRegistries.data" :key="registry.id"
+                  :class="{'bg-white dark:bg-gray-800': true, 'border-b dark:border-gray-700': index !== paginatedRegistries.data.length - 1}">
+          <tr>
 
 
-          <th scope="row" class="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-            <input
-                type="checkbox"
-                :id="`checkbox-${registry.id}`"
-                :value="registry.id"
-                :checked="registriesStore.selectedRegistriesIds.includes(registry.id)"
-                v-model="form.registriesIds"
-                @change="() => toggleRegistrySelection(registry.id)"
-                class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
-            />
-          </th>
+            <th scope="row" class="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+              <input
+                  type="checkbox"
+                  :id="`checkbox-${registry.id}`"
+                  :value="registry.id"
+                  :checked="registriesStore.selectedRegistriesIds.includes(registry.id)"
+                  v-model="form.registriesIds"
+                  @change="() => toggleRegistrySelection(registry.id)"
+                  class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
+              />
+            </th>
 
 
-          <th scope="row"
-              class="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-            <Link v-if="registry.project_id === null"
-                  :href="route('project.registries.show', [ projectId, registry.id])"
-                  class="text-cyan-600 hover:text-cyan-700">
-              {{ registry.name }}
-            </Link>
+            <th scope="row" class="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+            >
 
-            <Link v-else :href="route('project.registries.edit', [ projectId, registry.id])"
-                  class="text-cyan-600 hover:text-cyan-700">
-              {{ registry.name }}
-            </Link>
+              <div @click="selectedRegistryId = selectedRegistryId === registry.id ? null : registry.id">
+                {{ registry.name }}
+              </div>
 
 
-          </th>
+            </th>
 
-          <td class="px-6 py-2">
-            {{ registry.validity_period }}
-          </td>
-          <td class="px-6 py-2 text-center flex justify-center">
-            <ApplicationLogo v-if="registry.project_id === null"
-                             class="w-4 h-4 fill-white stroke-2"></ApplicationLogo>
-            <p v-else class="italic text-xs">custom</p>
-          </td>
+            <td class="px-6 py-2">
+              {{ registry.validity_period }}
+            </td>
+            <td class="px-6 py-2 text-center flex justify-center">
+              <ApplicationLogo v-if="registry.project_id === null"
+                               class="w-4 h-4 fill-white stroke-2"></ApplicationLogo>
+              <p v-else class="italic text-xs">custom</p>
+            </td>
 
 
-        </tr>
+          </tr>
+          <tr v-if="selectedRegistryId === registry.id">
+            <td colspan="4" class="px-6 py-2">
+              {{ registry.description }}
+            </td>
+          </tr>
+        </template>
+
 
         </tbody>
       </table>

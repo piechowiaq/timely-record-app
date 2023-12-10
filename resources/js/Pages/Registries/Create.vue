@@ -38,7 +38,7 @@ const form = useForm({
               </p>
             </header>
 
-            <form @submit.prevent="form.post(route('project.registries.store', projectId))"
+            <form @submit.prevent="form.post(route('registries.store', projectId))"
                   method="post"
                   class="mt-6 space-y-6">
               <div>

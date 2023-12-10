@@ -24,7 +24,7 @@ const index = ref({
 });
 
 watch(index.value, debounce(() => {
-  router.get(route('project.registries.index', {project: projectId}), index.value, {
+  router.get(route('registries.index', {project: projectId}), index.value, {
     preserveState: true,
     replace: true
   });
@@ -61,14 +61,14 @@ const getSortIconClass = (field) => {
         <div class="flex items-center justify-between">
           <div class="mb-2 flex items-center">
             <input v-model="index.search" type="text" name="search" placeholder="Search…"
-                   class="text-sm h-8 px-6 py-3 border-gray-200 ">
+                   class="text-sm h-8 px-6 py-2 border-gray-200 ">
             <button type="button"
                     class="ml-3 text-sm text-gray-500 hover:text-gray-700 focus:text-cyan-600"
                     @click="resetSearch">Reset
             </button>
 
           </div>
-          <Link :href="route('project.registries.create', projectId)" class="text-cyan-600 hover:text-cyan-700 text-sm">
+          <Link :href="route('registries.create', projectId)" class="text-cyan-600 hover:text-cyan-700 text-sm">
             Create
             Custom Registry
           </Link>
@@ -77,17 +77,17 @@ const getSortIconClass = (field) => {
           <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-              <th scope="col" class="px-6 py-3" @click="sort('name')">
+              <th scope="col" class="px-6 py-2" @click="sort('name')">
                 Name
                 <i :class="getSortIconClass('name')"></i>
               </th>
 
-              <th scope="col" class="px-6 py-3" @click="sort('validity_period')">
+              <th scope="col" class="px-6 py-2" @click="sort('validity_period')">
                 Valid in months
                 <i :class="getSortIconClass('validity_period')"></i>
               </th>
 
-              <th scope="col" class="px-6 py-3 text-center" @click="sort('project_id')">
+              <th scope="col" class="px-6 py-2 text-center" @click="sort('project_id')">
                 Type
                 <i :class="getSortIconClass('project_id')"></i>
               </th>
@@ -99,24 +99,24 @@ const getSortIconClass = (field) => {
                 :class="{'bg-white dark:bg-gray-800': true, 'border-b dark:border-gray-700': index !== paginatedRegistries.data.length - 1}">
 
               <th scope="row"
-                  class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                  class="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                 <Link v-if="registry.project_id === null"
-                      :href="route('project.registries.show', [ projectId, registry.id])"
+                      :href="route('registries.show', [ projectId, registry.id])"
                       class="text-cyan-600 hover:text-cyan-700">
                   {{ registry.name }}
                 </Link>
 
-                <Link v-else :href="route('project.registries.edit', [ projectId, registry.id])"
+                <Link v-else :href="route('registries.edit', [ projectId, registry.id])"
                       class="text-cyan-600 hover:text-cyan-700">
                   {{ registry.name }}
                 </Link>
 
               </th>
 
-              <td class="px-6 py-4">
+              <td class="px-6 py-2">
                 {{ registry.validity_period }}
               </td>
-              <td class="px-6 py-4 text-center flex justify-center">
+              <td class="px-6 py-2 text-center flex justify-center">
                 <ApplicationLogo v-if="registry.project_id === null"
                                  class="w-4 h-4 fill-white stroke-2"></ApplicationLogo>
                 <p v-else class="italic text-xs">custom</p>

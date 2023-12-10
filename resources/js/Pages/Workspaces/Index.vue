@@ -60,7 +60,7 @@ const getSortIconClass = (field) => {
         <div class="flex items-center justify-between">
           <div class="mb-2 flex items-center">
             <input v-model="index.search" type="text" name="search" placeholder="Search…"
-                   class="text-sm h-8 px-6 py-3 border-gray-200 ">
+                   class="text-sm h-8 px-6 py-2 border-gray-200 ">
             <button type="button"
                     class="ml-3 text-sm text-gray-500 hover:text-gray-700 focus:text-cyan-600"
                     @click="resetSearch">Reset
@@ -76,12 +76,12 @@ const getSortIconClass = (field) => {
           <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-              <th scope="col" class="px-6 py-3" @click="sort('name')">
+              <th scope="col" class="px-6 py-2" @click="sort('name')">
                 Name
                 <i :class="getSortIconClass('name')"></i>
               </th>
 
-              <th scope="col" class="px-6 py-3" @click="sort('location')">
+              <th scope="col" class="px-6 py-2" @click="sort('location')">
                 Location
                 <i :class="getSortIconClass('location')"></i>
               </th>
@@ -93,14 +93,14 @@ const getSortIconClass = (field) => {
                 :class="{'bg-white dark:bg-gray-800': true, 'border-b dark:border-gray-700': index !== paginatedWorkspaces.data.length - 1}">
 
               <th scope="row"
-                  class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                  class="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                 <Link :href="route('workspaces.edit', [ projectId, workspace.id])"
                       class="text-cyan-600 hover:text-cyan-700">
                   {{ workspace.name }}
                 </Link>
               </th>
 
-              <td class="px-6 py-4">
+              <td class="px-6 py-2">
                 {{ workspace.location }}
               </td>
 

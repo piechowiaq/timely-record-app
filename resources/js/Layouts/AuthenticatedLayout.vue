@@ -43,7 +43,7 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
             <div class="flex">
               <!-- Logo -->
               <div class="shrink-0 flex items-center justify-center w-56 -ml-4">
-                <Link :href="route('dashboard')">
+                <Link :href="route('projects.dashboard', projectId)">
                   <div class="flex justify-start items-center">
                     <ApplicationLogo class="w-10 h-10"/>
                     <p class="ml-2 font-bold whitespace-nowrap tracking-widest text-gray-600"><span
@@ -60,6 +60,12 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
                     class="text-cyan-600 hover:text-cyan-700 text-sm">
                   {{ workspace.name }}
                 </Link>
+              </div>
+              <div v-else
+                   class="hidden space-x-8 items-center sm:-my-px sm:ml-10 sm:flex">
+
+                <p class="text-amber-400 uppercase text-xs font-semibold">Project Settings</p>
+
               </div>
 
             </div>
@@ -96,7 +102,7 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
 
                   <template #content>
                     <DropdownLink :href="route('profile.edit')"> Profile</DropdownLink>
-                    <DropdownLink :href="route('projects.show', projectId)"> Project Settings
+                    <DropdownLink :href="route('projects.dashboard', projectId)"> Project Settings
                     </DropdownLink>
                     <DropdownLink :href="route('logout')" method="post" as="button">
                       Log Out
@@ -180,7 +186,7 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
 
             <div class="mt-3 space-y-1">
               <ResponsiveNavLink :href="route('profile.edit')"> Profile</ResponsiveNavLink>
-              <ResponsiveNavLink :href="route('projects.show', projectId)"> Project Settings
+              <ResponsiveNavLink :href="route('projects.dashboard', projectId)"> Project Settings
               </ResponsiveNavLink>
               <ResponsiveNavLink :href="route('logout')" method="post" as="button">
                 Log Out

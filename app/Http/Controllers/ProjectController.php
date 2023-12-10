@@ -18,29 +18,17 @@ class ProjectController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Invoke the controller.
      *
      * @throws AuthorizationException
      */
-    public function dashboard(Project $project): Response
+    public function __invoke(Project $project): Response
     {
         $this->authorize('view', $project);
 
         $workspaces = $project->workspaces;
 
         return Inertia::render('Projects/Dashboard', [
-            'workspaces' => $workspaces,
-        ]);
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Project $project): Response
-    {
-        $workspaces = $project->workspaces;
-
-        return Inertia::render('Projects/Show', [
             'workspaces' => $workspaces,
         ]);
     }

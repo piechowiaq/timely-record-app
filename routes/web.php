@@ -1,11 +1,10 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Project\RegistryController;
+use App\Http\Controllers\Project\UserController;
+use App\Http\Controllers\Project\WorkspaceController;
 use App\Http\Controllers\ProjectController;
-use App\Http\Controllers\ProjectRegistryController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\WorkspaceController;
-use App\Http\Controllers\WorkspaceRegistryController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -34,11 +33,9 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware('auth', 'verified', 'web')->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
-    Route::get('/projects/{project}/dashboard', [ProjectController::class, 'dashboard'])->name('projects.dashboard');
-    Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
+
+    Route::get('/projects/{project}/dashboard', ProjectController::class)->name('projects.dashboard');
+
     //will need to group these routes by project
     Route::get('projects/{project}/users', [UserController::class, 'index'])->name('users.index');
     Route::get('projects/{project}/users/create', [UserController::class, 'create'])->name('users.create');
@@ -47,13 +44,13 @@ Route::middleware('auth', 'verified', 'web')->group(function () {
     Route::patch('projects/{project}/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('projects/{project}/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
-    Route::get('projects/{project}/registries', [ProjectRegistryController::class, 'index'])->name('project.registries.index');
-    Route::get('projects/{project}/create', [ProjectRegistryController::class, 'create'])->name('project.registries.create');
-    Route::post('projects/{project}/registries', [ProjectRegistryController::class, 'store'])->name('project.registries.store');
-    Route::get('projects/{project}/registries/{registry}/edit', [ProjectRegistryController::class, 'edit'])->name('project.registries.edit');
-    Route::get('projects/{project}/registries/{registry}', [ProjectRegistryController::class, 'show'])->name('project.registries.show');
-    Route::patch('projects/{project}/registries/{registry}', [ProjectRegistryController::class, 'update'])->name('project.registries.update');
-    Route::delete('projects/{project}/registries/{registry}', [ProjectRegistryController::class, 'destroy'])->name('project.registries.destroy');
+    Route::get('projects/{project}/registries', [RegistryController::class, 'index'])->name('registries.index');
+    Route::get('projects/{project}/create', [RegistryController::class, 'create'])->name('registries.create');
+    Route::post('projects/{project}/registries', [RegistryController::class, 'store'])->name('registries.store');
+    Route::get('projects/{project}/registries/{registry}/edit', [RegistryController::class, 'edit'])->name('registries.edit');
+    Route::get('projects/{project}/registries/{registry}', [RegistryController::class, 'show'])->name('registries.show');
+    Route::patch('projects/{project}/registries/{registry}', [RegistryController::class, 'update'])->name('registries.update');
+    Route::delete('projects/{project}/registries/{registry}', [RegistryController::class, 'destroy'])->name('registries.destroy');
 
     Route::get('projects/{project}/workspaces/{workspace}/dashboard', [WorkspaceController::class, 'dashboard'])->name('workspaces.dashboard');
     Route::get('projects/{project}/workspaces/index', [WorkspaceController::class, 'index'])->name('workspaces.index');
@@ -68,9 +65,6 @@ Route::middleware('auth', 'verified', 'web')->group(function () {
     //update registries new
     Route::get('/projects/{project}/workspaces/{workspace}/edit-registries', [WorkspaceController::class, 'editRegistries'])->name('workspaces.edit-registries');
     Route::patch('/projects/{project}/workspaces/{workspace}/sync-registries', [WorkspaceController::class, 'syncRegistries'])->name('workspaces.sync-registries');
-
-    // route and controller for individual workspace registries - dedicated to end basic user
-    Route::get('projects/{project}/workspaces/{workspace}/registries', [WorkspaceRegistryController::class, 'index'])->name('workspace.registries.index');
 
 });
 

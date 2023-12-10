@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Project;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProjectRegistryRequest;
 use App\Http\Requests\UpdateProjectRegistryRequest;
 use App\Models\Project;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class ProjectRegistryController extends Controller
+class RegistryController extends Controller
 {
     private RegistryService $registryService;
 
@@ -61,7 +62,7 @@ class ProjectRegistryController extends Controller
         $registry->project_id = $request->get('projectId');
         $registry->save();
 
-        return Redirect::route('project.registries.index', ['project' => $request->get('projectId')]);
+        return Redirect::route('registries.index', ['project' => $request->get('projectId')]);
     }
 
     /**
@@ -94,7 +95,7 @@ class ProjectRegistryController extends Controller
         $registry->validity_period = $request->get('validity_period');
         $registry->save();
 
-        return Redirect::route('project.registries.edit', ['project' => $project->id, 'registry' => $registry->id])
+        return Redirect::route('registries.edit', ['project' => $project->id, 'registry' => $registry->id])
             ->with('success', 'Custom Registry updated successfully.');
     }
 
@@ -109,6 +110,6 @@ class ProjectRegistryController extends Controller
 
         $registry->delete();
 
-        return Redirect::route('project.registries.index', ['project' => $project])->with('success', 'Registry deleted.');
+        return Redirect::route('registries.index', ['project' => $project])->with('success', 'Registry deleted.');
     }
 }

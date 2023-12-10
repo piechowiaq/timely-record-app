@@ -30,7 +30,7 @@ const confirmRegistryDeletion = () => {
 };
 
 const deleteRegistry = () => {
-  form.delete(route('project.registries.destroy', {project: projectId, registry: props.registry}), {
+  form.delete(route('registries.destroy', {project: projectId, registry: props.registry}), {
     preserveScroll: true,
     onSuccess: () => closeModal(),
     onError: () => passwordInput.value.focus(),
