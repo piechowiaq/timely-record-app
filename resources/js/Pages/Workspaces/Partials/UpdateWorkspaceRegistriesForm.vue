@@ -3,10 +3,10 @@
 import {Link, router, useForm, usePage} from "@inertiajs/vue3";
 import {computed, onMounted, ref, watch, watchEffect} from "vue";
 import {debounce} from "lodash";
-import Pagination from "@/Components/Pagination.vue";
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import {useRegistriesStore} from "@/Stores/RegistriesStore.js";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import Pagination from "@/Components/Pagination.vue";
 
 
 const props = defineProps({
@@ -51,7 +51,7 @@ const index = ref({
 });
 
 watch(index.value, debounce(() => {
-  router.get(route('workspaces.edit', {project: projectId, workspace: props.workspace.id}), index.value, {
+  router.get(route('workspaces.edit-registries', {project: projectId, workspace: props.workspace.id}), index.value, {
     preserveState: true,
     preserveScroll: true,
     replace: true
@@ -108,18 +108,24 @@ function toggleRegistrySelection(registryId) {
 }
 
 function submit() {
-  form.patch(route('workspaces.registries.update', {project: projectId, workspace: props.workspace.id}));
+  form.patch(route('workspaces.sync-registries', {project: projectId, workspace: props.workspace.id}));
 }
 
 </script>
 
 <template>
+  <header>
+    <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Workspace Registries</h2>
 
+    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+      Synchronize workspace registries.
+    </p>
+  </header>
 
-  <div class="flex items-center justify-between">
-    <div class="mb-2 flex items-center">
+  <div class="flex items-center justify-between mt-6 ">
+    <div class=" flex items-center">
       <input v-model="index.search" type="text" name="search" placeholder="Search…"
-             class="text-sm h-8 px-6 py-3 border-gray-200 ">
+             class="text-sm h-8 px-6 py-2 border-gray-200 ">
       <button type="button"
               class="ml-3 text-sm text-gray-500 hover:text-gray-700 focus:text-cyan-600"
               @click="resetSearch">Reset
@@ -127,8 +133,7 @@ function submit() {
 
 
     </div>
-    <Pagination :links="paginatedRegistries.links"
-                class="flex items-center justify-end py-2"></Pagination>
+
   </div>
   <div class="relative overflow-x-auto">
     <form
@@ -139,7 +144,7 @@ function submit() {
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
         <tr>
 
-          <th scope="col" class="px-6 py-3">
+          <th scope="col" class="px-6 py-2">
 
 
             <input
@@ -154,17 +159,17 @@ function submit() {
 
           </th>
 
-          <th scope="col" class="px-6 py-3" @click="sort('name')">
+          <th scope="col" class="px-6 py-2" @click="sort('name')">
             Name
             <i :class="getSortIconClass('name')"></i>
           </th>
 
-          <th scope="col" class="px-6 py-3" @click="sort('validity_period')">
+          <th scope="col" class="px-6 py-2" @click="sort('validity_period')">
             Valid in months
             <i :class="getSortIconClass('validity_period')"></i>
           </th>
 
-          <th scope="col" class="px-6 py-3 text-center" @click="sort('project_id')">
+          <th scope="col" class="px-6 py-2 text-center" @click="sort('project_id')">
             Type
             <i :class="getSortIconClass('project_id')"></i>
           </th>
@@ -176,7 +181,7 @@ function submit() {
             :class="{'bg-white dark:bg-gray-800': true, 'border-b dark:border-gray-700': index !== paginatedRegistries.data.length - 1}">
 
 
-          <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+          <th scope="row" class="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
             <input
                 type="checkbox"
                 :id="`checkbox-${registry.id}`"
@@ -190,7 +195,7 @@ function submit() {
 
 
           <th scope="row"
-              class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+              class="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
             <Link v-if="registry.project_id === null"
                   :href="route('project.registries.show', [ projectId, registry.id])"
                   class="text-cyan-600 hover:text-cyan-700">
@@ -205,10 +210,10 @@ function submit() {
 
           </th>
 
-          <td class="px-6 py-4">
+          <td class="px-6 py-2">
             {{ registry.validity_period }}
           </td>
-          <td class="px-6 py-4 text-center flex justify-center">
+          <td class="px-6 py-2 text-center flex justify-center">
             <ApplicationLogo v-if="registry.project_id === null"
                              class="w-4 h-4 fill-white stroke-2"></ApplicationLogo>
             <p v-else class="italic text-xs">custom</p>
@@ -219,18 +224,25 @@ function submit() {
 
         </tbody>
       </table>
-      <div class="flex items-center gap-4">
-        <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
+      <div class="flex justify-between">
+        <div class="flex items-center gap-4">
+          <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
 
-        <Transition
-            enter-active-class="transition ease-in-out"
-            enter-from-class="opacity-0"
-            leave-active-class="transition ease-in-out"
-            leave-to-class="opacity-0"
-        >
-          <p v-if="form.recentlySuccessful" class="text-sm text-gray-600 dark:text-gray-400">
-            Saved.</p>
-        </Transition>
+          <Transition
+              enter-active-class="transition ease-in-out"
+              enter-from-class="opacity-0"
+              leave-active-class="transition ease-in-out"
+              leave-to-class="opacity-0"
+          >
+            <p v-if="form.recentlySuccessful" class="text-sm text-gray-600 dark:text-gray-400">
+              Saved.</p>
+          </Transition>
+
+        </div>
+
+
+        <Pagination :links="paginatedRegistries.links"
+                    class="flex items-center justify-end py-2"></Pagination>
       </div>
 
     </form>

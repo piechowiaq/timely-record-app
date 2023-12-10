@@ -108,6 +108,14 @@ class WorkspaceController extends Controller
      */
     public function edit(Request $request, Project $project, Workspace $workspace)
     {
+
+        return Inertia::render('Workspaces/Edit', [
+            'workspace' => $workspace,
+        ]);
+    }
+
+    public function editRegistries(Request $request, Project $project, Workspace $workspace): \Inertia\Response
+    {
         $registriesQuery = Registry::query()
             ->where(function ($query) use ($project) {
                 $query->whereNull('project_id')
@@ -121,9 +129,9 @@ class WorkspaceController extends Controller
         $registriesIds = $filteredRegistriesQuery->pluck('id')->toArray();
 
         // Paginate the filtered registries
-        $paginatedRegistries = $filteredRegistriesQuery->paginate(5)->withQueryString();
+        $paginatedRegistries = $filteredRegistriesQuery->paginate(10)->withQueryString();
 
-        return Inertia::render('Workspaces/Edit', [
+        return Inertia::render('Workspaces/EditRegistries', [
             'workspace' => $workspace,
             'paginatedRegistries' => $paginatedRegistries,
             'workspaceRegistries' => $workspace->registries->pluck('id')->toArray(),
@@ -145,13 +153,13 @@ class WorkspaceController extends Controller
         return redirect()->route('workspaces.edit', ['project' => $project, 'workspace' => $workspace])->with('success', 'Workspace updated.');
     }
 
-    public function registriesUpdate(Request $request, Project $project, Workspace $workspace): \Illuminate\Http\RedirectResponse
+    public function syncRegistries(Request $request, Project $project, Workspace $workspace): \Illuminate\Http\RedirectResponse
     {
         $registriesIds = $request->registriesIds ?? [];
 
         $workspace->registries()->sync($registriesIds);
 
-        return redirect()->route('workspaces.edit', ['project' => $project, 'workspace' => $workspace])->with('success', 'Workspace updated.');
+        return redirect()->route('workspaces.edit-registries', ['project' => $project, 'workspace' => $workspace])->with('success', 'Workspace updated.');
     }
 
     /**
