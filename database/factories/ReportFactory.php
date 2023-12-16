@@ -21,7 +21,8 @@ class ReportFactory extends Factory
     {
         return [
             'report_date' => $this->faker->date(),
-            'expiry_date' => $this->faker->dateTimeBetween('+1 week', '+1 month'),
+            'expiry_date' => $this->faker->dateTimeBetween('+1 week', '+1 month')->format('Y-m-d'),
+
             'notes' => $this->faker->text(),
             'workspace_id' => Workspace::factory(),
             'registry_id' => Registry::factory(),

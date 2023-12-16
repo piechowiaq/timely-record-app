@@ -2,7 +2,7 @@ import {defineStore} from "pinia";
 
 const WORKSPACE_NAVIGATION_OPTIONS = [
     {name: 'Dashboard', route: 'workspaces.dashboard', iconName: 'fa-gauge-simple-high'},
-    {name: 'Registries', route: 'workspaces.dashboard', iconName: 'fa-box-archive'},
+    {name: 'Registries', route: 'workspace.registries.index', iconName: 'fa-box-archive'},
 ];
 
 const PROJECT_NAVIGATION_OPTIONS = [

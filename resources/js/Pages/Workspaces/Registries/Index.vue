@@ -26,7 +26,7 @@ const index = ref({
 });
 
 watch(index.value, debounce(() => {
-  router.get(route('registries.index', {project: projectId, workspace: props.workspace.id}), index.value, {
+  router.get(route('workspace.registries.index', {project: projectId, workspace: props.workspace.id}), index.value, {
     preserveState: true,
     replace: true
   });
@@ -90,7 +90,7 @@ const timeLeftUntilExpiryDate = (expiry_date) => {
 <template>
   <Head title="Project"/>
 
-  <AuthenticatedLayout>
+  <AuthenticatedLayout :workspace="workspace">
     <template #header>
       <h2 class="text-white dark:text-gray-700 leading-tight">Registries</h2>
     </template>
@@ -114,22 +114,20 @@ const timeLeftUntilExpiryDate = (expiry_date) => {
           <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-              <th scope="col" class="px-6 py-3" @click="sort('last_name')">
+              <th scope="col" class="px-6 py-3" @click="sort('name')">
                 Name
-                <i :class="getSortIconClass('last_name')"></i>
+                <i :class="getSortIconClass('name')"></i>
               </th>
 
               <th scope="col" class="px-6 py-3">
 
               </th>
-              <th scope="col" class="px-6 py-3" @click="sort('email')">
+              <th scope="col" class="px-6 py-3" @click="sort('expiry_date')">
                 Wygasa dnia | za
-                <i :class="getSortIconClass('email')"></i>
+                <i :class="getSortIconClass('expiry_date')"></i>
               </th>
-              <th scope="col" class="px-6 py-3 text-center" @click="sort('email_verified_at')">
+              <th scope="col" class="px-6 py-3 text-center">
                 Pobierz
-                <i :class="getSortIconClass('email_verified_at')"
-                ></i>
               </th>
             </tr>
             </thead>
