@@ -1,7 +1,7 @@
 <script setup>
 
 import {router, useForm, usePage} from "@inertiajs/vue3";
-import {computed, onMounted, ref, watch, watchEffect} from "vue";
+import {computed, onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
 import {debounce} from "lodash";
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import {useRegistriesStore} from "@/Stores/RegistriesStore.js";
@@ -33,6 +33,11 @@ onMounted(() => {
   props.workspaceRegistries?.forEach(registryId => {
     registriesStore.selectRegistry(registryId);
   });
+
+});
+
+onUnmounted(() => {
+  registriesStore.resetSelection();
 });
 
 
@@ -111,7 +116,13 @@ function submit() {
   form.patch(route('workspaces.sync-registries', {project: projectId, workspace: props.workspace.id}));
 }
 
-const selectedRegistryId = null;
+const selectedRegistryId = ref(null);
+
+function toggleDescription(id) {
+
+  this.selectedRegistryId = this.selectedRegistryId === id ? null : id;
+
+}
 </script>
 
 <template>
@@ -159,6 +170,9 @@ const selectedRegistryId = null;
 
 
           </th>
+          <th scope="col" class="px-6 py-2">
+
+          </th>
 
           <th scope="col" class="px-6 py-2" @click="sort('name')">
             Name
@@ -194,14 +208,16 @@ const selectedRegistryId = null;
                   class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
               />
             </th>
+            <th scope="row"
+                class="px-6 pr-2 font-medium text-gray-900 whitespace-nowrap dark:text-white flex justify-end ">
+              <i class="fa-solid fa-plus text-amber-400 " @click="toggleDescription(registry.id)"></i>
+            </th>
 
 
-            <th scope="row" class="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-            >
+            <th scope="row" class="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
 
-              <div @click="selectedRegistryId = selectedRegistryId === registry.id ? null : registry.id">
-                {{ registry.name }}
-              </div>
+
+              {{ registry.name }}
 
 
             </th>
@@ -217,11 +233,14 @@ const selectedRegistryId = null;
 
 
           </tr>
+
           <tr v-if="selectedRegistryId === registry.id">
-            <td colspan="4" class="px-6 py-2">
+
+            <td colspan="5" class="px-6 py-2 bg-gray-50 text-xs">
               {{ registry.description }}
             </td>
           </tr>
+
         </template>
 
 

@@ -5,6 +5,7 @@ use App\Http\Controllers\Project\RegistryController;
 use App\Http\Controllers\Project\UserController;
 use App\Http\Controllers\Project\WorkspaceController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\Workspace\WorkspaceRegistriesController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -60,11 +61,11 @@ Route::middleware('auth', 'verified', 'web')->group(function () {
     Route::patch('/projects/{project}/workspaces/{workspace}', [WorkspaceController::class, 'update'])->name('workspaces.update');
     Route::delete('/projects/{project}/workspaces/{workspace}', [WorkspaceController::class, 'destroy'])->name('workspaces.destroy');
 
-    //update registries old
-    Route::patch('/projects/{project}/workspaces/{workspace}/update', [WorkspaceController::class, 'registriesUpdate'])->name('workspaces.registries.update');
     //update registries new
     Route::get('/projects/{project}/workspaces/{workspace}/edit-registries', [WorkspaceController::class, 'editRegistries'])->name('workspaces.edit-registries');
     Route::patch('/projects/{project}/workspaces/{workspace}/sync-registries', [WorkspaceController::class, 'syncRegistries'])->name('workspaces.sync-registries');
+
+    Route::get('/projects/{project}/workspaces/{workspace}/registries', [WorkspaceRegistriesController::class, 'index'])->name('workspace.registries.index');
 
 });
 
