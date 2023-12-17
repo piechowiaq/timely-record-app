@@ -41,9 +41,9 @@ let filteredRegistries = computed(() =>
 )
 
 const form = useForm(useRemember(reactive({
-      notes: null,
-      report_date: null,
-      registry_id: null,
+      notes: '',
+      report_date: '',
+      registry_id: selected.value ? selected.value.id : '',
       workspace_id: props.workspace.id,
     }))
 )
@@ -87,7 +87,7 @@ const store = () => {
             </header>
             <form @submit.prevent="store" method="post"
                   class="mt-6 space-y-6">
-
+            
               <div class="">
                 <Combobox v-model="selected">
                   <InputLabel for="registries" value="Registry"/>
@@ -159,7 +159,7 @@ const store = () => {
                   <InputError class="mt-2" :message="form.errors.registry_id"/>
                 </Combobox>
               </div>
-              
+
               <div>
                 <InputLabel for="report_date" value="Report Date"/>
 

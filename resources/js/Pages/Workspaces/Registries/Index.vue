@@ -158,13 +158,14 @@ const timeLeftUntilExpiryDate = (expiry_date) => {
                 }} </span>
               </td>
               <td class="px-6 py-2 text-center">
-                <i v-if="paginatedRegistries.expiry_date"
+
+                <i v-if="registry.expiry_date"
                    class="fa-regular fa-circle-check text-green-600"></i>
                 <i v-else class="fa-regular fa-circle-xmark text-red-600"></i>
               </td>
             </tr>
             <tr v-if="paginatedRegistries.data.length === 0">
-              <td class="p-2 border-t text-red-600" colspan="4">No registries assigned.</td>
+              <td class="p-2 border-t text-red-600" colspan="4">No registries found.</td>
             </tr>
 
             </tbody>
