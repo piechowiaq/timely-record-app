@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
-class WorkspaceRegistriesController
+class WorkspaceRegistryController
 {
     public function index(Request $request, Project $project, Workspace $workspace): \Inertia\Response
     {

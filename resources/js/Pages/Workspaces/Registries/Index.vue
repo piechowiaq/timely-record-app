@@ -99,14 +99,15 @@ const timeLeftUntilExpiryDate = (expiry_date) => {
         <div class="flex items-center justify-between">
           <div class="mb-2 flex items-center">
             <input v-model="index.search" type="text" name="search" placeholder="Search…"
-                   class="text-sm h-8 px-6 py-3 border-gray-200 ">
+                   class="text-sm h-8 px-6 py-2 border-gray-200 ">
             <button type="button"
                     class="ml-3 text-sm text-gray-500 hover:text-gray-700 focus:text-cyan-600"
                     @click="resetSearch">Reset
             </button>
 
           </div>
-          <Link :href="route('users.create', projectId)" class="text-cyan-600 hover:text-cyan-700 text-sm">
+          <Link :href="route('workspace.registry.reports.create', {project: projectId, workspace: workspace.id})"
+                class="text-cyan-600 hover:text-cyan-700 text-sm">
             Upload Report
           </Link>
         </div>
@@ -114,19 +115,19 @@ const timeLeftUntilExpiryDate = (expiry_date) => {
           <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-              <th scope="col" class="px-6 py-3" @click="sort('name')">
+              <th scope="col" class="px-6 py-2" @click="sort('name')">
                 Name
                 <i :class="getSortIconClass('name')"></i>
               </th>
 
-              <th scope="col" class="px-6 py-3">
+              <th scope="col" class="px-6 py-2">
 
               </th>
-              <th scope="col" class="px-6 py-3" @click="sort('expiry_date')">
+              <th scope="col" class="px-6 py-2" @click="sort('expiry_date')">
                 Wygasa dnia | za
                 <i :class="getSortIconClass('expiry_date')"></i>
               </th>
-              <th scope="col" class="px-6 py-3 text-center">
+              <th scope="col" class="px-6 py-2 text-center">
                 Pobierz
               </th>
             </tr>
@@ -136,24 +137,27 @@ const timeLeftUntilExpiryDate = (expiry_date) => {
                 :class="{'bg-white dark:bg-gray-800': true, 'border-b dark:border-gray-700': index !== paginatedRegistries.data.length - 1}">
 
               <th scope="row"
-                  class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                  class="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                 <span
                     class="text-cyan-600 hover:text-cyan-700">
                   {{ registry.name }}
                 </span>
               </th>
 
-              <td class="px-6 py-4">
-                <i class="fa-solid fa-bell text-red-500" v-if="isRegistryExpired(registry.expiry_date)"></i>
+              <td class="px-6 py-2">
+                <i class="fa-solid fa-bell text-red-500"
+                   v-if="isRegistryExpired(registry.expiry_date)"></i>
                 <i class="fa-solid fa-bell text-yellow-500"
                    v-else-if="isRegistryExpiringInLessThanAMonth(registry.expiry_date)"></i>
 
               </td>
-              <td class="px-6 py-4">
+              <td class="px-6 py-2">
                 {{ registry.expiry_date }} <span
-                  class="ml-2 text-xs italic text-gray-400"> {{ timeLeftUntilExpiryDate(registry.expiry_date) }} </span>
+                  class="ml-2 text-xs italic text-gray-400"> {{
+                  timeLeftUntilExpiryDate(registry.expiry_date)
+                }} </span>
               </td>
-              <td class="px-6 py-4 text-center">
+              <td class="px-6 py-2 text-center">
                 <i v-if="paginatedRegistries.expiry_date"
                    class="fa-regular fa-circle-check text-green-600"></i>
                 <i v-else class="fa-regular fa-circle-xmark text-red-600"></i>
