@@ -20,13 +20,17 @@ import {
 const props = defineProps({
   workspace: Object,
   registries: Array,
+  registry: {
+    type: Object,
+    default: null
+  }
 
 })
 const projectId = usePage().props.auth.user.project_id;
 
 const registries = props.registries
 
-let selected = ref(registries[0])
+const selected = ref(props.registry ?? props.registries[0]);
 let query = ref('')
 
 let filteredRegistries = computed(() =>
@@ -87,7 +91,7 @@ const store = () => {
             </header>
             <form @submit.prevent="store" method="post"
                   class="mt-6 space-y-6">
-            
+
               <div class="">
                 <Combobox v-model="selected">
                   <InputLabel for="registries" value="Registry"/>

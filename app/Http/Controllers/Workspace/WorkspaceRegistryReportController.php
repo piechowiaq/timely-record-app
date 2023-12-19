@@ -9,6 +9,7 @@ use App\Models\Registry;
 use App\Models\Report;
 use App\Models\Workspace;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -16,11 +17,16 @@ use Inertia\Response;
 
 class WorkspaceRegistryReportController extends Controller
 {
-    public function create(Project $project, Workspace $workspace): Response
+    public function create(Project $project, Workspace $workspace, Request $request): Response
     {
+
+        $registryId = $request->input('registry', null);
+        $registry = $registryId ? Registry::find($registryId) : null;
+
         return Inertia::render('Workspaces/Registries/Reports/Create', [
             'workspace' => $workspace,
             'registries' => $workspace->registries()->get(),
+            'registry' => $registry,
         ]);
     }
 

@@ -140,7 +140,10 @@ const timeLeftUntilExpiryDate = (expiry_date) => {
                   class="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                 <span
                     class="text-cyan-600 hover:text-cyan-700">
-                  {{ registry.name }}
+                 <Link
+                     :href="route('workspace.registries.show', { project: projectId, workspace: workspace, registry: registry.registry_id})">
+                {{ registry.name }}
+              </Link>
                 </span>
               </th>
 

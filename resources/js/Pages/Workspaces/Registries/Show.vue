@@ -109,13 +109,15 @@ const toDateString = (dateString) => {
     <template #header>
       <h2 class="text-white dark:text-gray-700 leading-tight">Registries</h2>
     </template>
+
     <div class="md:flex md:flex-grow md:overflow-hidden">
       <div class=" md:flex-1 md:overflow-y-auto">
-        <div>
+        <div class="px-2">
           <div class="p-4 flex justify-between items-center">
             <h1 class="font-bold text-3xl pr-4">{{ registry.name }}</h1>
-            <Link :href="route('workspace.registry.reports.create', [workspace, registry])"
-                  class="block whitespace-nowrap">
+            <Link
+                :href="route('workspace.registry.reports.create', { project: projectId, workspace: workspace, registry: registry.id } )"
+                class="block whitespace-nowrap">
               Submit Report
             </Link>
           </div>

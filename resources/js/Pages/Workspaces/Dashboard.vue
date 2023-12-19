@@ -1,5 +1,5 @@
 <script setup>
-import {Head, usePage} from '@inertiajs/vue3';
+import {Head, Link, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 defineProps({
@@ -30,6 +30,8 @@ defineProps({
 })
 
 const page = usePage();
+
+const projectId = usePage().props.auth.user.project_id;
 
 </script>
 
@@ -83,8 +85,10 @@ const page = usePage();
           <h3 class="py-2 font-bold">Most Outdated:</h3>
           <ul v-if="mostOutdatedRegistries && mostOutdatedRegistries.length" class="text-cyan-600">
             <li v-for="registry in mostOutdatedRegistries" :key="registry.name" class="py-1 truncate">
-
-              {{ registry.name }}
+              <Link
+                  :href="route('workspace.registries.show', { project: projectId, workspace: workspace, registry: registry.registry_id})">
+                {{ registry.name }}
+              </Link>
 
             </li>
           </ul>
@@ -94,9 +98,10 @@ const page = usePage();
           <h3 class="py-2 font-bold">Expiring Soon:</h3>
           <ul v-if="expiringSoonRegistries && expiringSoonRegistries.length" class="text-cyan-600 ">
             <li v-for="registry in expiringSoonRegistries" :key="registry.name" class="py-1 truncate">
-
-              {{ registry.name }}
-
+              <Link
+                  :href="route('workspace.registries.show', { project: projectId, workspace: workspace, registry: registry.registry_id})">
+                {{ registry.name }}
+              </Link>
             </li>
           </ul>
           <p v-else class="text-gray-400 italic">None of the registries expiring within 30 days.</p>
