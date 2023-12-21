@@ -9,6 +9,13 @@ import {Link, usePage} from '@inertiajs/vue3';
 import {useNavigationStore} from "@/Stores/NavigationStore.js";
 import FlashMessages from "@/Components/FlashMessages.vue";
 
+
+const props = defineProps({
+  workspace: {
+    type: Object
+  },
+})
+
 const showingNavigationDropdown = ref(false);
 
 const projectId = usePage().props.auth.user.project_id;
@@ -18,12 +25,6 @@ const navigation = useNavigationStore();
 const user = usePage().props.auth.user;
 
 const userHasNoWorkspace = !user.workspaces || !user.workspaces.length
-
-const props = defineProps({
-  workspace: {
-    type: Object
-  },
-})
 
 const page = usePage().props.route;
 

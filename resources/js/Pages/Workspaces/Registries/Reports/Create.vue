@@ -92,7 +92,7 @@ const store = () => {
             <form @submit.prevent="store" method="post"
                   class="mt-6 space-y-6">
 
-              <div class="">
+              <div v-if="registry === null">
                 <Combobox v-model="selected">
                   <InputLabel for="registries" value="Registry"/>
                   <div class="relative">
@@ -162,6 +162,9 @@ const store = () => {
                   </div>
                   <InputError class="mt-2" :message="form.errors.registry_id"/>
                 </Combobox>
+              </div>
+              <div v-else>
+                {{ registry.name }}
               </div>
 
               <div>

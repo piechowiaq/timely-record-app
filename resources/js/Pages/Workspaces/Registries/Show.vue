@@ -1,9 +1,10 @@
 <script setup>
 
-import {Head, Link, usePage} from "@inertiajs/vue3";
+import {Head, Link, router, usePage} from "@inertiajs/vue3";
 
-import {computed, ref} from "vue";
+import {computed, ref, watch} from "vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import {debounce} from "lodash";
 
 const props = defineProps({
   workspace: {
@@ -32,18 +33,25 @@ const index = ref(
 
 
 const sort = (field) => {
-  index.value.field = field;
-  index.value.direction = index.value.direction === 'asc' ? 'desc' : 'asc';
-}
+  console.log(field, index.value)
+  if (index.value.field !== field) {
+    return 'fa-solid fa-sort fa-xs ml-2'; // Default icon when the field is not the current sort field
+  }
+  return index.value.direction === 'asc' ? 'fa-solid fa-sort-down fa-xs ml-2' : 'fa-solid fa-sort-up fa-xs ml-2';
+};
 
 const projectId = usePage().props.auth.user.project_id;
 
-// watch(index, debounce(function () {
-//   router.get(route('workspace.registries.show', [projectId, props.workspace, props.registry]), index.value, {
-//     preserveState: true,
-//     replace: true
-//   });
-// }, 150), {deep: true});
+watch(index, debounce(function () {
+  router.get(route('workspace.registries.show', {
+    project: projectId,
+    workspace: props.workspace,
+    registry: props.registry
+  }), index.value, {
+    preserveState: true,
+    replace: true
+  });
+}, 150), {deep: true});
 
 const validFor = computed(() => {
   if (props.registry.validity_period < 12) {
@@ -106,6 +114,7 @@ const toDateString = (dateString) => {
   <Head title="Project"/>
 
   <AuthenticatedLayout :workspace="workspace">
+
     <template #header>
       <h2 class="text-white dark:text-gray-700 leading-tight">Registries</h2>
     </template>
@@ -217,13 +226,13 @@ const toDateString = (dateString) => {
               <caption class="py-2">Hisorical reports</caption>
               <thead v-if="historicalReports.length !== 0">
               <tr>
-                <th class="text-start flex p-2" @click="sort('report_date')">
+                <th class="text-start flex items-center p-2" @click="sort('report_date')">
                   Data Przeglądu
                   <i :class="sort('report_date')"></i>
 
                 </th>
                 <th class="p-2"></th>
-                <th class="p-2 flex" @click="sort('expiry_date')">
+                <th class="p-2 flex items-center" @click="sort('expiry_date')">
                   Wygasa dnia | za
                   <i :class="sort('expiry_date')"></i>
 
