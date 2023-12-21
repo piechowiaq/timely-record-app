@@ -152,10 +152,13 @@ const toDateString = (dateString) => {
               </tr>
               <tr v-else>
                 <td class="border-b p-2 w-2/3 truncate ...">
-                  <span
+
+
+                  <Link
+                      :href="route('workspace.registry.reports.edit', { project: projectId, workspace: workspace.id, registry: registry.id,  report: mostCurrentReport.id })"
                       class="hover:text-cyan-600 text-sm">
                     {{ mostCurrentReport.report_date }}
-                  </span>
+                  </Link>
                   <span class="text-xs text-gray-400 italic  ml-6">
                                         Created: {{ toDateString(mostCurrentReport.created_at) }} -
                                         {{
@@ -234,10 +237,11 @@ const toDateString = (dateString) => {
               </tr>
               <tr v-else v-for="report of historicalReports" :key="report.id">
                 <td class="border-b p-2 w-2/3 truncate ...">
-                  <span
+                  <Link
+                      :href="route('workspace.registry.reports.edit', { project: projectId, workspace: workspace.id, registry: registry.id,  report: report.id })"
                       class="hover:text-cyan-600 text-sm">
                     {{ report.report_date }}
-                  </span>
+                  </Link>
                   <span class="text-xs text-gray-400 italic  ml-6">
                                         Created: {{ toDateString(report.created_at) }} -
                                         {{ report?.created_by_user?.first_name }} {{
