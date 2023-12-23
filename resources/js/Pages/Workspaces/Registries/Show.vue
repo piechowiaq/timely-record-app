@@ -33,7 +33,7 @@ const index = ref(
 
 
 const sort = (field) => {
-  console.log(field, index.value)
+
   if (index.value.field !== field) {
     return 'fa-solid fa-sort fa-xs ml-2'; // Default icon when the field is not the current sort field
   }
@@ -271,7 +271,7 @@ const toDateString = (dateString) => {
 
                   <i v-else-if="isReportExpiringInLessThanAMonth(report.expiry_date)"
 
-                     class="fa-solid fa-bell block m-auto text-yellow-500 h-6 w-6"/>
+                     class="fa-solid fa-bell text-yellow-500"/>
 
                 </td>
                 <td class="border-b p-2 text-sm truncate ... ">

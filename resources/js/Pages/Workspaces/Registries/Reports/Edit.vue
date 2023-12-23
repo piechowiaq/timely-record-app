@@ -5,6 +5,9 @@ import {Head, router, useForm, useRemember} from "@inertiajs/vue3";
 import TextInput from "@/Components/TextInput.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import InputLabel from "@/Components/InputLabel.vue";
+import InputError from "@/Components/InputError.vue";
+import DangerButton from "@/Components/DangerButton.vue";
 
 
 const props = defineProps({
@@ -62,24 +65,58 @@ const destroy = (report) => {
                 Please provide required data to create report.
               </p>
             </header>
-            <form @submit.prevent="update">
+            <form @submit.prevent="update" class="mt-6 space-y-6">
 
-              <div class="p-8 -mr-6 -mb-8 flex flex-wrap">
-                <TextInput type="date" v-model="form.report_date" :error="form.errors.report_date"
-                           class="pb-8 pr-6 w-full lg:w-1/2"
-                           label="Date of the report"/>
-                <TextInput v-model="form.notes" :error="form.errors.notes" class="pb-8 pr-6 w-full lg:w-1/2"
-                           label="Notes"/>
+              <div>
+                <InputLabel for="report_date" value="Report Date"/>
+
+                <TextInput
+                    id="report_date"
+                    type="date"
+                    class="mt-1 block w-full"
+                    v-model="form.report_date"
+                    required
+                    autofocus
+                    autocomplete="report_date"
+                />
+
+                <InputError class="mt-2" :message="form.errors.report_date"/>
               </div>
-              <div class="px-8 py-4 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
-                <PrimaryButton v-if="!report.deleted_at" value="Delete"
-                               @click.once="destroy(report)" tabindex="-1"
-                               type="button" class="text-red-600 hover:underline">Delete Report
-                </PrimaryButton>
-                <PrimaryButton class="ml-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                  Edit Registry
-                </PrimaryButton>
+
+
+              <div>
+                <InputLabel for="notes" value="Notes"/>
+
+                <TextInput
+                    id="notes"
+                    type="text"
+                    class="mt-1 block w-full"
+                    v-model="form.notes"
+                    required
+                    autofocus
+                    autocomplete="notes"
+                />
+
+                <InputError class="mt-2" :message="form.errors.notes"/>
               </div>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                  <PrimaryButton :disabled="form.processing">Update</PrimaryButton>
+                  <Transition
+                      enter-active-class="transition ease-in-out"
+                      enter-from-class="opacity-0"
+                      leave-active-class="transition ease-in-out"
+                      leave-to-class="opacity-0"
+                  >
+                    <p v-if="form.recentlySuccessful" class="text-sm text-gray-600 dark:text-gray-400">
+                      Updated.</p>
+                  </Transition>
+
+                </div>
+                <DangerButton type="button" @click.once="destroy(report)" tabindex="-1" value="Delete">Delete Report
+                </DangerButton>
+              </div>
+
 
             </form>
           </section>

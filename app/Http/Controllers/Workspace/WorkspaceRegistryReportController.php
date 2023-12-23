@@ -47,7 +47,7 @@ class WorkspaceRegistryReportController extends Controller
         $report->created_by_user_id = Auth::id();
         $report->save();
 
-        return Redirect::route('workspace.registries.index', ['project' => $project, 'workspace' => $workspace])->with('success', 'Report uploaded.');
+        return Redirect::route('workspace.registries.show', ['project' => $project, 'workspace' => $workspace, 'registry' => $registry])->with('success', 'Report uploaded.');
     }
 
     public function edit(Project $project, Workspace $workspace, Registry $registry, Report $report)
@@ -73,7 +73,7 @@ class WorkspaceRegistryReportController extends Controller
         $report->updated_by_user_id = Auth::id();
         $report->save();
 
-        return Redirect::route('workspace.registries.show', ['project' => $project, 'workspace' => $workspace, 'registry' => $registry])->with('success', 'Report updated');
+        return Redirect::route('workspace.registry.reports.edit', ['project' => $project, 'workspace' => $workspace, 'registry' => $registry, 'report' => $report])->with('success', 'Report updated');
     }
 
     /**
@@ -81,6 +81,7 @@ class WorkspaceRegistryReportController extends Controller
      */
     public function destroy(Project $project, Workspace $workspace, Registry $registry, Report $report)
     {
+
         $report->delete();
 
         return Redirect::route('workspace.registries.show', ['project' => $project, 'workspace' => $workspace, 'registry' => $registry])->with('success', 'Report deleted.');
