@@ -21,7 +21,7 @@ class WorkspaceFactory extends Factory
         return [
             'name' => fake()->company,
             'location' => fake()->city,
-            'project_id' => Project::factory()->create()->id,
+            'project_id' => Project::factory(),
         ];
     }
 }
