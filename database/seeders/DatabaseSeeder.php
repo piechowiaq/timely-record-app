@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Project;
 use App\Models\Registry;
+use App\Models\Report;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Database\Seeder;
@@ -34,6 +35,8 @@ class DatabaseSeeder extends Seeder
         $user->workspaces()->attach($workspaces);
 
         $registries = Registry::all(); // Get all registries
+
+        Report::factory(500)->create();
 
         // Loop through each workspace
         foreach ($workspaces as $workspace) {
