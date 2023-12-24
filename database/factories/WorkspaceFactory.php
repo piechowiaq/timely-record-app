@@ -18,9 +18,13 @@ class WorkspaceFactory extends Factory
      */
     public function definition(): array
     {
+        $hotelSuffixes = ['Hotel', 'Resort', 'Inn', 'Lodge', 'Suites', 'Palace', 'Plaza'];
+        $location = $this->faker->city;
+        $hotelName = $location.' '.$this->faker->randomElement($hotelSuffixes);
+
         return [
-            'name' => fake()->company,
-            'location' => fake()->city,
+            'name' => $hotelName,
+            'location' => $location,
             'project_id' => Project::factory(),
         ];
     }

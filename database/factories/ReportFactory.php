@@ -3,12 +3,14 @@
 namespace Database\Factories;
 
 use App\Models\Registry;
+use App\Models\Report;
 use App\Models\User;
 use App\Models\Workspace;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Report>
+ * @extends Factory<Report>
  */
 class ReportFactory extends Factory
 {
@@ -17,14 +19,15 @@ class ReportFactory extends Factory
      *
      * @return array<string, mixed>
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function definition(): array
     {
-        $registry = Registry::query()->inRandomOrder()->first() ?? Registry::factory()->create();
-
-        // Get a random Workspace model from the database, or create a new one if none exists
-        $workspace = Workspace::query()->inRandomOrder()->first() ?? Workspace::factory()->create();
+        $recycledRegistries = $this->recycle->get(Registry::class, collect());
+        $registry = $recycledRegistries->isNotEmpty()
+            ? $recycledRegistries->random()
+            : Registry::factory()->create();
+        //        $registry = Registry::query()->inRandomOrder()->first() ?? Registry::factory()->create();
 
         // Define report date
         // Define report date within the last 2 years
@@ -39,7 +42,7 @@ class ReportFactory extends Factory
             'report_date' => $reportDate,
             'expiry_date' => $expiryDate,
             'notes' => $this->faker->text(),
-            'workspace_id' => $workspace->id,
+            'workspace_id' => Workspace::factory(),
             'registry_id' => $registry->id,
             'created_by_user_id' => User::factory(),
             'updated_by_user_id' => User::factory(),

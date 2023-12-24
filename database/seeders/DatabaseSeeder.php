@@ -18,12 +18,11 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-
             RegistrySeeder::class,
         ]);
 
         $project = Project::factory()->create();
-        $workspaces = Workspace::factory(6)->recycle($project)->create();
+        $users = User::factory(3)->recycle($project)->create();
 
         $user = User::factory()->recycle($project)->create([
             'first_name' => 'Bartosz',
@@ -32,14 +31,15 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('12345678'),
         ]);
 
+        $workspaces = Workspace::factory(2)->recycle($project)->create();
+
         $user->workspaces()->attach($workspaces);
 
         $registries = Registry::all(); // Get all registries
 
-        Report::factory(500)->create();
-
-        // Loop through each workspace
         foreach ($workspaces as $workspace) {
+            Report::factory(25)->recycle($workspace)->recycle($registries)->recycle($users)->create();
+
             // Decide the number of registries to attach (randomly)
             $numberOfRegistriesToAttach = rand(1, $registries->count());
 
@@ -49,6 +49,5 @@ class DatabaseSeeder extends Seeder
             // Attach the registries to the workspace
             $workspace->registries()->attach($registriesToAttach);
         }
-
     }
 }

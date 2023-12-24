@@ -63,7 +63,7 @@ class WorkspaceRegistryReportController extends Controller
     public function update(UpdateReportRequest $request, Project $project, Workspace $workspace, Registry $registry, Report $report)
     {
         $report_date = new Carbon($request->report_date);
-        $expiryDate = $report_date->addMonths($registry->valid_for)->toDateString();
+        $expiryDate = $report_date->addMonths($registry->validity_period)->toDateString();
 
         $report->report_date = $request->report_date;
         $report->expiry_date = $expiryDate;
