@@ -34,7 +34,7 @@ const projectId = usePage().props.auth.user.project_id;
   <AuthenticatedLayout>
     <template #header>
       <h2 class="text-white dark:text-gray-700 leading-tight">
-        <Link :href="route('workspaces.edit', [projectId, workspace])">Edit Workspaces &lt
+        <Link :href="route('workspaces.edit', { project: projectId, workspace: workspace})">Edit Workspace &lt
         </Link>
         Sync Workspace Registries
       </h2>

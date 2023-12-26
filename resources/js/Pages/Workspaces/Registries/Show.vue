@@ -116,63 +116,70 @@ const toDateString = (dateString) => {
   <AuthenticatedLayout :workspace="workspace">
 
     <template #header>
-      <h2 class="text-white dark:text-gray-700 leading-tight">Registries</h2>
+      <h2 class="text-white dark:text-gray-700 leading-tight">
+        <Link :href="route('workspace.registries.index',  { project: projectId, workspace: workspace})">Registries &lt
+        </Link>
+        {{ registry.name }}
+      </h2>
     </template>
 
-    <div class="md:flex md:flex-grow md:overflow-hidden">
+
+    <div class="md:flex md:flex-grow md:overflow-hidden  m-2">
       <div class=" md:flex-1 md:overflow-y-auto">
-        <div class="px-2">
-          <div class="p-4 flex justify-between items-center">
-            <h1 class="font-bold text-3xl pr-4">{{ registry.name }}</h1>
+
+        <div class="p-4 bg-white">
+          <div class="flex items-center justify-between mb-2">
+            <h1 class="font-bold text-2xl">{{ registry.name }}</h1>
             <Link
                 :href="route('workspace.registry.reports.create', { project: projectId, workspace: workspace, registry: registry.id } )"
-                class="block whitespace-nowrap">
+                class="block whitespace-nowrap text-sm">
               Submit Report
             </Link>
           </div>
-          <div class="shadow overflow-x-auto px-4 pb-4">
-            <div class="font-bold"> Description:</div>
-            <br>
-            <div class=" text-sm mb-6">{{ registry.description }}</div>
-            <div class=" font-bold"> Valid for: {{ validFor }}</div>
-          </div>
-
-          <div class="shadow overflow-x-auto p-2">
-
-            <table class="w-full border">
-              <caption class="py-2">Most current report</caption>
-              <thead v-if="mostCurrentReport">
-              <tr>
-                <th class="text-start flex p-2">
-                  Data Przeglądu
-
-                </th>
-                <th class="p-2"></th>
-                <th class="p-2 flex">
-                  Wygasa dnia | za
-
-                </th>
-                <th class="p-2">Pobierz</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr v-if="!mostCurrentReport">
-                <td class="p-2 text-red-600" colspan="4">Awaiting upoload.</td>
-              </tr>
-              <tr v-else>
-                <td class="border-b p-2 w-2/3 truncate ...">
 
 
-                  <Link
-                      :href="route('workspace.registry.reports.edit', { project: projectId, workspace: workspace.id, registry: registry.id,  report: mostCurrentReport.id })"
-                      class="hover:text-cyan-600 text-sm">
-                    {{ mostCurrentReport.report_date }}
-                  </Link>
-                  <span class="text-xs text-gray-400 italic  ml-6">
+          <div class="font-bold"> Description:</div>
+
+          <div class=" text-sm mb-2">{{ registry.description }}</div>
+          <div class=" font-bold"> Valid for: {{ validFor }}</div>
+        </div>
+
+        <div class="shadow overflow-x-auto p-2 mt-2 bg-white">
+
+          <table class="w-full border">
+            <caption>Most current report</caption>
+            <thead v-if="mostCurrentReport">
+            <tr>
+              <th class="text-start flex p-2">
+                Data Przeglądu
+
+              </th>
+              <th class="p-2"></th>
+              <th class="p-2 flex">
+                Wygasa dnia | za
+
+              </th>
+              <th class="p-2">Pobierz</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-if="!mostCurrentReport">
+              <td class="p-2 text-red-600" colspan="4">Awaiting upoload.</td>
+            </tr>
+            <tr v-else>
+              <td class="border-b p-2 w-2/3 truncate ...">
+
+
+                <Link
+                    :href="route('workspace.registry.reports.edit', { project: projectId, workspace: workspace.id, registry: registry.id,  report: mostCurrentReport.id })"
+                    class="hover:text-cyan-600 text-sm">
+                  {{ mostCurrentReport.report_date }}
+                </Link>
+                <span class="text-xs text-gray-400 italic  ml-6">
                                         Created: {{ toDateString(mostCurrentReport.created_at) }} -
                                         {{
-                      mostCurrentReport?.created_by_user?.first_name
-                    }} {{ mostCurrentReport?.created_by_user?.last_name }}
+                    mostCurrentReport?.created_by_user?.first_name
+                  }} {{ mostCurrentReport?.created_by_user?.last_name }}
                                     <span
                                         v-if="new Date(mostCurrentReport.updated_at) > new Date(mostCurrentReport.created_at)">
                                     | Updated: {{ toDateString(mostCurrentReport.updated_at) }} -
@@ -184,78 +191,78 @@ const toDateString = (dateString) => {
 
                                     </span>
 
-                </td>
-                <td class="border-b p-2 px-2 w-16">
+              </td>
+              <td class="border-b p-2 px-2 w-16">
 
-                  <i class="fa-solid fa-bell text-red-500"
-                     v-if="isReportExpired(mostCurrentReport.expiry_date)"></i>
-                  <i class="fa-solid fa-bell text-yellow-500"
-                     v-else-if="isReportExpiringInLessThanAMonth(mostCurrentReport.expiry_date)"></i>
+                <i class="fa-solid fa-bell text-red-500"
+                   v-if="isReportExpired(mostCurrentReport.expiry_date)"></i>
+                <i class="fa-solid fa-bell text-yellow-500"
+                   v-else-if="isReportExpiringInLessThanAMonth(mostCurrentReport.expiry_date)"></i>
 
 
-                </td>
-                <td class="border-b p-2 text-sm truncate ... ">
-                  {{ mostCurrentReport.expiry_date }} <span class="ml-2 text-xs italic text-gray-400"> {{
-                    timeLeftUntilExpiryDate(mostCurrentReport.expiry_date)
-                  }} </span>
-                </td>
-                <td class="border-b p-2 w-24">
+              </td>
+              <td class="border-b p-2 text-sm truncate ... ">
+                {{ mostCurrentReport.expiry_date }} <span class="ml-2 text-xs italic text-gray-400"> {{
+                  timeLeftUntilExpiryDate(mostCurrentReport.expiry_date)
+                }} </span>
+              </td>
+              <td class=" p-2 w-24">
                   <span
                       v-if="mostCurrentReport.expiry_date"
-                      class="hover:bg-gray-100 group flex items-center border"
+                      class="hover:bg-gray-100 group flex items-center"
                   >
 
-                    <i class="fa-solid fa-download block m-auto h-6 w-6 group-hover:fill-cyan-600 fill-gray-600"></i>
+                    <i class="fa-solid fa-download block m-auto group-hover:fill-cyan-600 fill-gray-600 p-2"></i>
 
                   </span>
 
-                  <i v-else class="fa-solid fa-download text-gray-300 block m-auto h-6 w-6"></i>
+                <i v-else class="fa-solid fa-download text-gray-300 block m-auto h-6 w-6"></i>
 
 
-                </td>
-              </tr>
+              </td>
+            </tr>
 
-              </tbody>
-            </table>
+            </tbody>
+          </table>
 
-          </div>
-          <div class="bg-white shadow overflow-x-auto p-2">
+        </div>
+        <div class="bg-white shadow overflow-x-auto p-2 mt-2">
 
 
-            <table class="w-full bg-gray-100 ">
-              <caption class="py-2">Hisorical reports</caption>
-              <thead v-if="historicalReports.length !== 0">
-              <tr>
-                <th class="text-start flex items-center p-2" @click="sort('report_date')">
-                  Data Przeglądu
-                  <i :class="sort('report_date')"></i>
+          <table class="w-full bg-gray-100 ">
+            <caption>Hisorical reports</caption>
+            <thead v-if="historicalReports.length !== 0">
+            <tr>
+              <th class="text-start flex items-center p-2" @click="sort('report_date')">
+                Data Przeglądu
+                <i :class="sort('report_date')"></i>
 
-                </th>
-                <th class="p-2"></th>
-                <th class="p-2 flex items-center" @click="sort('expiry_date')">
-                  Wygasa dnia | za
-                  <i :class="sort('expiry_date')"></i>
+              </th>
+              <th class="p-2"></th>
+              <th class="p-2 flex items-center" @click="sort('expiry_date')">
+                Wygasa dnia | za
+                <i :class="sort('expiry_date')"></i>
 
-                </th>
-                <th class="p-2">Pobierz</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr v-if="historicalReports.length === 0">
-                <td class="p-2 text-red-600" colspan="4">No other reports.</td>
-              </tr>
-              <tr v-else v-for="report of historicalReports" :key="report.id">
-                <td class="border-b p-2 w-2/3 truncate ...">
-                  <Link
-                      :href="route('workspace.registry.reports.edit', { project: projectId, workspace: workspace.id, registry: registry.id,  report: report.id })"
-                      class="hover:text-cyan-600 text-sm">
-                    {{ report.report_date }}
-                  </Link>
-                  <span class="text-xs text-gray-400 italic  ml-6">
+              </th>
+              <th class="p-2">Pobierz</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-if="historicalReports.length === 0">
+              <td class="p-2 text-red-600" colspan="4">No other reports.</td>
+            </tr>
+            <tr v-else v-for="report of historicalReports" :key="report.id">
+              <td class="border-b p-2 w-2/3 truncate ...">
+                <Link
+                    :href="route('workspace.registry.reports.edit', { project: projectId, workspace: workspace.id, registry: registry.id,  report: report.id })"
+                    class="hover:text-cyan-600 text-sm">
+                  {{ report.report_date }}
+                </Link>
+                <span class="text-xs text-gray-400 italic  ml-6">
                                         Created: {{ toDateString(report.created_at) }} -
                                         {{ report?.created_by_user?.first_name }} {{
-                      report?.created_by_user?.last_name
-                    }}
+                    report?.created_by_user?.last_name
+                  }}
                                         <span v-if="new Date(report.updated_at) > new Date(report.created_at)">
                                         / Updated: {{ toDateString(report.updated_at) }} -
                                             {{
@@ -264,40 +271,42 @@ const toDateString = (dateString) => {
                                         </span>
                                     </span>
 
-                </td>
-                <td class="border-b p-2 px-2 w-16">
-                  <i class="fa-solid fa-bell text-red-200"
-                     v-if="isReportExpired(report.expiry_date)"/>
+              </td>
+              <td class="border-b p-2 px-2 w-16">
+                <i class="fa-solid fa-bell text-red-200"
+                   v-if="isReportExpired(report.expiry_date)"/>
 
-                  <i v-else-if="isReportExpiringInLessThanAMonth(report.expiry_date)"
+                <i v-else-if="isReportExpiringInLessThanAMonth(report.expiry_date)"
 
-                     class="fa-solid fa-bell text-yellow-500"/>
+                   class="fa-solid fa-bell text-yellow-500"/>
 
-                </td>
-                <td class="border-b p-2 text-sm truncate ... ">
-                  {{ report.expiry_date }} <span
-                    class="ml-2 text-xs italic text-gray-400"> {{ timeLeftUntilExpiryDate(report.expiry_date) }} </span>
-                </td>
-                <td class="border-b p-2 w-24">
+              </td>
+              <td class="border-b p-2 text-sm truncate ... ">
+                {{ report.expiry_date }} <span
+                  class="ml-2 text-xs italic text-gray-400"> {{ timeLeftUntilExpiryDate(report.expiry_date) }} </span>
+              </td>
+
+              <td class="border-b p-2 w-24">
                   <span
                       v-if="report.expiry_date"
-
-                      class="hover:bg-gray-100 group flex items-center border"
+                      class="hover:bg-gray-100 group flex items-center"
                   >
-                    <i class="fa-solid fa-download block m-auto h-6 w-6 group-hover:fill-cyan-600 fill-gray-600"></i>
+
+                    <i class="fa-solid fa-download block m-auto group-hover:fill-cyan-600 fill-gray-600 p-2"></i>
 
                   </span>
 
-                  <i v-else class="fa-solid fa-download text-gray-300 block m-auto h-6 w-6"></i>
+                <i v-else class="fa-solid fa-download text-gray-300 block m-auto"></i>
 
-                </td>
-              </tr>
 
-              </tbody>
-            </table>
+              </td>
+            </tr>
 
-          </div>
+            </tbody>
+          </table>
+
         </div>
+
       </div>
     </div>
 
