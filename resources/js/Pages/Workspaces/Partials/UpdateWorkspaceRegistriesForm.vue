@@ -33,6 +33,7 @@ const page = usePage();
 const currentUrl = computed(() => page.url.split('?')[0])
 
 router.on('navigate', (event) => {
+
   if (event.detail.page.url.split('?')[0] !== currentUrl.value) {
     registriesStore.resetSelection();
   } else props.workspaceRegistries.forEach(registryId => {
