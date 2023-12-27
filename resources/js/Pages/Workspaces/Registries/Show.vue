@@ -129,26 +129,31 @@ const toDateString = (dateString) => {
 
         <div class="p-4 bg-white">
           <div class="flex items-center justify-between mb-2">
-            <h1 class="font-bold text-2xl">{{ registry.name }}</h1>
+            <h1 class="font-bold text-lg text-gray-900 dark:text-gray-100">{{ registry.name }}</h1>
             <Link
                 :href="route('workspace.registry.reports.create', { project: projectId, workspace: workspace, registry: registry.id } )"
-                class="block whitespace-nowrap text-sm">
+                class="text-cyan-600 hover:text-cyan-700 text-sm">
               Submit Report
             </Link>
           </div>
 
 
-          <div class="font-bold"> Description:</div>
+          <div class="font-medium text-gray-900 dark:text-gray-100"> Description:</div>
 
-          <div class=" text-sm mb-2">{{ registry.description }}</div>
-          <div class=" font-bold"> Valid for: {{ validFor }}</div>
+          <div class=" text-sm mb-2 text-gray-600 dark:text-gray-400">{{ registry.description }}</div>
+          <div class="font-medium text-gray-900 dark:text-gray-100"> Valid for: <span
+              class="text-sm text-gray-600 dark:text-gray-400">{{ validFor }}</span></div>
         </div>
 
         <div class="shadow overflow-x-auto p-2 mt-2 bg-white">
 
-          <table class="w-full border">
-            <caption>Most current report</caption>
-            <thead v-if="mostCurrentReport">
+          <table class="w-full text-sm text-gray-500 dark:text-gray-400 ">
+            <caption class="font-bold text-xs text-gray-700 uppercase pb-2 dark:bg-gray-700 dark:text-gray-400">Most
+              current
+              report
+            </caption>
+            <thead v-if="mostCurrentReport"
+                   class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               <th class="text-start flex p-2">
                 Data Przeglądu
@@ -167,12 +172,12 @@ const toDateString = (dateString) => {
               <td class="p-2 text-red-600" colspan="4">Awaiting upoload.</td>
             </tr>
             <tr v-else>
-              <td class="border-b p-2 w-2/3 truncate ...">
+              <td class=" p-2 w-2/3 truncate ">
 
 
                 <Link
                     :href="route('workspace.registry.reports.edit', { project: projectId, workspace: workspace.id, registry: registry.id,  report: mostCurrentReport.id })"
-                    class="hover:text-cyan-600 text-sm">
+                    class="hover:text-cyan-700 text-sm  font-medium text-cyan-600 ">
                   {{ mostCurrentReport.report_date }}
                 </Link>
                 <span class="text-xs text-gray-400 italic  ml-6">
@@ -192,7 +197,7 @@ const toDateString = (dateString) => {
                                     </span>
 
               </td>
-              <td class="border-b p-2 px-2 w-16">
+              <td class=" p-2 px-2 w-16">
 
                 <i class="fa-solid fa-bell text-red-500"
                    v-if="isReportExpired(mostCurrentReport.expiry_date)"></i>
@@ -201,7 +206,7 @@ const toDateString = (dateString) => {
 
 
               </td>
-              <td class="border-b p-2 text-sm truncate ... ">
+              <td class="p-2 text-sm font-medium truncate">
                 {{ mostCurrentReport.expiry_date }} <span class="ml-2 text-xs italic text-gray-400"> {{
                   timeLeftUntilExpiryDate(mostCurrentReport.expiry_date)
                 }} </span>
@@ -229,9 +234,13 @@ const toDateString = (dateString) => {
         <div class="bg-white shadow overflow-x-auto p-2 mt-2">
 
 
-          <table class="w-full bg-gray-100 ">
-            <caption>Hisorical reports</caption>
-            <thead v-if="historicalReports.length !== 0">
+          <table class="w-full bg-gray-100 text-sm text-gray-500 dark:text-gray-400 ">
+            <caption class="font-bold text-xs text-gray-700 uppercase pb-2 dark:bg-gray-700 dark:text-gray-400">
+              Hisorical
+              reports
+            </caption>
+            <thead v-if="historicalReports.length !== 0"
+                   class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               <th class="text-start flex items-center p-2" @click="sort('report_date')">
                 Data Przeglądu
@@ -252,10 +261,10 @@ const toDateString = (dateString) => {
               <td class="p-2 text-red-600" colspan="4">No other reports.</td>
             </tr>
             <tr v-else v-for="report of historicalReports" :key="report.id">
-              <td class="border-b p-2 w-2/3 truncate ...">
+              <td class="p-2 w-2/3 truncate ">
                 <Link
                     :href="route('workspace.registry.reports.edit', { project: projectId, workspace: workspace.id, registry: registry.id,  report: report.id })"
-                    class="hover:text-cyan-600 text-sm">
+                    class="text-sm hover:text-cyan-700 font-medium text-cyan-600 ">
                   {{ report.report_date }}
                 </Link>
                 <span class="text-xs text-gray-400 italic  ml-6">
@@ -272,7 +281,7 @@ const toDateString = (dateString) => {
                                     </span>
 
               </td>
-              <td class="border-b p-2 px-2 w-16">
+              <td class=" p-2 px-2 w-16">
                 <i class="fa-solid fa-bell text-red-200"
                    v-if="isReportExpired(report.expiry_date)"/>
 
@@ -281,12 +290,12 @@ const toDateString = (dateString) => {
                    class="fa-solid fa-bell text-yellow-500"/>
 
               </td>
-              <td class="border-b p-2 text-sm truncate ... ">
+              <td class="p-2 text-sm truncate ... ">
                 {{ report.expiry_date }} <span
                   class="ml-2 text-xs italic text-gray-400"> {{ timeLeftUntilExpiryDate(report.expiry_date) }} </span>
               </td>
 
-              <td class="border-b p-2 w-24">
+              <td class=" p-2 w-24">
                   <span
                       v-if="report.expiry_date"
                       class="hover:bg-gray-100 group flex items-center"
