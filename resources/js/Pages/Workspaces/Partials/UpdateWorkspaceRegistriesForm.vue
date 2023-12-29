@@ -41,6 +41,7 @@ router.on('navigate', (event) => {
   })
 });
 
+
 const selectedRegistriesIds = computed(() => registriesStore.selectedRegistriesIds);
 
 const form = useForm({
@@ -112,6 +113,7 @@ function toggleRegistrySelection(registryId) {
 
 }
 
+
 function submit() {
   form.patch(route('workspaces.sync-registries', {project: projectId, workspace: props.workspace.id}));
 }
@@ -132,7 +134,7 @@ function toggleDescription(id) {
     <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Workspace Registries</h2>
 
     <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-      Synchronize workspace registries. {{ selectedRegistriesIds }}
+      Synchronize workspace registries. {{ registriesIds }}
     </p>
   </header>
 

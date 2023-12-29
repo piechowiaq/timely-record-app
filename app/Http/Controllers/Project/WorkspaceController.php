@@ -119,20 +119,34 @@ class WorkspaceController extends Controller
 
     public function editRegistries(Request $request, Project $project, Workspace $workspace): \Inertia\Response
     {
-        $registriesQuery = Registry::query()
+        $paginatedRegistries = Registry::query()
             ->where(function ($query) use ($project) {
-                $query->whereNull('project_id')
-                    ->orWhere('project_id', $project->id);
-            });
+                $query->where('project_id', $project->id)
+                    ->orWhereNull('project_id');
+            })
+            ->when($request->has('search'), function ($query) use ($request) {
+                $query->where('name', 'like', '%'.$request->input('search').'%');
+            })
+            ->when($request->has(['field', 'direction']), function ($query) use ($request) {
+                $field = $request->input('field');
+                $direction = $request->input('direction');
+
+                $query->orderBy($field, $direction);
+            })
+            ->paginate(10)
+            ->withQueryString();
 
         // Apply filters to the query before executing it
-        $filteredRegistriesQuery = $this->registryService->applyFilters($registriesQuery, $request);
 
         // Fetch the IDs of the filtered registries
-        $registriesIds = $filteredRegistriesQuery->pluck('id')->toArray();
+        $registriesIds = Registry::query()
+            ->where(function ($query) use ($project) {
+                $query->where('project_id', $project->id)
+                    ->orWhereNull('project_id');
+            })->pluck('id')->toArray();
 
         // Paginate the filtered registries
-        $paginatedRegistries = $filteredRegistriesQuery->paginate(10)->withQueryString();
+        //        $paginatedRegistries = $filteredRegistriesQuery->paginate(10)->withQueryString();
 
         return Inertia::render('Workspaces/EditRegistries', [
             'workspace' => $workspace,
