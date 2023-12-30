@@ -4,9 +4,17 @@ import {defineStore} from 'pinia';
 export const useTestStore = defineStore('test', {
     state: () => ({
         selectedRegistries: new Set(), // Holds the IDs of selected registries
-        selectAll: false // State to track if 'Select All' is checked
+        selectAll: false, // State to track if 'Select All' is checked
+        isInitialized: false // New flag
     }),
     actions: {
+
+        initializeSelectedRegistries(workspaceRegistriesIds) {
+            if (!this.isInitialized) {
+                workspaceRegistriesIds.forEach(id => this.selectedRegistries.add(id));
+                this.isInitialized = true;
+            }
+        },
 
         // Toggles the selection status of a single registry
         toggleRegistry(registryId) {

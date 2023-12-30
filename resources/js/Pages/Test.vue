@@ -9,7 +9,7 @@ const globalSelectedRegistries = ref([]);
 import {useForm} from "@inertiajs/vue3";
 import {useTestStore} from '@/Stores/TestStore.js';
 import Pagination from "@/Components/Pagination.vue";
-import {computed, ref, watch} from "vue";
+import {computed, onMounted, ref, watch, watchEffect} from "vue";
 
 const props = defineProps({
   paginatedRegistries: Object,
@@ -18,6 +18,10 @@ const props = defineProps({
 });
 
 const store = useTestStore();
+
+watchEffect(() => {
+  store.initializeSelectedRegistries(props.workspaceRegistriesIds);
+});
 
 const form = useForm({
   registries: '',
@@ -50,7 +54,8 @@ const handleCheckboxChange = (registryId) => {
   <div>
 
     {{ store.selectAll }}<br>
-    <!--    {{ store.selectedRegistries }}<br>-->
+    {{ store.selectedRegistries }}<br>
+
 
     <form @submit.prevent="form.post(route('test', { registries: Array.from(store.selectedRegistries)}) )" class="p-8">
 
