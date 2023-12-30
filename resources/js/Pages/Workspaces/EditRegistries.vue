@@ -16,10 +16,10 @@ const props = defineProps({
   filters: {
     type: Object,
   },
-  registriesIds: {
+  allRegistriesIds: {
     type: Array,
   },
-  workspaceRegistries: {
+  workspaceRegistriesIds: {
     type: Array,
   }
 })
@@ -48,8 +48,8 @@ const projectId = usePage().props.auth.user.project_id;
         <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow">
 
           <UpdateWorkspaceRegistriesForm :workspace="workspace" :paginatedRegistries="paginatedRegistries"
-                                         :filters="filters" :registriesIds="registriesIds"
-                                         :workspaceRegistries="workspaceRegistries"/>
+                                         :filters="filters" :allRegistriesIds="allRegistriesIds"
+                                         :workspaceRegistriesIds="workspaceRegistriesIds"/>
         </div>
 
       </div>

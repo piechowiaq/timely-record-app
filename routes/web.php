@@ -26,6 +26,8 @@ Route::get('test', function () {
 
     $allRegistriesIds = \App\Models\Registry::all()->pluck('id');
 
+    dd($allRegistriesIds);
+
     $workspace = \App\Models\Workspace::findOrFail(1);
 
     return Inertia::render('Test', [

@@ -119,6 +119,7 @@ class WorkspaceController extends Controller
 
     public function editRegistries(Request $request, Project $project, Workspace $workspace): \Inertia\Response
     {
+        //Fetch all registries generic and custom to project
         $paginatedRegistries = Registry::query()
             ->where(function ($query) use ($project) {
                 $query->where('project_id', $project->id)
@@ -136,24 +137,19 @@ class WorkspaceController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        // Apply filters to the query before executing it
-
-        // Fetch the IDs of the filtered registries
-        $registriesIds = Registry::query()
+        // Fetch the IDs of the all generic and custom to project registries
+        $allRegistriesIds = Registry::query()
             ->where(function ($query) use ($project) {
                 $query->where('project_id', $project->id)
                     ->orWhereNull('project_id');
-            })->pluck('id')->toArray();
-
-        // Paginate the filtered registries
-        //        $paginatedRegistries = $filteredRegistriesQuery->paginate(10)->withQueryString();
+            })->pluck('id');
 
         return Inertia::render('Workspaces/EditRegistries', [
             'workspace' => $workspace,
             'paginatedRegistries' => $paginatedRegistries,
-            'workspaceRegistries' => $workspace->registries->pluck('id')->toArray(),
+            'workspaceRegistriesIds' => $workspace->registries->pluck('id'),
             'filters' => $request->all(['search', 'field', 'direction']),
-            'registriesIds' => $registriesIds,
+            'allRegistriesIds' => $allRegistriesIds,
         ]);
     }
 

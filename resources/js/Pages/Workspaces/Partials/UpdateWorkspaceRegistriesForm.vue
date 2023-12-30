@@ -10,46 +10,56 @@ import Pagination from "@/Components/Pagination.vue";
 
 
 const props = defineProps({
-  paginatedRegistries: {
-    type: Object,
-  },
-  filters: {
-    type: Object,
-  },
-  workspace: {
-    type: Object
-  },
-  registriesIds: {
-    type: Array,
-  },
-  workspaceRegistries: {
-    type: Array,
-  }
+  workspace: Object,
+  paginatedRegistries: Object,
+  allRegistriesIds: Array,
+  workspaceRegistriesIds: Array,
+  filters: Object,
 });
+
 const registriesStore = useRegistriesStore();
 
-const page = usePage();
-
-const currentUrl = computed(() => page.url.split('?')[0])
-
-router.on('navigate', (event) => {
-
-  if (event.detail.page.url.split('?')[0] !== currentUrl.value) {
-    registriesStore.resetSelection();
-  } else props.workspaceRegistries.forEach(registryId => {
-    registriesStore.selectRegistry(registryId);
-  })
+// Use watchEffect to initialize selected registries as soon as the component is mounted.
+watchEffect(() => {
+  registriesStore.initializeWorkspaceRegistries(props.workspaceRegistriesIds);
 });
 
+// Computed property to calculate the total count of registries.
+const countOfTotalRegistries = computed(() => props.allRegistriesIds.length);
 
-const selectedRegistriesIds = computed(() => registriesStore.selectedRegistriesIds);
+// Function to handle changes in 'Select All' checkbox.
+const handleSelectAll = (selectAll) => {
+  registriesStore.setSelectAll(selectAll, props.allRegistriesIds);
+};
+
+// Function to handle changes in individual registry selection.
+const handleCheckboxChange = (registryId) => {
+  registriesStore.toggleRegistry(registryId);
+  registriesStore.updateSelectAllState(countOfTotalRegistries.value);
+};
+
+
+const selectedRegistryId = ref(null);
+
+function toggleDescription(id) {
+
+  this.selectedRegistryId = this.selectedRegistryId === id ? null : id;
+
+}
+
+
+// From submitting functionality
+const projectId = usePage().props.auth.user.project_id;
 
 const form = useForm({
-  registriesIds: selectedRegistriesIds.value,
+  registriesIds: '',
 });
 
+function submit() {
+  form.patch(route('workspaces.sync-registries', {project: projectId, workspace: props.workspace.id}));
+}
 
-const projectId = usePage().props.auth.user.project_id;
+// Search and direction functionality
 
 const index = ref({
   search: props.filters.search,
@@ -80,53 +90,6 @@ const getSortIconClass = (field) => {
 };
 
 
-const isAllSelected = computed({
-  get: () => registriesStore.isAllSelected,
-  set: (value) => {
-    if (value) {
-      registriesStore.selectAllRegistries();
-    } else {
-      registriesStore.deselectAllRegistries();
-    }
-  }
-});
-
-watchEffect(() => {
-  if (props.paginatedRegistries?.data) {
-    registriesStore.setRegistriesData(props.paginatedRegistries.data);
-  }
-  if (props.registriesIds) {
-    registriesStore.setAllRegistryIds(props.registriesIds);
-  }
-});
-
-watch(selectedRegistriesIds, (newSelectedIds) => {
-  form.registriesIds = newSelectedIds;
-}, {deep: true});
-
-function toggleRegistrySelection(registryId) {
-  if (selectedRegistriesIds.value.includes(registryId)) {
-    registriesStore.deselectRegistry(registryId);
-  } else {
-    registriesStore.selectRegistry(registryId);
-  }
-
-}
-
-
-function submit() {
-  form.patch(route('workspaces.sync-registries', {project: projectId, workspace: props.workspace.id}));
-}
-
-const selectedRegistryId = ref(null);
-
-function toggleDescription(id) {
-
-  this.selectedRegistryId = this.selectedRegistryId === id ? null : id;
-
-}
-
-
 </script>
 
 <template>
@@ -134,7 +97,13 @@ function toggleDescription(id) {
     <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Workspace Registries</h2>
 
     <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-      Synchronize workspace registries. {{ registriesIds }}
+      Synchronize workspace registries. <br>
+      {{ allRegistriesIds }}
+      <br>
+      {{ countOfTotalRegistries }}
+
+      <br>
+      {{ workspaceRegistriesIds }}
     </p>
   </header>
 
@@ -165,9 +134,8 @@ function toggleDescription(id) {
 
             <input
                 type="checkbox"
-                id="select-all"
-                :checked="isAllSelected"
-                @change="isAllSelected = $event.target.checked"
+                v-model="registriesStore.selectAll"
+                @change="handleSelectAll(registriesStore.selectAll)"
                 class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
 
             />
@@ -204,12 +172,9 @@ function toggleDescription(id) {
             <th scope="row" class="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
               <input
                   type="checkbox"
-                  :id="`checkbox-${registry.id}`"
                   :value="registry.id"
-                  :checked="registriesStore.selectedRegistriesIds.includes(registry.id)"
-                  v-model="form.registriesIds"
-
-                  @change="() => toggleRegistrySelection(registry.id)"
+                  :checked="registriesStore.selectedRegistries.has(registry.id)"
+                  @change="() => handleCheckboxChange(registry.id)"
                   class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
               />
             </th>
