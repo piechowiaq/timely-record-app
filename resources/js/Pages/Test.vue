@@ -19,22 +19,24 @@ const props = defineProps({
 
 const store = useTestStore();
 
+// Use watchEffect to initialize selected registries as soon as the component is mounted.
 watchEffect(() => {
-  store.initializeSelectedRegistries(props.workspaceRegistriesIds);
+  store.initializeWorkspaceRegistries(props.workspaceRegistriesIds);
 });
 
 const form = useForm({
   registries: '',
 })
 
+// Computed property to calculate the total count of registries.
 const countOfTotalRegistries = computed(() => props.allRegistriesIds.length);
 
-// Handles the change in 'Select All' checkbox state
+// Function to handle changes in 'Select All' checkbox.
 const handleSelectAll = (selectAll) => {
   store.setSelectAll(selectAll, props.allRegistriesIds);
 };
 
-// Toggles the selection of an individual registry and updates the 'Select All' state
+// Function to handle changes in individual registry selection.
 const handleCheckboxChange = (registryId) => {
   store.toggleRegistry(registryId);
   store.updateSelectAllState(countOfTotalRegistries.value);
