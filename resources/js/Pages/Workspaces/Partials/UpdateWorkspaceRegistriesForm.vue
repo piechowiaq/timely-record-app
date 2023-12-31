@@ -52,8 +52,7 @@ onUnmounted(() => {
   // If navigating away from the specific edit-registries route,
   // clear selected registries and reset initialization state.
   if (currentPath.value !== route('workspaces.edit-registries', {project: projectId, workspace: props.workspace.id})) {
-    registriesStore.selectedRegistriesIds.clear();
-    registriesStore.isInitialized = false;
+    registriesStore.clearSelectedRegistries();
   }
 });
 
@@ -113,6 +112,7 @@ const getSortIconClass = (field) => {
   return index.value.direction === 'asc' ? 'fa-solid fa-sort-down fa-xs ml-2' : 'fa-solid fa-sort-up fa-xs ml-2';
 };
 
+
 </script>
 
 <template>
@@ -132,8 +132,6 @@ const getSortIconClass = (field) => {
               class="ml-3 text-sm text-gray-500 hover:text-gray-700 focus:text-cyan-600"
               @click="resetSearch">Reset
       </button>
-
-
     </div>
 
   </div>
@@ -145,31 +143,26 @@ const getSortIconClass = (field) => {
       <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
         <tr>
-
-          <th scope="col" class="px-6 py-2">
-
+          <th scope="col" class=" px-6 py-2">
 
             <input
                 type="checkbox"
                 v-model="registriesStore.selectAll"
                 @change="handleSelectAll(registriesStore.selectAll)"
                 class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
-
             />
 
-
           </th>
-          <th scope="col" class="px-6 py-2">
-
+          <th scope="col" class=" py-2">
           </th>
 
-          <th scope="col" class="px-6 py-2" @click="sort('name')">
+          <th scope="col" class=" px-6 py-2" @click="sort('name')">
             Name
             <i :class="getSortIconClass('name')"></i>
           </th>
 
-          <th scope="col" class="px-6 py-2" @click="sort('validity_period')">
-            Valid in months
+          <th scope="col" class=" px-6 py-2" @click="sort('validity_period')">
+            Valid | in months
             <i :class="getSortIconClass('validity_period')"></i>
           </th>
 
@@ -185,8 +178,7 @@ const getSortIconClass = (field) => {
                   :class="{'bg-white dark:bg-gray-800': true, 'border-b dark:border-gray-700': index !== paginatedRegistries.data.length - 1}">
           <tr>
 
-
-            <th scope="row" class="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+            <th scope="row" class="w-16 px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
               <input
                   type="checkbox"
                   :value="registry.id"
@@ -196,34 +188,32 @@ const getSortIconClass = (field) => {
               />
             </th>
             <th scope="row"
-                class="px-6 pr-2 font-medium text-gray-900 whitespace-nowrap dark:text-white flex justify-end ">
-              <i class="fa-solid fa-plus text-amber-400 " @click="toggleDescription(registry.id)"></i>
+                class="w-16 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
+              <i :class="{
+                  'fa-solid': true,
+                  'fa-circle-info': true,
+                  'hover:text-amber-400': true,
+                  'text-amber-400': selectedRegistryId === registry.id,
+                  'text-amber-200': selectedRegistryId !== registry.id
+                }"
+                 @click="() => toggleDescription(registry.id)"></i>
             </th>
 
-
-            <th scope="row" class="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-
-
+            <th scope="row" class=" px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
               {{ registry.name }}
-
-
             </th>
 
-            <td class="px-6 py-2">
+            <td class=" w-1/6 px-6 py-2">
               {{ registry.validity_period }}
             </td>
             <td class="px-6 py-2 text-center flex justify-center">
               <ApplicationLogo v-if="registry.project_id === null"
-                               class="w-4 h-4 fill-white stroke-2"></ApplicationLogo>
+                               class=" w-4 h-4 fill-white stroke-2"></ApplicationLogo>
               <p v-else class="italic text-xs">custom</p>
             </td>
-
-
           </tr>
-
           <tr v-if="selectedRegistryId === registry.id">
-
-            <td colspan="5" class="px-6 py-2 bg-gray-50 text-xs">
+            <td colspan="5" class="px-6 py-2 bg-gray-50 text-xs text-justify">
               {{ registry.description }}
             </td>
           </tr>

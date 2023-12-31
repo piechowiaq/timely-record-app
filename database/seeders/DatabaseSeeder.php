@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             RegistrySeeder::class,
+            RolesAndPermissionsSeeder::class,
         ]);
 
         $project = Project::factory()->create();

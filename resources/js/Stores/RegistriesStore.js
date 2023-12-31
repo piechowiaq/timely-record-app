@@ -44,7 +44,13 @@ export const useRegistriesStore = defineStore('registries', {
         // Updates 'selectAll' based on this comparison.
         updateSelectAllState(allRegistriesIdsCount) {
             this.selectAll = this.selectedRegistriesIds.size === allRegistriesIdsCount;
-        }
+        },
+
+        // Clear selected registries and reset initialization state.
+        clearSelectedRegistries() {
+            this.selectedRegistriesIds.clear();
+            this.isInitialized = false;
+        },
     },
     getters: {
         // Getter to return the selected registries as an array
