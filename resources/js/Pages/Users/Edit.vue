@@ -81,7 +81,7 @@ function toggleWorkspaceSelection(workspaceId) {
 }
 
 function submit() {
-  form.patch(route('users.update', {project: projectId, user: props.user.id}), form)
+  form.patch(route('users.update', {project: projectId, user: props.user.id}))
 }
 </script>
 

@@ -1,13 +1,12 @@
 <script setup>
 
 import {router, useForm, usePage,} from "@inertiajs/vue3";
-import {computed, ref, watch, watchEffect} from "vue";
+import {computed, onUnmounted, ref, watch, watchEffect} from "vue";
 import {debounce} from "lodash";
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import {useRegistriesStore} from "@/Stores/RegistriesStore.js";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import Pagination from "@/Components/Pagination.vue";
-
 
 const props = defineProps({
   workspace: Object,
@@ -17,15 +16,46 @@ const props = defineProps({
   filters: Object,
 });
 
+const projectId = usePage().props.auth.user.project_id;
+
 const registriesStore = useRegistriesStore();
 
-// Use watchEffect to initialize selected registries as soon as the component is mounted.
-watchEffect(() => {
-  registriesStore.initializeWorkspaceRegistries(props.workspaceRegistriesIds);
+const form = useForm({
+  registriesIds: []
+});
+const page = usePage();
+
+// A computed property to safely access the current path from the paginatedRegistries.
+const currentPath = computed(() => {
+  // Check if paginatedRegistries and its path property exist
+  return page.props.paginatedRegistries?.path;
 });
 
-// Computed property to calculate the total count of registries.
-const countOfTotalRegistries = computed(() => props.allRegistriesIds.length);
+
+// Keeps the form's registriesIds in sync with the store's selected registries.
+// Whenever the selected registries in the store change, this watchEffect updates the form's registriesIds accordingly.
+watchEffect(() => {
+  // Initializes the selected registries in the store with the IDs provided in props.workspaceRegistriesIds.
+  // This only happens once when the component is mounted and if the store has not been initialized yet.
+  if (!registriesStore.isInitialized) {
+    registriesStore.initializeWorkspaceRegistries(props.workspaceRegistriesIds, props.allRegistriesIds.length);
+  }
+  // Keeps the form's registriesIds in sync with the store's selected registries.
+  // Whenever the selected registries in the store change, this watchEffect updates the form's registriesIds accordingly.
+  form.registriesIds = registriesStore.selectedRegistriesIdsArray;
+});
+
+
+onUnmounted(() => {
+  // Triggered when leaving the component.
+
+  // If navigating away from the specific edit-registries route,
+  // clear selected registries and reset initialization state.
+  if (currentPath.value !== route('workspaces.edit-registries', {project: projectId, workspace: props.workspace.id})) {
+    registriesStore.selectedRegistriesIds.clear();
+    registriesStore.isInitialized = false;
+  }
+});
 
 // Function to handle changes in 'Select All' checkbox.
 const handleSelectAll = (selectAll) => {
@@ -35,32 +65,26 @@ const handleSelectAll = (selectAll) => {
 // Function to handle changes in individual registry selection.
 const handleCheckboxChange = (registryId) => {
   registriesStore.toggleRegistry(registryId);
-  registriesStore.updateSelectAllState(countOfTotalRegistries.value);
+  registriesStore.updateSelectAllState(props.allRegistriesIds.length);
 };
 
 
 const selectedRegistryId = ref(null);
 
-function toggleDescription(id) {
+function toggleDescription(registryId) {
 
-  this.selectedRegistryId = this.selectedRegistryId === id ? null : id;
+  this.selectedRegistryId = this.selectedRegistryId === registryId ? null : registryId;
 
 }
 
-
-// From submitting functionality
-const projectId = usePage().props.auth.user.project_id;
-
-const form = useForm({
-  registriesIds: '',
-});
-
 function submit() {
-  form.patch(route('workspaces.sync-registries', {project: projectId, workspace: props.workspace.id}));
+  form.patch(route('workspaces.sync-registries', {
+    project: projectId,
+    workspace: props.workspace.id,
+  }));
 }
 
 // Search and direction functionality
-
 const index = ref({
   search: props.filters.search,
 });
@@ -89,7 +113,6 @@ const getSortIconClass = (field) => {
   return index.value.direction === 'asc' ? 'fa-solid fa-sort-down fa-xs ml-2' : 'fa-solid fa-sort-up fa-xs ml-2';
 };
 
-
 </script>
 
 <template>
@@ -97,13 +120,7 @@ const getSortIconClass = (field) => {
     <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Workspace Registries</h2>
 
     <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-      Synchronize workspace registries. <br>
-      {{ allRegistriesIds }}
-      <br>
-      {{ countOfTotalRegistries }}
-
-      <br>
-      {{ workspaceRegistriesIds }}
+      Synchronize workspace registries.
     </p>
   </header>
 
@@ -173,7 +190,7 @@ const getSortIconClass = (field) => {
               <input
                   type="checkbox"
                   :value="registry.id"
-                  :checked="registriesStore.selectedRegistries.has(registry.id)"
+                  :checked="registriesStore.selectedRegistriesIds.has(registry.id)"
                   @change="() => handleCheckboxChange(registry.id)"
                   class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
               />

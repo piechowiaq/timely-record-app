@@ -8,8 +8,9 @@ import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import {Link, usePage} from '@inertiajs/vue3';
 import {useNavigationStore} from "@/Stores/NavigationStore.js";
 import FlashMessages from "@/Components/FlashMessages.vue";
+import {useRegistriesStore} from "@/Stores/RegistriesStore.js";
 
-
+const registriesStore = useRegistriesStore();
 const props = defineProps({
   workspace: {
     type: Object

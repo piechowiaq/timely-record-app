@@ -168,6 +168,7 @@ class WorkspaceController extends Controller
 
     public function syncRegistries(Request $request, Project $project, Workspace $workspace): \Illuminate\Http\RedirectResponse
     {
+
         $registriesIds = $request->registriesIds ?? [];
 
         $workspace->registries()->sync($registriesIds);

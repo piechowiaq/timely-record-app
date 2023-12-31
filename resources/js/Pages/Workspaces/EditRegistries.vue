@@ -24,6 +24,7 @@ const props = defineProps({
   }
 })
 
+
 const projectId = usePage().props.auth.user.project_id;
 
 </script>

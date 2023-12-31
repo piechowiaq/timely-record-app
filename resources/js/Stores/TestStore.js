@@ -44,5 +44,12 @@ export const useTestStore = defineStore('test', {
         updateSelectAllState(countOfTotalRegistries) {
             this.selectAll = this.selectedRegistries.size === countOfTotalRegistries;
         }
-    }
+    },
+    getters: {
+        // Getter to return the selected registries as an array
+        selectedRegistriesArray: (state) => {
+
+            return Array.from(state.selectedRegistries);
+        }
+    },
 });

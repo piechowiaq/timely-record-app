@@ -1,15 +1,9 @@
-<script>
-import {ref} from "vue";
-
-const globalSelectedRegistries = ref([]);
-</script>
-
 <script setup>
 
 import {useForm} from "@inertiajs/vue3";
 import {useTestStore} from '@/Stores/TestStore.js';
 import Pagination from "@/Components/Pagination.vue";
-import {computed, onMounted, ref, watch, watchEffect} from "vue";
+import {computed, onMounted, watchEffect} from "vue";
 
 const props = defineProps({
   paginatedRegistries: Object,
@@ -19,14 +13,29 @@ const props = defineProps({
 
 const store = useTestStore();
 
-// Use watchEffect to initialize selected registries as soon as the component is mounted.
-watchEffect(() => {
-  store.initializeWorkspaceRegistries(props.workspaceRegistriesIds);
+// // Use watchEffect to initialize selected registries as soon as the component is mounted.
+// watchEffect(() => {
+//   store.initializeWorkspaceRegistries(props.workspaceRegistriesIds);
+// });
+
+// Initialize only once on component mount
+onMounted(() => {
+  if (!store.isInitialized) {
+    store.initializeWorkspaceRegistries(props.workspaceRegistriesIds);
+  }
 });
 
+
+// Initializes the form with 'registries' field is set to the IDs from 'workspaceRegistriesIds' prop.
 const form = useForm({
-  registries: '',
+  registries: props.workspaceRegistriesIds,
 })
+
+// This watchEffect updates the 'registries' field in the form to reflect these changes.
+watchEffect(() => {
+  form.registries = store.selectedRegistriesArray;
+});
+
 
 // Computed property to calculate the total count of registries.
 const countOfTotalRegistries = computed(() => props.allRegistriesIds.length);
@@ -41,6 +50,13 @@ const handleCheckboxChange = (registryId) => {
   store.toggleRegistry(registryId);
   store.updateSelectAllState(countOfTotalRegistries.value);
 };
+
+// Submit form data
+function submitForm() {
+
+  console.log(form.registries);
+  form.post(route('test'));
+}
 
 </script>
 
@@ -59,7 +75,7 @@ const handleCheckboxChange = (registryId) => {
     {{ store.selectedRegistries }}<br>
 
 
-    <form @submit.prevent="form.post(route('test', { registries: Array.from(store.selectedRegistries)}) )" class="p-8">
+    <form @submit.prevent="submitForm" class="p-8">
 
       <div>
         <input type="checkbox" v-model="store.selectAll" @change="handleSelectAll(store.selectAll)">
