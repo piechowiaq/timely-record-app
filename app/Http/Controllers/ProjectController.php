@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\Workspace;
+use App\Services\ProjectService;
 use Carbon\Carbon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\DB;
@@ -12,11 +13,14 @@ use Inertia\Response;
 
 class ProjectController extends Controller
 {
+    protected ProjectService $projectService;
+
     /**
      * Create the controller instance.
      */
-    public function __construct()
+    public function __construct(ProjectService $projectService)
     {
+        $this->projectService = $projectService;
         $this->authorizeResource(Project::class, 'project');
     }
 
@@ -29,7 +33,7 @@ class ProjectController extends Controller
     {
         $this->authorize('view', $project);
 
-        $workspaces = $project->workspaces->map(function ($workspace) {
+        $workspaces = $this->projectService->getWorkspaces($project)->map(function ($workspace) {
             $workspace->percentageOfUpToDate = $this->getPercentageOfUpToDate($workspace);
 
             return $workspace;
