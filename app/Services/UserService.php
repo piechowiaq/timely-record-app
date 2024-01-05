@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\Project;
 use App\Repositories\Contracts\UserRepositoryInterface;
-use Illuminate\Database\Eloquent\Collection;
 
 class UserService
 {
@@ -24,5 +23,22 @@ class UserService
         $query->where('project_id', $project->id);
 
         return $query->get();
+    }
+
+    public function getFilteredUsers($projectId, $search, $sortField, $sortDirection, $excludeUserId)
+    {
+        $query = $this->userRepository->getSearchedUsers($search);
+
+        if ($sortField) {
+            $query = $this->userRepository->sortUsersByField($query, $sortField, $sortDirection);
+        }
+
+        $query->where('project_id', $projectId)
+            ->where('users.id', '<>', $excludeUserId)
+            ->whereDoesntHave('roles', function ($query) {
+                $query->where('name', 'project-admin');
+            });
+
+        return $query->with('roles')->paginate(10);
     }
 }
