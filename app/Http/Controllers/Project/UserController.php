@@ -7,6 +7,8 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\Project;
 use App\Models\User;
+use App\Repositories\Contracts\UserRepositoryInterface;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
@@ -16,11 +18,32 @@ use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
+    private UserRepositoryInterface $userRepository;
+
+    private UserService $userService;
+
+    public function __construct(UserRepositoryInterface $userRepository, UserService $userService)
+    {
+        $this->userRepository = $userRepository;
+        $this->userService = $userService;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index(Project $project, Request $request)
     {
+        $users = $this->userService->getAllUsersQuery($project);
+        $users = $this->userService->applyFilters($users, $request);
+
+        return Inertia::render('Users/Index', [
+
+            'paginatedUsers' => $users->paginate(10)
+                ->withQueryString(),
+            'filters' => $request->all(['search', 'field', 'direction']),
+
+        ]);
+
         $search = $request->input('search');
         $sortField = $request->input('field'); // the field to sort by
         $sortDirection = $request->input('direction') ?? 'asc'; // the direction of sorting, default to 'asc'

@@ -3,7 +3,9 @@
 namespace App\Services;
 
 use App\Models\Project;
+use App\Models\User;
 use App\Repositories\Contracts\UserRepositoryInterface;
+use Illuminate\Http\Request;
 
 class UserService
 {
@@ -40,5 +42,30 @@ class UserService
             });
 
         return $query->with('roles')->paginate(10);
+    }
+
+    public function getAllUsersQuery(Project $project): \Illuminate\Database\Eloquent\Builder
+    {
+        return User::query()->where('project_id', $project->id);
+    }
+
+    public function applyFilters($query, Request $request)
+    {
+        $search = $request->get('search');
+
+        if ($request->has('search')) {
+            $query->where('first_name', 'like', '%'.$request->get('search').'%')
+                ->orWhere('last_name', 'like', '%'.$request->get('search').'%')
+                ->orWhere('email', 'like', '%'.$request->get('search').'%')
+                ->orWhereHas('roles', function ($query) use ($search) {
+                    $query->where('name', 'like', '%'.$search.'%');
+                });
+        }
+
+        if ($request->has(['field', 'direction'])) {
+            $query->orderBy($request->get('field'), $request->get('direction'));
+        }
+
+        return $query;
     }
 }

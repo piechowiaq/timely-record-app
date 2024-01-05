@@ -2,12 +2,18 @@
 
 namespace App\Repositories\Eloquent;
 
+use App\Models\Project;
 use App\Models\User;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
 
 class EloquentUserRepository implements UserRepositoryInterface
 {
+    public function getUsersByProjectWithRoles(Project $project): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $project->users()->with('roles');
+    }
+
     public function getSearchedUsers(?string $searchInput): Builder
     {
         $query = User::query();
