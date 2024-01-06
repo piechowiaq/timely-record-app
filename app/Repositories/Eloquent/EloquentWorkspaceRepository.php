@@ -10,9 +10,14 @@ use Illuminate\Support\Facades\DB;
 
 class EloquentWorkspaceRepository implements WorkspaceRepositoryInterface
 {
-    public function getWorkspacesByProject(Project $project)
+    public function getWorkspacesByProjectQuery(Project $project)
     {
-        return Workspace::where('project_id', $project->id)->get();
+        return Workspace::where('project_id', $project->id);
+    }
+
+    public function getWorkspacesIds($workspaces)
+    {
+        return $workspaces->pluck('id')->toArray();
     }
 
     protected function baseRegistryQuery(Workspace $workspace): \Illuminate\Database\Query\Builder

@@ -7,7 +7,9 @@ use App\Models\Workspace;
 
 interface WorkspaceRepositoryInterface
 {
-    public function getWorkspacesByProject(Project $project);
+    public function getWorkspacesByProjectQuery(Project $project);
+
+    public function getWorkspacesIds($workspaces);
 
     public function getUpToDateRegistries(Workspace $workspace);
 

@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
+use App\Http\Resources\WorkspaceResource;
 use App\Models\Project;
 use App\Models\User;
+use App\Repositories\Contracts\RoleRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
+use App\Repositories\Contracts\WorkspaceRepositoryInterface;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -23,82 +26,30 @@ class UserController extends Controller
 
     private UserService $userService;
 
-    public function __construct(UserRepositoryInterface $userRepository, UserService $userService)
+    private RoleRepositoryInterface $roleRepository;
+
+    private WorkspaceRepositoryInterface $workspaceRepository;
+
+    public function __construct(UserRepositoryInterface $userRepository, UserService $userService, RoleRepositoryInterface $roleRepository, WorkspaceRepositoryInterface $workspaceRepository)
     {
         $this->userRepository = $userRepository;
         $this->userService = $userService;
+        $this->roleRepository = $roleRepository;
+        $this->workspaceRepository = $workspaceRepository;
     }
 
     /**
      * Display a listing of the resource.
      */
-    public function index(Project $project, Request $request)
+    public function index(Project $project, Request $request): \Inertia\Response
     {
-
-        $query = $this->userRepository->getUsersByProjectWithRoles($project);
-        $filteredQuery = $this->userRepository->applyUserFilters($query, $request);
-
-        $paginatedUsers = $filteredQuery->paginate(10)->withQueryString();
+        $paginatedUsers = $this->userRepository->getUsersByProjectWithRolesQuery($project)
+            ->applyFilters($request)
+            ->paginate(10)
+            ->withQueryString();
 
         return Inertia::render('Users/Index', [
             'paginatedUsers' => UserResource::collection($paginatedUsers),
-            'users' => $paginatedUsers,
-            'filters' => $request->all(['search', 'field', 'direction']),
-        ]);
-
-        $search = $request->input('search');
-        $sortField = $request->input('field'); // the field to sort by
-        $sortDirection = $request->input('direction') ?? 'asc'; // the direction of sorting, default to 'asc'
-
-        $query = User::query();
-
-        // Apply search conditions
-        if ($search) {
-            $query->where(function ($query) use ($search) {
-                $query->where('first_name', 'like', "%{$search}%")
-                    ->orWhere('last_name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhereHas('roles', function ($query) use ($search) {
-                        $query->where('name', 'like', "%{$search}%");
-                    });
-            });
-        }
-
-        // Apply sorting
-        if ($sortField) {
-            if ($sortField === 'role') {
-                // Adjust this line based on your database structure
-                $query->join('model_has_roles', 'users.id', '=', 'model_has_roles.model_id')
-                    ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
-                    ->orderBy('roles.name', $sortDirection)
-                    ->select('users.*'); // Avoid selecting columns from joined tables
-            } else {
-                $query->orderBy($sortField, $sortDirection);
-            }
-        }
-
-        // Filter by project and user ID, then paginate
-        User::where('project_id', $project->id)
-            ->where('users.id', '<>', auth()->id())
-            ->whereDoesntHave('roles', function ($query) {
-                $query->where('name', 'project-admin');
-            })
-            ->with('roles')
-            ->paginate(10)
-            ->withQueryString()
-            ->through(function ($user) {
-                return [
-                    'id' => $user->id,
-                    'first_name' => $user->first_name,
-                    'last_name' => $user->last_name,
-                    'role' => $user->roles->pluck('name')->join(', '), // Adjust for multiple roles
-                    'email' => $user->email,
-                    'email_verified' => $user->hasVerifiedEmail(),
-                ];
-            });
-
-        return Inertia::render('Users/Index', [
-            'paginatedUsers' => $users,
             'filters' => $request->all(['search', 'field', 'direction']),
         ]);
     }
@@ -108,30 +59,18 @@ class UserController extends Controller
      */
     public function create()
     {
-        $roles = Role::whereNotIn('name', ['super-admin', 'project-admin'])->pluck('name');
+        $roles = $this->roleRepository->getAvailableRoles();
 
-        $workspacesQuery = optional(auth()->user()->project)->workspaces();
-
-        $workspacesIds = [];
-
-        // Paginate the workspaces and use tap to get the workspace IDs
-        $workspaces = $workspacesQuery->tap(function ($query) use (&$workspacesIds) {
-            $workspacesIds = $query->pluck('id')->toArray();
-        })->paginate(5);
-
-        // Transform the paginated workspaces collection
-        $workspaces->getCollection()->transform(function ($workspace) {
-            return [
-                'id' => $workspace->id,
-                'name' => $workspace->name,
-                'location' => $workspace->location ?? '',
-            ];
-        });
+        // Fetch all workspaces related to the user's project
+        $paginatedWorkspaces = $this->workspaceRepository
+            ->getWorkspacesByProjectQuery(auth()->user()->project)
+            ->paginate(5)
+            ->withQueryString();
 
         return Inertia::render('Users/Create', [
             'roles' => $roles,
-            'paginatedWorkspaces' => $workspaces,
-            'workspacesIds' => $workspacesIds, // Pass all workspace IDs from the current paginated set
+            'paginatedWorkspaces' => WorkspaceResource::collection($paginatedWorkspaces),
+            'workspacesIds' => $this->workspaceRepository->getWorkspacesIds($paginatedWorkspaces),
         ]);
     }
 

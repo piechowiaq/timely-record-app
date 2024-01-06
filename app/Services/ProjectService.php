@@ -19,7 +19,7 @@ class ProjectService
 
     public function getWorkspaces(Project $project)
     {
-        return $this->workspaceRepository->getWorkspacesByProject($project);
+        return $this->workspaceRepository->getWorkspacesByProjectQuery($project)->get();
     }
 
     public function getWorkspacesWithUpToDateMetrics(Project $project)

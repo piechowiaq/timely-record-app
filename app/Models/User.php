@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
@@ -61,5 +63,34 @@ class User extends Authenticatable implements MustVerifyEmail
     public function workspaces()
     {
         return $this->belongsToMany(Workspace::class);
+    }
+
+    public function scopeApplyFilters(Builder $query, Request $request): Builder
+    {
+        $search = $request->input('search');
+        $sortField = $request->input('field');
+        $sortDirection = $request->input('direction') ?? 'asc';
+
+        if ($search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('first_name', 'like', "%$search%")
+                    ->orWhere('last_name', 'like', "%$search%")
+                    ->orWhere('email', 'like', "%$search%")
+                    ->orWhereHas('roles', function ($query) use ($search) {
+                        $query->where('name', 'like', "%$search%");
+                    });
+            });
+        }
+
+        if ($sortField === 'role') {
+            $query->leftJoin('model_has_roles', 'users.id', '=', 'model_has_roles.model_id')
+                ->leftJoin('roles', 'model_has_roles.role_id', '=', 'roles.id')
+                ->orderBy('roles.name', $sortDirection)
+                ->select('users.*');
+        } elseif ($sortField) {
+            $query->orderBy($sortField, $sortDirection);
+        }
+
+        return $query;
     }
 }

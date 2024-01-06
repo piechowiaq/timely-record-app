@@ -6,5 +6,5 @@ use App\Models\Project;
 
 interface UserRepositoryInterface
 {
-    public function getUsersByProjectWithRoles(Project $project): \Illuminate\Database\Eloquent\Relations\HasMany;
+    public function getUsersByProjectWithRolesQuery(Project $project): \Illuminate\Database\Eloquent\Relations\HasMany;
 }
