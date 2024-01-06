@@ -3,43 +3,39 @@
 namespace App\Repositories\Eloquent;
 
 use App\Models\Project;
-use App\Models\User;
 use App\Repositories\Contracts\UserRepositoryInterface;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 
 class EloquentUserRepository implements UserRepositoryInterface
 {
     public function getUsersByProjectWithRoles(Project $project): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $project->users()->with('roles');
+        return $project->users()->where('users.id', '<>', auth()->id())
+            ->whereDoesntHave('roles', function ($query) {
+                $query->where('name', 'project-admin');
+            })
+            ->with('roles');
     }
 
-    public function getSearchedUsers(?string $searchInput): Builder
+    public function applyUserFilters($query, Request $request)
     {
-        $query = User::query();
+        $search = $request->input('search');
+        $sortField = $request->input('field'); // the field to sort by
+        $sortDirection = $request->input('direction') ?? 'asc';
 
-        if ($searchInput) {
-            $query->where('first_name', 'like', "%{$searchInput}%")
-                ->orWhere('last_name', 'like', "%{$searchInput}%")
-                ->orWhere('email', 'like', "%{$searchInput}%")
-                ->orWhereHas('roles', function ($query) use ($searchInput) {
-                    $query->where('name', 'like', "%{$searchInput}%");
+        if ($request->has('search')) {
+            $query->where('first_name', 'like', '%'.$search.'%')
+                ->orWhere('last_name', 'like', '%'.$search.'%')
+                ->orWhere('email', 'like', '%'.$search.'%')
+                ->orWhereHas('roles', function ($query) use ($search) {
+                    $query->where('name', 'like', '%'.$search.'%');
                 });
         }
 
-        return $query;
-    }
-
-    public function sortUsersByField(Builder $query, ?string $field, ?string $direction): void
-    {
-        if ($field === 'role') {
-            // Adjust this line based on your database structure
-            $query->join('model_has_roles', 'users.id', '=', 'model_has_roles.model_id')
-                ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
-                ->orderBy('roles.name', $direction)
-                ->select('users.*'); // Avoid selecting columns from joined tables
-        } else {
-            $query->orderBy($field, $direction);
+        if ($request->has(['field', 'direction'])) {
+            $query->orderBy($sortField, $sortDirection);
         }
+
+        return $query;
     }
 }

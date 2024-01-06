@@ -3,8 +3,8 @@
 import {Link} from "@inertiajs/vue3";
 import {defineProps} from "vue";
 
-defineProps({
-    links: Array,
+const props = defineProps({
+    links: Object,
 })
 
 </script>

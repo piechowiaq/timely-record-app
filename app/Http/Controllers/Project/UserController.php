@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Project;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Http\Resources\UserResource;
 use App\Models\Project;
 use App\Models\User;
 use App\Repositories\Contracts\UserRepositoryInterface;
@@ -33,15 +34,16 @@ class UserController extends Controller
      */
     public function index(Project $project, Request $request)
     {
-        $users = $this->userService->getAllUsersQuery($project);
-        $users = $this->userService->applyFilters($users, $request);
+
+        $query = $this->userRepository->getUsersByProjectWithRoles($project);
+        $filteredQuery = $this->userRepository->applyUserFilters($query, $request);
+
+        $paginatedUsers = $filteredQuery->paginate(10)->withQueryString();
 
         return Inertia::render('Users/Index', [
-
-            'paginatedUsers' => $users->paginate(10)
-                ->withQueryString(),
+            'paginatedUsers' => UserResource::collection($paginatedUsers),
+            'users' => $paginatedUsers,
             'filters' => $request->all(['search', 'field', 'direction']),
-
         ]);
 
         $search = $request->input('search');
@@ -76,7 +78,7 @@ class UserController extends Controller
         }
 
         // Filter by project and user ID, then paginate
-        $users = $query->where('project_id', $project->id)
+        User::where('project_id', $project->id)
             ->where('users.id', '<>', auth()->id())
             ->whereDoesntHave('roles', function ($query) {
                 $query->where('name', 'project-admin');
