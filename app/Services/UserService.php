@@ -16,7 +16,7 @@ class UserService
         $this->userRepository = $userRepository;
     }
 
-    public function createUser(array $userData)
+    public function createUser(array $userData): User
     {
         // Create a new user with the provided data
         $user = User::create([
@@ -32,6 +32,24 @@ class UserService
 
         // Assign the specified role to the user
         $user->assignRole($userData['role']);
+
+        return $user;
+    }
+
+    public function updateUser(User $user, array $userData): User
+    {
+        // Update the user with the provided data
+        $user->update([
+            'first_name' => $userData['first_name'],
+            'last_name' => $userData['last_name'],
+            'email' => $userData['email'],
+        ]);
+
+        // Sync the user's workspaces
+        $user->workspaces()->sync($userData['workspacesIds']);
+
+        // Assign the specified role to the user
+        $user->syncRoles($userData['role']);
 
         return $user;
     }

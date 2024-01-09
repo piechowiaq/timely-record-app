@@ -14,4 +14,6 @@ interface WorkspaceRepositoryInterface
     public function getUpToDateRegistries(Workspace $workspace);
 
     public function getExpiredRegistries(Workspace $workspace);
+
+    public function getWorkspacesByProjectIds(Project $project);
 }

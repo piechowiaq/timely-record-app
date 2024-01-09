@@ -112,6 +112,8 @@ class UserController extends Controller
         // Fetch roles excluding 'super-admin'
         $roles = $this->roleRepository->getAvailableRoles();
 
+        $allWorkspacesIds = $workspaceRepository->getWorkspacesByProjectIds($project);
+
         $paginatedWorkspaces = $workspaceRepository
             ->getWorkspacesByProjectQuery($project)
             ->paginate(5)
@@ -121,6 +123,7 @@ class UserController extends Controller
             'user' => UserResource::make($user),
             'roles' => $roles,
             'paginatedWorkspaces' => $paginatedWorkspaces,
+            'allWorkspacesIds' => $allWorkspacesIds, // Pass all workspace IDs from the current project
             'workspacesIds' => $workspaceRepository->getWorkspacesIds($paginatedWorkspaces), // Pass all workspace IDs from the current paginated set
         ]);
     }
@@ -128,18 +131,19 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Project $project, User $user, UpdateUserRequest $request)
+    public function update(Project $project, User $user, UpdateUserRequest $request, UserService $userService): RedirectResponse
     {
-        // Update the user
-        $user->update([
+        // Define the user data to be updated
+        $userData = [
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $request->email,
-        ]);
+            'workspacesIds' => $request->workspacesIds,
+            'role' => $request->role,
+        ];
 
-        // Sync roles and workspaces
-        $user->syncRoles($request->role);
-        $user->workspaces()->sync($request->workspacesIds);
+        // Update the user using the UserService
+        $userService->updateUser($user, $userData);
 
         // Redirect back with success message
         return redirect()->route('users.edit', ['project' => $project, 'user' => $user])

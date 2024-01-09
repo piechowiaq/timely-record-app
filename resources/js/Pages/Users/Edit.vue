@@ -6,7 +6,7 @@ import TextInput from "@/Components/TextInput.vue";
 import {Head, useForm, usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import {computed, onMounted, watch, watchEffect} from 'vue';
+import {computed, onUnmounted, watchEffect} from 'vue';
 import {useWorkspacesStore} from "@/Stores/WorkspacesStore.js";
 import Pagination from "@/Components/Pagination.vue";
 
@@ -14,74 +14,68 @@ import RegistrationLink from "@/Pages/Users/Partials/RegistrationLink.vue";
 import DeleteUserForm from "@/Pages/Users/Partials/DeleteUserForm.vue";
 
 const props = defineProps({
-    roles: {
-        type: Array,
-    },
-    paginatedWorkspaces: {
-        type: Object,
-    },
-    workspacesIds: {
-        type: Array,
-    },
-    user: {
-        type: Object,
-    }
+    roles: Array,
+    paginatedWorkspaces: Object,
+    workspacesIds: Array,
+    user: Object,
+    allWorkspacesIds: Array,
 });
-const workspacesStore = useWorkspacesStore();
 
-const selectedWorkspacesIds = computed(() => workspacesStore.selectedWorkspacesIds);
+const projectId = usePage().props.auth.user.project_id;
+
+const workspacesStore = useWorkspacesStore();
 
 const form = useForm({
     first_name: props.user.data.first_name,
     last_name: props.user.data.last_name,
     email: props.user.data.email,
     role: props.user.data.role,
-    workspacesIds: selectedWorkspacesIds.value,
+    workspacesIds: [],
 });
 
-onMounted(() => {
-    // Select each workspace ID from the props when the component is mounted
-    props.user.data.workspacesIds?.forEach(workspaceId => {
-        workspacesStore.selectWorkspace(workspaceId);
-    });
-});
+const page = usePage();
 
-const projectId = usePage().props.auth.user.project_id;
-
-const isAllSelected = computed({
-    get: () => workspacesStore.isAllSelected,
-    set: (value) => {
-        if (value) {
-            workspacesStore.selectAllWorkspaces();
-        } else {
-            workspacesStore.deselectAllWorkspaces();
-        }
-    }
+// A computed property to safely access the current path from the paginatedRegistries.
+const currentPath = computed(() => {
+    // Check if paginatedRegistries and its path property exist
+    return page.props.paginatedWorkspaces?.path;
 });
 
 watchEffect(() => {
-    if (props.paginatedWorkspaces?.data) {
-        workspacesStore.setWorkspacesData(props.paginatedWorkspaces.data);
+    // Initializes the selected registries in the store with the IDs provided in props.workspaceRegistriesIds.
+    // This only happens once when the component is mounted and if the store has not been initialized yet.
+    if (!workspacesStore.isInitialized) {
+        workspacesStore.initializeWorkspaces(props.workspacesIds, props.allWorkspacesIds.length);
     }
-    if (props.workspacesIds) {
-        workspacesStore.setAllWorkspaceIds(props.workspacesIds);
+    // Keeps the form's registriesIds in sync with the store's selected registries.
+    // Whenever the selected registries in the store change, this watchEffect updates the form's registriesIds accordingly.
+    form.workspacesIds = workspacesStore.selectedWorkspacesIdsArray;
+});
+
+onUnmounted(() => {
+    // Triggered when leaving the component.
+
+    // If navigating away from the specific edit-registries route,
+    // clear selected registries and reset initialization state.
+    if (currentPath.value !== route('users.edit', {project: projectId, user: props.user.data.id})) {
+        workspacesStore.clearSelectedWorkspaces();
     }
 });
 
-watch(selectedWorkspacesIds, (newSelectedIds) => {
-    form.workspacesIds = newSelectedIds;
-}, {deep: true});
 
-function toggleWorkspaceSelection(workspaceId) {
-    if (selectedWorkspacesIds.value.includes(workspaceId)) {
-        workspacesStore.deselectWorkspace(workspaceId);
-    } else {
-        workspacesStore.selectWorkspace(workspaceId);
-    }
-}
+// Function to handle changes in 'Select All' checkbox.
+const handleSelectAll = (selectAll) => {
+    workspacesStore.setSelectAll(selectAll, props.allWorkspacesIds);
+};
+
+// Function to handle changes in individual registry selection.
+const handleCheckboxChange = (workspaceId) => {
+    workspacesStore.toggleWorkspace(workspaceId);
+    workspacesStore.updateSelectAllState(props.allWorkspacesIds.length);
+};
 
 function submit() {
-    form.patch(route('users.update', {project: projectId, user: props.user.id}))
+    form.patch(route('users.update', {project: projectId, user: props.user.data.id}))
 }
 </script>
 
@@ -94,7 +88,7 @@ function submit() {
         </template>
 
         <div class="px-2 pb-2">
-          
+
             <div class="space-y-2">
                 <div v-if="!user.email_verified" class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow ">
 
@@ -192,9 +186,8 @@ function submit() {
                                         <div class="flex">
                                             <input
                                                 type="checkbox"
-                                                id="select-all"
-                                                :checked="isAllSelected"
-                                                @change="isAllSelected = $event.target.checked"
+                                                v-model="workspacesStore.selectAll"
+                                                @change="handleSelectAll(workspacesStore.selectAll)"
                                                 class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
 
                                             />
@@ -207,17 +200,15 @@ function submit() {
                                     </div>
 
 
-                                    <div v-for="(workspace, index) in workspacesStore.workspacesData"
+                                    <div v-for="(workspace, index) in paginatedWorkspaces.data"
                                          :key="workspace.id"
-                                         :class="{'border-b': index !== workspacesStore.workspacesData.length - 1}"
+                                         :class="{'border-b': index !== paginatedWorkspaces.data.length - 1}"
                                          class="flex items-center py-2">
                                         <input
                                             type="checkbox"
-                                            :id="`checkbox-${workspace.id}`"
                                             :value="workspace.id"
-                                            :checked="workspacesStore.selectedWorkspacesIds.includes(workspace.id)"
-                                            v-model="form.workspacesIds"
-                                            @change="() => toggleWorkspaceSelection(workspace.id)"
+                                            :checked="workspacesStore.selectedWorkspacesIds.has(workspace.id)"
+                                            @change="() => handleCheckboxChange(workspace.id)"
                                             class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
                                         />
                                         <div class="text-sm flex flex-col justify-center">

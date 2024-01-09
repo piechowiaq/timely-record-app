@@ -2,48 +2,61 @@ import {defineStore} from 'pinia';
 
 export const useWorkspacesStore = defineStore('workspaces', {
     state: () => ({
-        // The current page number
-        currentPage: 1,
-        // Object to track selected workspaces per page
-        selectedWorkspaces: new Set(), // Initial
-        workspacesData: [],
-        allWorkspaceIds: new Set(),
+
+        selectAll: false,
+        isInitialized: false, // New flag
+        selectedWorkspacesIds: new Set(), // Initial
 
     }),
     actions: {
-        selectWorkspace(workspaceId) {
+        initializeWorkspaces(workspacesIds, allWorkspacesIdsCount) {
+            if (!this.isInitialized) {
+                workspacesIds.forEach(id => this.selectedWorkspacesIds.add(id));
+                this.isInitialized = true;
+            }
 
-            this.selectedWorkspaces.add(workspaceId);
-        },
-        deselectWorkspace(workspaceId) {
-            this.selectedWorkspaces.delete(workspaceId);
+            this.selectAll = this.selectedWorkspacesIds.size === allWorkspacesIdsCount;
         },
 
-        setWorkspacesData(data) {
-            this.workspacesData = data;
+
+        // Toggles the selection status of a single registry.
+        // Adds the ID to selectedRegistriesIds if not present, removes if it is.
+        toggleWorkspace(workspaceId) {
+            if (this.selectedWorkspacesIds.has(workspaceId)) {
+                this.selectedWorkspacesIds.delete(workspaceId);
+            } else {
+                this.selectedWorkspacesIds.add(workspaceId);
+            }
         },
-        setAllWorkspaceIds(ids) {
-            this.allWorkspaceIds = new Set(ids);
+
+        // Checks if the count of selected registries matches the total count.
+        // Updates 'selectAll' based on this comparison.
+        updateSelectAllState(allWorkspacesIdsCount) {
+            this.selectAll = this.selectedWorkspacesIds.size === allWorkspacesIdsCount;
         },
-        selectAllWorkspaces() {
-            this.selectedWorkspaces = new Set(this.allWorkspaceIds);
+
+        setSelectAll(value, allWorkspacesIds = []) {
+            this.selectAll = value;
+            if (value) {
+                allWorkspacesIds.forEach(workspaceId => this.selectedWorkspacesIds.add(workspaceId));
+            } else {
+                this.selectedWorkspacesIds.clear();
+            }
         },
-        deselectAllWorkspaces() {
-            this.selectedWorkspaces.clear();
+
+        // Clear selected registries and reset initialization state.
+        clearSelectedWorkspaces() {
+            this.selectedWorkspacesIds.clear();
+            this.isInitialized = false;
         },
-        resetSelection() {
-            this.selectedWorkspaces.clear();
-        }
     },
+
+
     getters: {
 
-        selectedWorkspacesIds: (state) => {
-            // Convert the Set of selected workspace IDs to an array
-            return Array.from(state.selectedWorkspaces);
-        },
-        isAllSelected: (state) => {
-            // Check if the count of selected workspaces is equal to the count of all workspace IDs
-            return state.allWorkspaceIds.size === state.selectedWorkspaces.size;
-        },
+
+        selectedWorkspacesIdsArray: (state) => {
+            return Array.from(state.selectedWorkspacesIds);
+        }
     }
 });
