@@ -25,7 +25,7 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
 
-        $project = auth()->user()->project;
+        $project = $this->route('project');
 
         return [
             'first_name' => 'required|string|max:255',

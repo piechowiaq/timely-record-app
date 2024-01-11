@@ -86,7 +86,7 @@ function submit() {
         <template #header>
             <h2 class="text-white dark:text-gray-700 leading-tight">Edit User</h2>
         </template>
-
+        {{ props.workspacesIds }}
         <div class="px-2 pb-2">
 
             <div class="space-y-2">

@@ -6,21 +6,20 @@ import TextInput from "@/Components/TextInput.vue";
 import {Head, useForm, usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import {computed, watch, watchEffect} from 'vue';
+import {computed, onUnmounted, watchEffect} from 'vue';
 import {useWorkspacesStore} from "@/Stores/WorkspacesStore.js";
 import Pagination from "@/Components/Pagination.vue";
 
 const props = defineProps({
-    roles: {
-        type: Array,
-    },
-    paginatedWorkspaces: {
-        type: Object,
-    },
-    workspacesIds: {
-        type: Array,
-    },
+    roles: Array,
+    paginatedWorkspaces: Object,
+    workspacesIds: Array,
+
 });
+
+const projectId = usePage().props.auth.user.project_id;
+
+const workspacesStore = useWorkspacesStore();
 
 const form = useForm({
     first_name: '',
@@ -30,49 +29,49 @@ const form = useForm({
     workspacesIds: [],
 });
 
-const projectId = usePage().props.auth.user.project_id;
+const page = usePage();
 
-const workspacesStore = useWorkspacesStore();
-
-const selectedWorkspacesIds = computed(() => workspacesStore.selectedWorkspacesIds);
-
-const isAllSelected = computed({
-    get: () => workspacesStore.isAllSelected,
-    set: (value) => {
-        if (value) {
-            workspacesStore.selectAllWorkspaces();
-        } else {
-            workspacesStore.deselectAllWorkspaces();
-        }
-    }
+// A computed property to safely access the current path from the paginatedRegistries.
+const currentPath = computed(() => {
+    // Check if paginatedRegistries and its path property exist
+    return page.props.paginatedWorkspaces?.path;
 });
+
 
 watchEffect(() => {
-    if (props.paginatedWorkspaces?.data) {
-        workspacesStore.setWorkspacesData(props.paginatedWorkspaces.data);
-    }
-    if (props.workspacesIds) {
-        workspacesStore.setAllWorkspaceIds(props.workspacesIds);
+
+    // Keeps the form's registriesIds in sync with the store's selected registries.
+    // Whenever the selected registries in the store change, this watchEffect updates the form's registriesIds accordingly.
+    form.workspacesIds = workspacesStore.selectedWorkspacesIdsArray;
+});
+
+onUnmounted(() => {
+    // Triggered when leaving the component.
+
+    // If navigating away from the specific edit-registries route,
+    // clear selected registries and reset initialization state.
+    if (currentPath.value !== route('users.create', {project: projectId})) {
+        workspacesStore.clearSelectedWorkspaces();
     }
 });
 
-watch(selectedWorkspacesIds, (newSelectedIds) => {
-    form.workspacesIds = newSelectedIds;
-}, {deep: true});
 
-function toggleWorkspaceSelection(workspaceId) {
-    if (selectedWorkspacesIds.value.includes(workspaceId)) {
-        workspacesStore.deselectWorkspace(workspaceId);
-    } else {
-        workspacesStore.selectWorkspace(workspaceId);
-    }
-}
+// Function to handle changes in 'Select All' checkbox.
+const handleSelectAll = (selectAll) => {
+    workspacesStore.setSelectAll(selectAll, props.workspacesIds);
+};
+
+// Function to handle changes in individual registry selection.
+const handleCheckboxChange = (workspaceId) => {
+    workspacesStore.toggleWorkspace(workspaceId);
+    workspacesStore.updateSelectAllState(props.workspacesIds.length);
+};
 
 const submitForm = () => {
-    form.post(route('users.store', projectId), {
+    form.post(route('users.store', {project: projectId}), {
         onSuccess: () => {
             form.reset();
-            workspacesStore.resetSelection();// Reset the workspace selection
+
         },
     });
 };
@@ -85,7 +84,8 @@ const submitForm = () => {
         <template #header>
             <h2 class="text-white dark:text-gray-700 leading-tight">Create User</h2>
         </template>
-
+        {{ workspacesStore.selectedWorkspacesIdsArray }}
+        {{ form.workspacesIds }}
         <div class="px-2 pb-2">
             <div class="space-y-2">
                 <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow">
@@ -177,8 +177,8 @@ const submitForm = () => {
                                             <input
                                                 type="checkbox"
                                                 id="select-all"
-                                                :checked="isAllSelected"
-                                                @change="isAllSelected = $event.target.checked"
+                                                v-model="workspacesStore.selectAll"
+                                                @change="handleSelectAll(workspacesStore.selectAll)"
                                                 class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
 
                                             />
@@ -186,22 +186,21 @@ const submitForm = () => {
                                                 Select All
                                             </label>
                                         </div>
+
                                         <Pagination :links="paginatedWorkspaces.meta.links"
                                                     class="flex items-center justify-end py-2"></Pagination>
                                     </div>
 
 
-                                    <div v-for="(workspace, index) in workspacesStore.workspacesData"
+                                    <div v-for="(workspace, index) in paginatedWorkspaces.data"
                                          :key="workspace.id"
-                                         :class="{'border-b': index !== workspacesStore.workspacesData.length - 1}"
+                                         :class="{'border-b': index !== paginatedWorkspaces.data.length - 1}"
                                          class="flex items-center py-2">
                                         <input
                                             type="checkbox"
-                                            :id="`checkbox-${workspace.id}`"
                                             :value="workspace.id"
-                                            :checked="workspacesStore.selectedWorkspacesIds.includes(workspace.id)"
-                                            v-model="form.workspacesIds"
-                                            @change="() => toggleWorkspaceSelection(workspace.id)"
+                                            :checked="workspacesStore.selectedWorkspacesIds.has(workspace.id)"
+                                            @change="() => handleCheckboxChange(workspace.id)"
                                             class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
                                         />
                                         <div class="text-sm flex flex-col justify-center">

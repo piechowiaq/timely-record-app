@@ -69,10 +69,15 @@ class UserController extends Controller
             ->paginate(5)
             ->withQueryString();
 
+        $project = $request->user()->project;
+
+        $allWorkspacesIds = $workspaceRepository->getWorkspacesByProjectIds($project);
+
         return Inertia::render('Users/Create', [
             'roles' => $roles,
             'paginatedWorkspaces' => WorkspaceResource::collection($paginatedWorkspaces),
             'workspacesIds' => $workspaceRepository->getWorkspacesIds($paginatedWorkspaces),
+            'allWorkspacesIds' => $allWorkspacesIds,
         ]);
     }
 
@@ -113,7 +118,7 @@ class UserController extends Controller
         $roles = $this->roleRepository->getAvailableRoles();
 
         $allWorkspacesIds = $workspaceRepository->getWorkspacesByProjectIds($project);
-
+        $userRepository->
         $paginatedWorkspaces = $workspaceRepository
             ->getWorkspacesByProjectQuery($project)
             ->paginate(5)
@@ -153,15 +158,14 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Project $project, User $user, Request $request)
+    public function destroy(Project $project, User $user, Request $request, UserService $userService): RedirectResponse
     {
         $request->validate([
             'password' => ['required', 'current_password'],
         ]);
 
-        $user->delete();
+        $userService->deleteUser($user);
 
         return Redirect::route('users.index', ['project' => $project])->with('success', 'User deleted.');
-
     }
 }
