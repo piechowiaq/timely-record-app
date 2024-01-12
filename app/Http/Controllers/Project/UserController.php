@@ -17,6 +17,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class UserController extends Controller
 {
@@ -43,9 +44,9 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Project $project, UserRepositoryInterface $userRepository, Request $request): \Inertia\Response
+    public function index(Project $project, Request $request): Response
     {
-        $paginatedUsers = $userRepository->getUsersByProjectWithRolesQuery($project)
+        $paginatedUsers = $this->userRepository->getUsersByProjectWithRolesQuery($project)
             ->applyFilters($request)
             ->paginate(10)
             ->withQueryString();
@@ -59,24 +60,24 @@ class UserController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(RoleRepositoryInterface $roleRepository, WorkspaceRepositoryInterface $workspaceRepository, Request $request): \Inertia\Response
+    public function create(RoleRepositoryInterface $roleRepository, Request $request): Response
     {
         $roles = $roleRepository->getAvailableRoles();
 
         // Fetch all workspaces related to the user's project
-        $paginatedWorkspaces = $workspaceRepository
+        $paginatedWorkspaces = $this->workspaceRepository
             ->getWorkspacesByProjectQuery(auth()->user()->project)
             ->paginate(5)
             ->withQueryString();
 
         $project = $request->user()->project;
 
-        $allWorkspacesIds = $workspaceRepository->getWorkspacesByProjectIds($project);
+        $allWorkspacesIds = $this->workspaceRepository->getWorkspacesByProjectIds($project);
 
         return Inertia::render('Users/Create', [
             'roles' => $roles,
             'paginatedWorkspaces' => WorkspaceResource::collection($paginatedWorkspaces),
-            'workspacesIds' => $workspaceRepository->getWorkspacesIds($paginatedWorkspaces),
+            'workspacesIds' => $this->workspaceRepository->getWorkspacesIds($paginatedWorkspaces),
             'allWorkspacesIds' => $allWorkspacesIds,
         ]);
     }
@@ -86,14 +87,8 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request, Project $project): RedirectResponse
     {
-        $userData = [
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'email' => $request->email,
-            'project_id' => $project->id,
-            'workspacesIds' => $request->workspacesIds,
-            'role' => $request->role,
-        ];
+        $userData = $request->only('first_name', 'last_name', 'email', 'workspacesIds', 'role');
+        $userData['project_id'] = $project->id;
 
         $this->userService->createUser($userData);
 
@@ -102,24 +97,16 @@ class UserController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Project $project, User $user, WorkspaceRepositoryInterface $workspaceRepository, UserRepositoryInterface $userRepository)
+    public function edit(Project $project, User $user): Response
     {
         // Fetch roles excluding 'super-admin'
         $roles = $this->roleRepository->getAvailableRoles();
 
-        $allWorkspacesIds = $workspaceRepository->getWorkspacesByProjectIds($project);
-        $userRepository->
-        $paginatedWorkspaces = $workspaceRepository
+        $allWorkspacesIds = $this->workspaceRepository->getWorkspacesByProjectIds($project);
+
+        $paginatedWorkspaces = $this->workspaceRepository
             ->getWorkspacesByProjectQuery($project)
             ->paginate(5)
             ->withQueryString();
@@ -129,26 +116,19 @@ class UserController extends Controller
             'roles' => $roles,
             'paginatedWorkspaces' => $paginatedWorkspaces,
             'allWorkspacesIds' => $allWorkspacesIds, // Pass all workspace IDs from the current project
-            'workspacesIds' => $workspaceRepository->getWorkspacesIds($paginatedWorkspaces), // Pass all workspace IDs from the current paginated set
+            'workspacesIds' => $this->workspaceRepository->getWorkspacesIdsByUser($user), // Pass all workspace IDs from the current paginated set
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Project $project, User $user, UpdateUserRequest $request, UserService $userService): RedirectResponse
+    public function update(Project $project, User $user, UpdateUserRequest $request): RedirectResponse
     {
-        // Define the user data to be updated
-        $userData = [
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'email' => $request->email,
-            'workspacesIds' => $request->workspacesIds,
-            'role' => $request->role,
-        ];
+        $userData = $request->only('first_name', 'last_name', 'email', 'workspacesIds', 'role');
 
         // Update the user using the UserService
-        $userService->updateUser($user, $userData);
+        $this->userService->updateUser($user, $userData);
 
         // Redirect back with success message
         return redirect()->route('users.edit', ['project' => $project, 'user' => $user])
@@ -158,13 +138,13 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Project $project, User $user, Request $request, UserService $userService): RedirectResponse
+    public function destroy(Project $project, User $user, Request $request): RedirectResponse
     {
         $request->validate([
             'password' => ['required', 'current_password'],
         ]);
 
-        $userService->deleteUser($user);
+        $this->userService->deleteUser($user);
 
         return Redirect::route('users.index', ['project' => $project])->with('success', 'User deleted.');
     }

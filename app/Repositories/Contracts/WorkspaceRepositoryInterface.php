@@ -3,6 +3,7 @@
 namespace App\Repositories\Contracts;
 
 use App\Models\Project;
+use App\Models\User;
 use App\Models\Workspace;
 
 interface WorkspaceRepositoryInterface
@@ -16,4 +17,6 @@ interface WorkspaceRepositoryInterface
     public function getExpiredRegistries(Workspace $workspace);
 
     public function getWorkspacesByProjectIds(Project $project);
+
+    public function getWorkspacesIdsByUser(User $user);
 }

@@ -84,8 +84,6 @@ const submitForm = () => {
         <template #header>
             <h2 class="text-white dark:text-gray-700 leading-tight">Create User</h2>
         </template>
-        {{ workspacesStore.selectedWorkspacesIdsArray }}
-        {{ form.workspacesIds }}
         <div class="px-2 pb-2">
             <div class="space-y-2">
                 <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow">

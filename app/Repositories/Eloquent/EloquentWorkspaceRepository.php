@@ -3,6 +3,7 @@
 namespace App\Repositories\Eloquent;
 
 use App\Models\Project;
+use App\Models\User;
 use App\Models\Workspace;
 use App\Repositories\Contracts\WorkspaceRepositoryInterface;
 use Carbon\Carbon;
@@ -72,5 +73,10 @@ class EloquentWorkspaceRepository implements WorkspaceRepositoryInterface
         $results = $query->get();
 
         return $results->toArray();
+    }
+
+    public function getWorkspacesIdsByUser(User $user)
+    {
+        return $user->workspaces->pluck('id') ?? collect();
     }
 }
