@@ -43,4 +43,12 @@ class Registry extends Model
 
         return $query;
     }
+
+    protected $fillable = [
+        'name',
+        'description',
+        'validity_period',
+        'project_id',
+
+    ];
 }

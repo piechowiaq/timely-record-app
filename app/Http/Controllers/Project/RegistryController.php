@@ -52,16 +52,15 @@ class RegistryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreProjectRegistryRequest $request)
+    public function store(StoreProjectRegistryRequest $request, Project $project)
     {
-        $registry = new Registry();
-        $registry->name = $request->get('name');
-        $registry->description = $request->get('description');
-        $registry->validity_period = $request->get('validity_period');
-        $registry->project_id = $request->get('projectId');
-        $registry->save();
+        $registryData = $request->only('name', 'description', 'validity_period');
+        $registryData['project_id'] = $project->id;
 
-        return Redirect::route('registries.index', ['project' => $request->get('projectId')]);
+        $this->registryService->createRegistry($registryData);
+
+        return redirect()->route('registries.index', ['project' => $project])
+            ->with('success', 'User created.');
     }
 
     /**
@@ -89,12 +88,11 @@ class RegistryController extends Controller
      */
     public function update(Project $project, Registry $registry, UpdateProjectRegistryRequest $request)
     {
-        $registry->name = $request->get('name');
-        $registry->description = $request->get('description');
-        $registry->validity_period = $request->get('validity_period');
-        $registry->save();
+        $userRegistry = $request->only('name', 'description', 'validity_period');
 
-        return Redirect::route('registries.edit', ['project' => $project->id, 'registry' => $registry->id])
+        $this->registryService->updateRegistry($registry, $userRegistry);
+
+        return redirect()->route('registries.edit', ['project' => $project->id, 'registry' => $registry->id])
             ->with('success', 'Custom Registry updated successfully.');
     }
 
@@ -107,7 +105,7 @@ class RegistryController extends Controller
             'password' => ['required', 'current_password'],
         ]);
 
-        $registry->delete();
+        $this->registryService->deleteRegistry($registry);
 
         return Redirect::route('registries.index', ['project' => $project])->with('success', 'Registry deleted.');
     }
