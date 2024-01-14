@@ -2,13 +2,16 @@
 
 namespace App\Repositories\Eloquent;
 
+use App\Models\Project;
 use App\Models\Workspace;
 use App\Repositories\Contracts\RegistryRepositoryInterface;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 
 class EloquentRegistryRepository implements RegistryRepositoryInterface
 {
-    protected function baseRegistryQuery(Workspace $workspace): \Illuminate\Database\Query\Builder
+    protected function baseRegistryQuery(Workspace $workspace): Builder
     {
         return DB::table('registries')
             ->join('registry_workspace', 'registries.id', '=', 'registry_workspace.registry_id')
@@ -36,8 +39,13 @@ class EloquentRegistryRepository implements RegistryRepositoryInterface
             );
     }
 
-    public function getWorkspaceRegistriesQuery(Workspace $workspace): \Illuminate\Database\Query\Builder
+    public function getWorkspaceRegistriesQuery(Workspace $workspace): Builder
     {
         return $this->baseRegistryQuery($workspace);
+    }
+
+    public function getRegistriesByProjectQuery(Project $project): HasMany
+    {
+        return $project->registries();
     }
 }

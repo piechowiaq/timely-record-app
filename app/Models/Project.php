@@ -41,6 +41,19 @@ class Project extends Model
      */
     public function registries(): HasMany
     {
-        return $this->hasMany(Registry::class);
+        //
+        //        // Get the specific registries for this project via the pivot table
+        //        $specificRegistriesQuery = $this->belongsToMany(Registry::class, 'project_registry');
+        //
+        //        // Get the generic registries (those not linked to any project)
+        //        $genericRegistriesQuery = Registry::whereDoesntHave('projects');
+        //
+        //        // Combine the specific registries with the generic registries
+        //        return $specificRegistriesQuery->union($genericRegistriesQuery);
+        $specificRegistries = $this->hasMany(Registry::class);
+
+        $genericRegistries = Registry::whereNull('project_id');
+
+        return $specificRegistries->union($genericRegistries);
     }
 }

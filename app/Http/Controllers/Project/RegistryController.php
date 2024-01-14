@@ -7,6 +7,7 @@ use App\Http\Requests\StoreProjectRegistryRequest;
 use App\Http\Requests\UpdateProjectRegistryRequest;
 use App\Models\Project;
 use App\Models\Registry;
+use App\Repositories\Contracts\RegistryRepositoryInterface;
 use App\Services\RegistryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -17,27 +18,25 @@ class RegistryController extends Controller
 {
     private RegistryService $registryService;
 
-    public function __construct(RegistryService $registryService)
-    {
+    private RegistryRepositoryInterface $registryRepository;
+
+    public function __construct(
+        RegistryService $registryService,
+        RegistryRepositoryInterface $registryRepository
+    ) {
         $this->registryService = $registryService;
+        $this->registryRepository = $registryRepository;
     }
 
     public function index(Request $request, Project $project): Response
     {
-
-        $query = Registry::query();
-
-        // Include registries with null project_id and those associated with the given project
-        $query->where(function ($query) use ($project) {
-            $query->whereNull('project_id')
-                ->orWhere('project_id', $project->id);
-        });
-        $filteredQuery = $this->registryService->applyFilters($query, $request);
-
-        $paginatedRegistries = $filteredQuery->paginate(10)->withQueryString();
+        $paginatedRegistries = $this->registryRepository->getRegistriesByProjectQuery($project)
+            ->applyFilters($request)
+            ->paginate(10)
+            ->withQueryString();
 
         return Inertia::render('Registries/Index', [
-            'paginatedRegistries' => $filteredQuery->paginate(10)->withQueryString(),
+            'paginatedRegistries' => $paginatedRegistries,
             'filters' => $request->all(['search', 'field', 'direction']),
         ]);
     }
