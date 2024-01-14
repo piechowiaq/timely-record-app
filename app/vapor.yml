@@ -1,0 +1,18 @@
+id: 53159
+name: Timely-Record
+environments:
+  production:
+    memory: 1024
+    database: timely_record
+    domain: timelyrecord.com
+    cli-memory: 512
+    runtime: 'php-8.2:al2'
+    build:
+      - 'composer install --no-dev'
+      - 'php artisan event:cache'
+      - 'npm ci && npm run build && rd /s /q "node_modules"'
+#      - 'php artisan migrate:fresh --force'
+#      - 'php artisan db:seed --force'
+
+
+
