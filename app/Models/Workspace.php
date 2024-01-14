@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Http\Request;
 
 class Workspace extends Model
 {
@@ -44,5 +46,21 @@ class Workspace extends Model
     public function registries(): BelongsToMany
     {
         return $this->belongsToMany(Registry::class);
+    }
+
+    public function scopeApplyFilters(Builder $query, Request $request): Builder
+    {
+        $search = $request->input('search');
+
+        if ($search) {
+            $query->where('workspaces.name', 'like', '%'.$request->get('search').'%');
+        }
+
+        if ($request->has(['field', 'direction'])) {
+            $query->orderBy($request->get('field'), $request->get('direction'));
+        }
+
+        return $query;
+
     }
 }

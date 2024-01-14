@@ -12,4 +12,6 @@ interface RegistryRepositoryInterface
     public function getWorkspaceRegistriesQuery(Workspace $workspace): Builder;
 
     public function getRegistriesByProjectQuery(Project $project): HasMany;
+
+    public function getRegistriesByProjectIds(Project $project);
 }

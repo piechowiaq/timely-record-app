@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Workspace;
 use App\Repositories\Contracts\WorkspaceRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class WorkspaceService
 {
@@ -27,6 +28,33 @@ class WorkspaceService
         }
 
         return round(($countOfUpToDateRegistries / $totalRegistries) * 100);
+    }
 
+    public function createWorkspace(array $workspaceData): Workspace
+    {
+        $workspace = Workspace::create([
+            'name' => $workspaceData['name'],
+            'location' => $workspaceData['location'],
+            'project_id' => $workspaceData['project_id'],
+        ]);
+        // Associating the authenticated user with the created workspace
+        Auth::user()->workspaces()->attach($workspace->id);
+
+        return $workspace;
+    }
+
+    public function updateWorkspace(Workspace $workspace, array $workspaceData): Workspace
+    {
+        $workspace->update([
+            'name' => $workspaceData['name'],
+            'location' => $workspaceData['location'],
+        ]);
+
+        return $workspace;
+    }
+
+    public function deleteWorkspace(Workspace $workspace): void
+    {
+        $workspace->delete();
     }
 }

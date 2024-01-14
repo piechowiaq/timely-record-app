@@ -6,11 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreWorkspaceRequest;
 use App\Http\Requests\UpdateWorkspaceRequest;
 use App\Models\Project;
-use App\Models\Registry;
 use App\Models\Workspace;
+use App\Repositories\Contracts\RegistryRepositoryInterface;
+use App\Repositories\Contracts\WorkspaceRepositoryInterface;
 use App\Services\RegistryService;
+use App\Services\WorkspaceService;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -20,9 +21,22 @@ class WorkspaceController extends Controller
 {
     private RegistryService $registryService;
 
-    public function __construct(RegistryService $registryService)
-    {
+    private WorkspaceRepositoryInterface $workspaceRepository;
+
+    private WorkspaceService $workspaceService;
+
+    private RegistryRepositoryInterface $registryRepository;
+
+    public function __construct(
+        RegistryService $registryService,
+        WorkspaceRepositoryInterface $workspaceRepository,
+        WorkspaceService $workspaceService,
+        RegistryRepositoryInterface $registryRepository
+    ) {
         $this->registryService = $registryService;
+        $this->workspaceRepository = $workspaceRepository;
+        $this->workspaceService = $workspaceService;
+        $this->registryRepository = $registryRepository;
     }
 
     /**
@@ -30,11 +44,10 @@ class WorkspaceController extends Controller
      */
     public function index(Project $project, Request $request)
     {
-        $query = Workspace::where('project_id', $project->id);
-
-        $filteredQuery = $this->applyFilters($query, $request);
-
-        $paginatedWorkspaces = $filteredQuery->paginate(10)->withQueryString();
+        $paginatedWorkspaces = $this->workspaceRepository->getWorkspacesByProjectQuery($project)
+            ->applyFilters($request)
+            ->paginate(10)
+            ->withQueryString();
 
         return Inertia::render('Workspaces/Index', [
             'paginatedWorkspaces' => $paginatedWorkspaces,
@@ -42,46 +55,24 @@ class WorkspaceController extends Controller
         ]);
     }
 
-    public function applyFilters($query, Request $request): Builder
-    {
-        if ($request->has('search')) {
-            $query->where('workspaces.name', 'like', '%'.$request->get('search').'%');
-        }
-
-        if ($request->has(['field', 'direction'])) {
-            $query->orderBy($request->get('field'), $request->get('direction'));
-        }
-
-        return $query;
-    }
-
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        $project = Auth::user()->project;
-
-        return Inertia::render('Workspaces/Create', [
-            'project' => $project,
-        ]);
+        return Inertia::render('Workspaces/Create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreWorkspaceRequest $request)
+    public function store(StoreWorkspaceRequest $request, Project $project)
     {
-        $project = Auth::user()->project;
 
-        $validated = $request->validated();
+        $workspaceData = $request->only('name', 'location');
+        $workspaceData['project_id'] = $project->id;
 
-        $validated['project_id'] = $project->id;
-
-        $workspace = Workspace::create($validated);
-
-        // Associating the authenticated user with the created workspace
-        Auth::user()->workspaces()->attach($workspace->id);
+        $workspace = $this->workspaceService->createWorkspace($workspaceData);
 
         // Determine if this is the user's only workspace
         $redirectToDashboard = Auth::user()->workspaces()->count() === 1;
@@ -99,19 +90,10 @@ class WorkspaceController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request, Project $project, Workspace $workspace)
+    public function edit(Project $project, Workspace $workspace)
     {
-
         return Inertia::render('Workspaces/Edit', [
             'workspace' => $workspace,
         ]);
@@ -120,29 +102,12 @@ class WorkspaceController extends Controller
     public function editRegistries(Request $request, Project $project, Workspace $workspace): \Inertia\Response
     {
         //Fetch all registries generic and custom to project
-        $paginatedRegistries = Registry::query()
-            ->where(function ($query) use ($project) {
-                $query->where('project_id', $project->id)
-                    ->orWhereNull('project_id');
-            })
-            ->when($request->has('search'), function ($query) use ($request) {
-                $query->where('name', 'like', '%'.$request->input('search').'%');
-            })
-            ->when($request->has(['field', 'direction']), function ($query) use ($request) {
-                $field = $request->input('field');
-                $direction = $request->input('direction');
-
-                $query->orderBy($field, $direction);
-            })
+        $paginatedRegistries = $this->registryRepository->getRegistriesByProjectQuery($project)
+            ->applyFilters($request)
             ->paginate(10)
             ->withQueryString();
 
-        // Fetch the IDs of the all generic and custom to project registries
-        $allRegistriesIds = Registry::query()
-            ->where(function ($query) use ($project) {
-                $query->where('project_id', $project->id)
-                    ->orWhereNull('project_id');
-            })->pluck('id');
+        $allRegistriesIds = $this->registryRepository->getRegistriesByProjectIds($project);
 
         return Inertia::render('Workspaces/EditRegistries', [
             'workspace' => $workspace,
@@ -158,17 +123,13 @@ class WorkspaceController extends Controller
      */
     public function update(UpdateWorkspaceRequest $request, Project $project, Workspace $workspace)
     {
-
-        $validated = $request->validated();
-
-        $workspace->update($validated);
+        $this->workspaceService->updateWorkspace($workspace, $request->only('name', 'location'));
 
         return redirect()->route('workspaces.edit', ['project' => $project, 'workspace' => $workspace])->with('success', 'Workspace updated.');
     }
 
     public function syncRegistries(Request $request, Project $project, Workspace $workspace): \Illuminate\Http\RedirectResponse
     {
-
         $registriesIds = $request->registriesIds ?? [];
 
         $workspace->registries()->sync($registriesIds);
@@ -185,7 +146,7 @@ class WorkspaceController extends Controller
             'password' => ['required', 'current_password'],
         ]);
 
-        $workspace->delete();
+        $this->workspaceService->deleteWorkspace($workspace);
 
         // Redirect to the projects.show route
         return redirect()->route('projects.show', $project)->with('success', 'Workspace deleted.');

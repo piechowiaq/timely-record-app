@@ -48,4 +48,13 @@ class EloquentRegistryRepository implements RegistryRepositoryInterface
     {
         return $project->registries();
     }
+
+    /**
+     * Get an array of registry IDs associated with a given project.
+     */
+    public function getRegistriesByProjectIds(Project $project)
+    {
+        return $project->registries->pluck('id')->toArray();
+
+    }
 }
