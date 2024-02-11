@@ -57,4 +57,9 @@ class WorkspaceService
     {
         $workspace->delete();
     }
+
+    public function syncRegistries(Workspace $workspace, array $registriesIds): void
+    {
+        $workspace->registries()->sync($registriesIds);
+    }
 }

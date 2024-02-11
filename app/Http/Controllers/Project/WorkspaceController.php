@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreWorkspaceRequest;
 use App\Http\Requests\UpdateWorkspaceRequest;
 use App\Models\Project;
+use App\Models\Registry;
 use App\Models\Workspace;
 use App\Repositories\Contracts\RegistryRepositoryInterface;
 use App\Repositories\Contracts\WorkspaceRepositoryInterface;
@@ -130,9 +131,11 @@ class WorkspaceController extends Controller
 
     public function syncRegistries(Request $request, Project $project, Workspace $workspace): \Illuminate\Http\RedirectResponse
     {
+        // Get the registry IDs from the request
         $registriesIds = $request->registriesIds ?? [];
 
-        $workspace->registries()->sync($registriesIds);
+        // Use the service to sync the registries
+        $this->workspaceService->syncRegistries($workspace, $registriesIds);
 
         return redirect()->route('workspaces.edit-registries', ['project' => $project, 'workspace' => $workspace])->with('success', 'Workspace updated.');
     }
@@ -157,6 +160,26 @@ class WorkspaceController extends Controller
      */
     public function dashboard(Project $project, Workspace $workspace)
     {
+        $regis = Registry::whereHas('workspaces', function ($query) use ($workspace) {
+            $query->where('workspaces.id', $workspace->id);
+        })
+            ->with(['reports' => function ($query) {
+                $query->select('registry_id', 'workspace_id', DB::raw('MAX(expiry_date) as max_expiry_date'))
+                    ->groupBy('registry_id', 'workspace_id');
+            }])
+            ->get()
+            ->map(function ($registry) {
+                // Assuming the 'reports' relationship will return a collection, even if it's empty
+                $latestReport = $registry->reports->first();
+
+                return [
+                    'registry_id' => $registry->id,
+                    'name' => $registry->name,
+                    'expiry_date' => $latestReport ? $latestReport->max_expiry_date : null,
+                    'workspace_id' => $latestReport ? $latestReport->workspace_id : null,
+                ];
+            });
+
         $mostOutdatedRegistries = $this->getMostOutdatedRegistries($workspace, 3);
         $recentlyUpdatedRegistries = $this->getRecentlyUpdatedRegistries($workspace, 3);
         $percentageOfUpToDate = $this->getPercentageOfUpToDate($workspace);
@@ -202,11 +225,6 @@ class WorkspaceController extends Controller
                 'registry_workspace.workspace_id',
                 'max_reports.max_expiry_date'
             );
-    }
-
-    public function getAllRegistriesQuery(Workspace $workspace): \Illuminate\Database\Query\Builder
-    {
-        return $this->baseRegistryQuery($workspace);
     }
 
     public function getMostOutdatedRegistries(Workspace $workspace, int $limit): array
