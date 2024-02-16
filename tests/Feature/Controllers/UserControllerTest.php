@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Project;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
 
@@ -165,4 +166,23 @@ it('can delete a user', function () {
         ->assertSessionHas('success', 'User deleted.');
 
     $this->assertTrue($createdUser->fresh()->trashed());
+});
+
+it('allows logged in user to view only their project and its workspaces', function () {
+    // Assuming you have a User model, Project model, and Workspace model linked appropriately
+    $user = User::factory()->withWorkspaces(1)->create();
+    actingAs($user);
+
+    $project = $user->project;
+    $otherProject = Project::factory()->create();
+
+    // Attempt to access the user's project
+    $response = $this->get(route('projects.dashboard', $project->id));
+
+    $response->assertOk();
+
+    $response = $this->get(route('projects.dashboard', $otherProject->id));
+
+    $response->assertForbidden();
+
 });
