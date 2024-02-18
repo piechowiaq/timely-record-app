@@ -6,6 +6,9 @@ defineProps({
     workspaces: {
         type: Object,
     },
+    canCreateWorkspace: {
+        type: Boolean,
+    }
 
 });
 
@@ -41,7 +44,8 @@ const getWorkspaceBorderColor = (workspace) => {
                         associated with this project or with your credentials.
                     </p>
 
-                    <Link :href="route('workspaces.create', projectId )"
+                    <Link v-if="canCreateWorkspace"
+                          :href="route('workspaces.create', projectId )"
                           class="text-cyan-600 hover:text-cyan-700 text-sm">
                         Create Workspace
                     </Link>
