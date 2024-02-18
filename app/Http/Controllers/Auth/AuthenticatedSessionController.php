@@ -35,7 +35,7 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         // Assuming the User model has a relation to Workspace
-        if (auth()->user()->workspaces->isEmpty()) {
+        if (auth()->user()->workspaces->isEmpty() && auth()->user()->hasRole('project-admin')) {
             // No associated workspace, redirect to workspace creation
             return redirect()->route('workspaces.create', ['project' => auth()->user()->project_id]);
         } else {

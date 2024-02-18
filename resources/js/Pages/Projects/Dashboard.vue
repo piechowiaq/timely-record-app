@@ -38,7 +38,7 @@ const getWorkspaceBorderColor = (workspace) => {
                     <p class="italic text-red-400 text-xs mb-4">
                         No
                         workspaces
-                        associated with this project.
+                        associated with this project or with your credentials.
                     </p>
 
                     <Link :href="route('workspaces.create', projectId )"
