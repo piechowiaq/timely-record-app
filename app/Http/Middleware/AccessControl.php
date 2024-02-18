@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class EnsureProjectBelongsToUser
+class AccessControl
 {
     /**
      * Handle an incoming request.
@@ -21,7 +21,7 @@ class EnsureProjectBelongsToUser
 
         if ($projectId != $userProjectId) {
             // If the project ID does not match the user's project ID, return a 403 Forbidden response
-            abort(403);
+            abort(403, 'hello');
         }
 
         return $next($request);

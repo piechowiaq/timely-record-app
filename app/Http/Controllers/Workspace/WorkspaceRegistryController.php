@@ -14,8 +14,6 @@ class WorkspaceRegistryController
 {
     public function index(Request $request, Project $project, Workspace $workspace): \Inertia\Response
     {
-        $this->authorize('view', $project);
-
         $query = DB::table('registries')
             ->join('registry_workspace', 'registries.id', '=', 'registry_workspace.registry_id')
             ->leftJoin(DB::raw('(

@@ -46,7 +46,7 @@ it('can store a another workspace', function () {
     ];
 
     post(route('workspaces.store', ['project' => $user->project_id]), $data)
-        ->assertRedirect(route('projects.show', [
+        ->assertRedirect(route('workspaces.index', [
             'project' => $user->project_id,
         ]))->assertSessionHas('success', 'Workspace created.');
 
@@ -97,7 +97,7 @@ it('can delete a workspace', function () {
         'workspace' => $workspace,
     ]), [
         'password' => $password,
-    ])->assertRedirect(route('projects.show', $user->project_id))->assertSessionHas('success', 'Workspace deleted.');
+    ])->assertRedirect(route('workspaces.index', $user->project_id))->assertSessionHas('success', 'Workspace deleted.');
 
     expect(Workspace::find($workspace->id))->toBeNull();
 });

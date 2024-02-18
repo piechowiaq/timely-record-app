@@ -152,7 +152,7 @@ class WorkspaceController extends Controller
         $this->workspaceService->deleteWorkspace($workspace);
 
         // Redirect to the projects.show route
-        return redirect()->route('projects.show', $project)->with('success', 'Workspace deleted.');
+        return redirect()->route('workspaces.index', $project)->with('success', 'Workspace deleted.');
     }
 
     /**
