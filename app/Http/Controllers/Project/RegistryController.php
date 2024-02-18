@@ -44,9 +44,11 @@ class RegistryController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Project $project): Response
     {
-        return Inertia::render('Registries/Create');
+        return Inertia::render('Registries/Create', [
+            'project' => $project,
+        ]);
     }
 
     /**

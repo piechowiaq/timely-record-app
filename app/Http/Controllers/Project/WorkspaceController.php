@@ -59,9 +59,11 @@ class WorkspaceController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Project $project)
     {
-        return Inertia::render('Workspaces/Create');
+        return Inertia::render('Workspaces/Create', [
+            'project' => $project,
+        ]);
     }
 
     /**

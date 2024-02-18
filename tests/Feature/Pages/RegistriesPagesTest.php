@@ -25,14 +25,14 @@ it('it shows a list of registers that belong to workspace', function () {
 
     $response->assertInertia(fn (Assert $page) => $page
         ->component('Registries/Index')
-        ->has('registries', 4)
-        ->where('registries.0.name', $registries[0]['name'])
-        ->where('registries.0.validity_period', $registries[0]['validity_period'])
-        ->where('registries.1.name', $registries[1]['name'])
-        ->where('registries.1.validity_period', $registries[1]['validity_period'])
-        ->where('registries.2.name', $registries[2]['name'])
-        ->where('registries.2.validity_period', $registries[2]['validity_period'])
-        ->where('registries.3.name', $registries[3]['name'])
-        ->where('registries.3.validity_period', $registries[3]['validity_period']));
+        ->has('paginatedRegistries.data', 4)
+        ->where('paginatedRegistries.data.0.name', $registries[0]['name'])
+        ->where('paginatedRegistries.data.0.validity_period', $registries[0]['validity_period'])
+        ->where('paginatedRegistries.data.1.name', $registries[1]['name'])
+        ->where('paginatedRegistries.data.1.validity_period', $registries[1]['validity_period'])
+        ->where('paginatedRegistries.data.2.name', $registries[2]['name'])
+        ->where('paginatedRegistries.data.2.validity_period', $registries[2]['validity_period'])
+        ->where('paginatedRegistries.data.3.name', $registries[3]['name'])
+        ->where('paginatedRegistries.data.3.validity_period', $registries[3]['validity_period']));
 
 });

@@ -17,6 +17,7 @@ class AccessControl
     public function handle(Request $request, Closure $next): Response
     {
         $projectId = $request->route('project')->id ?? null;
+
         $userProjectId = Auth::user()->project->id ?? null;
 
         if ($projectId != $userProjectId) {

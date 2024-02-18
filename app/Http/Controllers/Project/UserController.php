@@ -60,7 +60,7 @@ class UserController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(RoleRepositoryInterface $roleRepository, Request $request): Response
+    public function create(RoleRepositoryInterface $roleRepository, Request $request, Project $project): Response
     {
         $roles = $roleRepository->getAvailableRoles();
 
@@ -79,6 +79,7 @@ class UserController extends Controller
             'paginatedWorkspaces' => WorkspaceResource::collection($paginatedWorkspaces),
             'workspacesIds' => $this->workspaceRepository->getWorkspacesIds($paginatedWorkspaces),
             'allWorkspacesIds' => $allWorkspacesIds,
+            'project' => $project,
         ]);
     }
 
