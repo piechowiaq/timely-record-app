@@ -62,4 +62,9 @@ class ProjectPolicy
     {
         //
     }
+
+    public function createWorkspace(User $user, Project $project): bool
+    {
+        return $user->hasRole('project-admin') || $user->hasRole('admin');
+    }
 }
