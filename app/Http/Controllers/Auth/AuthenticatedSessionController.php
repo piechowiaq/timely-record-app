@@ -38,6 +38,11 @@ class AuthenticatedSessionController extends Controller
         if (auth()->user()->workspaces->isEmpty() && auth()->user()->hasRole('project-admin')) {
             // No associated workspace, redirect to workspace creation
             return redirect()->route('workspaces.create', ['project' => auth()->user()->project_id]);
+        } elseif (auth()->user()->hasRole('user') && auth()->user()->workspaces()->exists()) {
+            $workspace = auth()->user()->workspaces()->first();
+            $project = auth()->user()->project_id;
+
+            return redirect()->route('workspaces.dashboard', ['project' => $project, 'workspace' => $workspace->id]);
         } else {
             // User has associated workspace(s), redirect to the project dashboard
             return redirect()->intended(RouteServiceProvider::home());
