@@ -20,7 +20,7 @@ class ProjectPolicy
      */
     public function view(User $user, Project $project): bool
     {
-        return $user->project->id === $project->id;
+        return $user->can('view project');
     }
 
     /**
@@ -61,10 +61,5 @@ class ProjectPolicy
     public function forceDelete(User $user, Project $project): bool
     {
         //
-    }
-
-    public function createWorkspace(User $user, Project $project): bool
-    {
-        return $user->hasRole('project-admin') || $user->hasRole('admin');
     }
 }

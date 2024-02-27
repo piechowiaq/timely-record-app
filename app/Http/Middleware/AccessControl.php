@@ -22,7 +22,7 @@ class AccessControl
 
         if ($projectId != $userProjectId) {
             // If the project ID does not match the user's project ID, return a 403 Forbidden response
-            abort(403, 'hello');
+            abort(403, 'Access denied.');
         }
 
         return $next($request);
