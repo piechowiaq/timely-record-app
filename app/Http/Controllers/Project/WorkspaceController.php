@@ -198,7 +198,7 @@ class WorkspaceController extends Controller
             'countOfUpToDateRegistries' => $countOfUpToDateRegistries,
             'countOfExpiredRegistries' => $countOfExpiredRegistries,
             'expiringSoonRegistries' => $expiringSoonRegistries,
-            'can' => auth()->user()->can('view project', $project),
+            'canViewProject' => auth()->user()->can('view project', $project),
         ]);
     }
 

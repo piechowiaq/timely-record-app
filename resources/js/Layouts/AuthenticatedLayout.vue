@@ -15,7 +15,7 @@ const props = defineProps({
     workspace: {
         type: Object
     },
-    can: {
+    canViewProject: {
         type: Boolean
     }
 })
@@ -107,7 +107,8 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
 
                                     <template #content>
                                         <DropdownLink :href="route('profile.edit')"> Profile</DropdownLink>
-                                        <DropdownLink v-if="can" :href="route('projects.dashboard', projectId)"> Project
+                                        <DropdownLink v-if="canViewProject"
+                                                      :href="route('projects.dashboard', projectId)"> Project
                                             Settings
                                         </DropdownLink>
                                         <DropdownLink :href="route('logout')" method="post" as="button">

@@ -29,7 +29,7 @@ defineProps({
     percentageOfUpToDate: {
         type: Number
     },
-    can: {
+    canViewProject: {
         type: Boolean
     }
 })
@@ -43,7 +43,7 @@ const projectId = usePage().props.auth.user.project_id;
 <template>
     <Head title="Workspace"/>
 
-    <AuthenticatedLayout :workspace="workspace" :can="can">
+    <AuthenticatedLayout :workspace="workspace" :canViewProject="canViewProject">
         <template #header>
             <h2 class="text-white dark:text-gray-700 leading-tight">Dashboard</h2>
         </template>
