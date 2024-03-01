@@ -52,7 +52,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::middleware('auth', 'verified', 'web', 'access.control')->group(function () {
+Route::middleware('auth', 'verified', 'web')->group(function () {
 
     Route::get('/projects/{project}/dashboard', ProjectController::class)->name('projects.dashboard');
 

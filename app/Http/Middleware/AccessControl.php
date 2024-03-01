@@ -17,10 +17,11 @@ class AccessControl
     public function handle(Request $request, Closure $next): Response
     {
         $projectId = $request->route('project')->id ?? null;
+        $workspaceId = $request->route('workspace')->id ?? null;
 
         $userProjectId = Auth::user()->project->id ?? null;
 
-        if ($projectId != $userProjectId) {
+        if ($projectId != $userProjectId || $workspaceId != Auth::user()->workspaces->contains($workspaceId)) {
             // If the project ID does not match the user's project ID, return a 403 Forbidden response
             abort(403, 'Access denied.');
         }

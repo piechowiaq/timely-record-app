@@ -4,20 +4,19 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
-use App\Providers\RouteServiceProvider;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Inertia\Response;
 
 class AuthenticatedSessionController extends Controller
 {
     /**
      * Display the login view.
+     *
+     * @return \Inertia\Response
      */
-    public function create(): Response
+    public function create()
     {
         return Inertia::render('Auth/Login', [
             'canResetPassword' => Route::has('password.request'),
@@ -27,27 +26,35 @@ class AuthenticatedSessionController extends Controller
 
     /**
      * Handle an incoming authentication request.
+     *
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(LoginRequest $request)
     {
         $request->authenticate();
 
         $request->session()->regenerate();
 
-        // Assuming the User model has a relation to Workspace
-        if (auth()->user()->workspaces->isEmpty() && auth()->user()->hasRole('project-admin')) {
-            // No associated workspace, redirect to workspace creation
-            return redirect()->route('workspaces.create', ['project' => auth()->user()->project_id]);
-        } else {
-            // User has associated workspace(s), redirect to the project dashboard
-            return redirect()->intended(RouteServiceProvider::home());
+        $user = Auth::user();
+
+        if ($user->hasRole('project-admin') && $user->workspaces->isEmpty()) {
+            return redirect()->route('workspaces.create', ['project' => $user->project_id]);
+        } elseif ($user->hasRole('user') && $user->workspaces()->count() === 1) {
+            $workspace = $user->workspaces()->first();
+            $project = $user->project_id;
+
+            return redirect()->route('workspaces.dashboard', ['project' => $project, 'workspace' => $workspace->id]);
         }
+
+        return redirect()->route('projects.dashboard', ['project' => $user->project_id]);
     }
 
     /**
      * Destroy an authenticated session.
+     *
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request)
     {
         Auth::guard('web')->logout();
 

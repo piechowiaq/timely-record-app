@@ -100,7 +100,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 'view user',
                 'update user',
                 // Project permissions
-
+                'view project',
                 // Workspace permissions
                 'view workspace',
             ]);
