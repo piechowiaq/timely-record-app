@@ -162,7 +162,7 @@ class WorkspaceController extends Controller
      */
     public function dashboard(Project $project, Workspace $workspace)
     {
-        $regis = Registry::whereHas('workspaces', function ($query) use ($workspace) {
+        Registry::whereHas('workspaces', function ($query) use ($workspace) {
             $query->where('workspaces.id', $workspace->id);
         })
             ->with(['reports' => function ($query) {
@@ -198,7 +198,7 @@ class WorkspaceController extends Controller
             'countOfUpToDateRegistries' => $countOfUpToDateRegistries,
             'countOfExpiredRegistries' => $countOfExpiredRegistries,
             'expiringSoonRegistries' => $expiringSoonRegistries,
-            'canViewProject' => auth()->user()->can('view project', $project),
+            'canViewProject' => auth()->user()->can('view', $project),
         ]);
     }
 

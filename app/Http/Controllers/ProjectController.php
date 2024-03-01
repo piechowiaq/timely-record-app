@@ -28,7 +28,6 @@ class ProjectController extends Controller
      */
     public function __invoke(Project $project): Response
     {
-        $this->authorize('view', $project);
 
         $workspaces = $this->projectService->getWorkspacesWithUpToDateMetrics($project);
 

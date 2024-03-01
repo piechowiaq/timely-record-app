@@ -49,7 +49,7 @@ const projectId = usePage().props.auth.user.project_id;
         </template>
 
         <div class="px-2 pb-2 sm:flex sm:space-x-2">
-
+          
             <!-- Registries Section -->
 
             <RegistriesCard :workspace="workspace"

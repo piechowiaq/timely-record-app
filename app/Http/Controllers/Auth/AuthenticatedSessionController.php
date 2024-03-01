@@ -35,18 +35,20 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        $user = Auth::user();
+        $user = auth()->user(); // Assuming $user is already defined as the authenticated user
+
+        // Determine the redirection path based on the user's role and workspace status
+        $redirectionPath = route('projects.dashboard', ['project' => $user->project_id]); // Default fallback route
 
         if ($user->hasRole('project-admin') && $user->workspaces->isEmpty()) {
-            return redirect()->route('workspaces.create', ['project' => $user->project_id]);
+            $redirectionPath = route('workspaces.create', ['project' => $user->project_id]);
         } elseif ($user->hasRole('user') && $user->workspaces()->count() === 1) {
-            $workspace = $user->workspaces()->first();
-            $project = $user->project_id;
-
-            return redirect()->route('workspaces.dashboard', ['project' => $project, 'workspace' => $workspace->id]);
+            $workspaceId = $user->workspaces()->first()->id;
+            $redirectionPath = route('workspaces.dashboard', ['project' => $user->project_id, 'workspace' => $workspaceId]);
         }
 
-        return redirect()->route('projects.dashboard', ['project' => $user->project_id]);
+        // Execute the redirection, using intended() to respect any previously intended route, if applicable
+        return redirect()->intended($redirectionPath);
     }
 
     /**

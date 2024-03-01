@@ -33,7 +33,7 @@ Route::get('test', function () {
         'allRegistriesIds' => $allRegistriesIds,
         'workspaceRegistriesIds' => $workspace->registries->pluck('id'),
     ]);
-});
+})->name('test');
 
 Route::post('test', function (Illuminate\Http\Request $request) {
     dd($request);
@@ -72,7 +72,7 @@ Route::middleware('auth', 'verified', 'web')->group(function () {
     Route::patch('projects/{project}/registries/{registry}', [RegistryController::class, 'update'])->name('registries.update');
     Route::delete('projects/{project}/registries/{registry}', [RegistryController::class, 'destroy'])->name('registries.destroy');
 
-    Route::get('projects/{project}/workspaces/{workspace}/dashboard', [WorkspaceController::class, 'dashboard'])->name('workspaces.dashboard');
+    Route::get('projects/{project}/workspaces/{workspace:id}/dashboard', [WorkspaceController::class, 'dashboard'])->name('workspaces.dashboard');
     Route::get('projects/{project}/workspaces/index', [WorkspaceController::class, 'index'])->name('workspaces.index');
     Route::get('/projects/{project}/workspaces/create', [WorkspaceController::class, 'create'])->name('workspaces.create');
     Route::post('/projects/{project}/workspaces', [WorkspaceController::class, 'store'])->name('workspaces.store');
