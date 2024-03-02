@@ -2,10 +2,10 @@
 
 namespace App\Policies;
 
-use App\Models\Project;
+use App\Models\Report;
 use App\Models\User;
 
-class ProjectPolicy
+class ReportPolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -18,14 +18,9 @@ class ProjectPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Project $project): bool
+    public function view(User $user, Report $report): bool
     {
-        // Unauthorized if the user has the 'user' role and exactly one workspace.
-        if ($user->hasRole('user') && $user->workspaces()->count() === 1) {
-            return false;
-        }
-
-        return $user->hasPermissionTo('view project') && $user->project_id === $project->id;
+        //
     }
 
     /**
@@ -33,13 +28,13 @@ class ProjectPolicy
      */
     public function create(User $user): bool
     {
-        //
+        return $user->hasPermissionTo('create report');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Project $project): bool
+    public function update(User $user, Report $report): bool
     {
         //
     }
@@ -47,7 +42,7 @@ class ProjectPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Project $project): bool
+    public function delete(User $user, Report $report): bool
     {
         //
     }
@@ -55,7 +50,7 @@ class ProjectPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Project $project): bool
+    public function restore(User $user, Report $report): bool
     {
         //
     }
@@ -63,13 +58,8 @@ class ProjectPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Project $project): bool
+    public function forceDelete(User $user, Report $report): bool
     {
         //
-    }
-
-    public function manage(User $user, Project $project): bool
-    {
-        return ! $user->hasRole('user');
     }
 }

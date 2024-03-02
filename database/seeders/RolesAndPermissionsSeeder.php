@@ -35,6 +35,18 @@ class RolesAndPermissionsSeeder extends Seeder
         Permission::create(['name' => 'update workspace']);
         Permission::create(['name' => 'delete workspace']);
 
+        // Registries
+        Permission::create(['name' => 'view registry']);
+        Permission::create(['name' => 'create registry']);
+        Permission::create(['name' => 'update registry']);
+        Permission::create(['name' => 'delete registry']);
+
+        // Reports
+        Permission::create(['name' => 'view report']);
+        Permission::create(['name' => 'create report']);
+        Permission::create(['name' => 'update report']);
+        Permission::create(['name' => 'delete report']);
+
         // Create roles and assign created permissions
 
         // Super Admin
@@ -57,6 +69,16 @@ class RolesAndPermissionsSeeder extends Seeder
                 'create workspace',
                 'update workspace',
                 'delete workspace',
+                // Registry permissions
+                'view registry',
+                'create registry',
+                'update registry',
+                'delete registry',
+                // Report permissions
+                'view report',
+                'create report',
+                'update report',
+                'delete report',
             ]);
 
         // Admin
@@ -74,6 +96,16 @@ class RolesAndPermissionsSeeder extends Seeder
                 'view workspace',
                 'create workspace',
                 'update workspace',
+                // Registry permissions
+                'view registry',
+                'create registry',
+                'update registry',
+                'delete registry',
+                // Report permissions
+                'view report',
+                'create report',
+                'update report',
+                'delete report',
             ]);
 
         // Manager
@@ -91,6 +123,13 @@ class RolesAndPermissionsSeeder extends Seeder
                 'create workspace',
                 'update workspace',
                 'delete workspace',
+                // Registry permissions
+                'view registry',
+                // Report permissions
+                'view report',
+                'create report',
+                'update report',
+                'delete report',
             ]);
 
         // User
@@ -103,6 +142,11 @@ class RolesAndPermissionsSeeder extends Seeder
                 'view project',
                 // Workspace permissions
                 'view workspace',
+                // Registry permissions
+                'view registry',
+                // Report permissions
+                'view report',
+
             ]);
     }
 }

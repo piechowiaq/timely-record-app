@@ -25,6 +25,8 @@ const index = ref({
     search: props.filters.search,
 });
 
+const canCreateReport = usePage().props.permissions.canCreateReport;
+
 watch(index.value, debounce(() => {
     router.get(route('workspace.registries.index', {project: projectId, workspace: props.workspace.id}), index.value, {
         preserveState: true,
@@ -106,7 +108,9 @@ const timeLeftUntilExpiryDate = (expiry_date) => {
                         </button>
 
                     </div>
-                    <Link v-if="!paginatedRegistries.data.length === 0"
+
+
+                    <Link v-if="paginatedRegistries.data.length > 0 && canCreateReport"
                           :href="route('workspace.registry.reports.create', {project: projectId, workspace: workspace.id})"
                           class="text-cyan-600 hover:text-cyan-700 text-sm">
                         Upload Report

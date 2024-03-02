@@ -24,10 +24,10 @@ const projectId = usePage().props.auth.user.project_id;
 const navigation = useNavigationStore();
 
 onMounted(() => {
-    navigation.updateCanManageProject(usePage().props.auth.canManageProject);
+    navigation.updateCanManageProject(usePage().props.permissions.canManageProject);
 })
 
-const canViewProject = usePage().props.auth.canViewProject;
+const canViewProject = usePage().props.permissions.canViewProject;
 
 const user = usePage().props.auth.user;
 

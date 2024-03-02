@@ -11,4 +11,4 @@ environments:
       - 'composer install --no-dev'
       - 'php artisan event:cache'
       - 'npm ci && npm run build && rd /s /q "node_modules"'
-      - 'php artisan migrate:fresh --force && php artisan db:seed --force'
+

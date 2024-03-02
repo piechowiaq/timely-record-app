@@ -20,7 +20,7 @@ class WorkspacePolicy
      */
     public function view(User $user, Workspace $workspace): bool
     {
-        return $user->can('view workspace') && $user->workspaces->contains($workspace->id);
+        return $user->hasPermissionTo('view workspace') && $user->workspaces->contains($workspace->id);
     }
 
     /**

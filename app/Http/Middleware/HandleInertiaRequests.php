@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Project;
+use App\Models\Report;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tightenco\Ziggy\Ziggy;
@@ -35,20 +36,20 @@ class HandleInertiaRequests extends Middleware
 
         $canManageProject = false;
         $canViewProject = false;
+        $canCreateReport = false;
 
         if ($user && $user->project_id) {
             // Assuming you use route model binding or retrieve it somehow
             $project = Project::find($user->project_id);
             $canManageProject = $project ? $user->can('manage', $project) : false;
             $canViewProject = $project ? $user->can('view', $project) : false;
+            $canCreateReport = $project ? $user->can('create', Report::class) : false;
         }
 
         return [
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user()?->load('workspaces'),
-                'canManageProject' => $canManageProject,
-                'canViewProject' => $canViewProject,
             ],
             'flash' => function () use ($request) {
                 return [
@@ -61,6 +62,11 @@ class HandleInertiaRequests extends Middleware
                 'location' => $request->url(),
             ],
             'route' => $request->route()->uri,
+            'permissions' => [
+                'canManageProject' => $canManageProject,
+                'canViewProject' => $canViewProject,
+                'canCreateReport' => $canCreateReport,
+            ],
         ];
     }
 }
