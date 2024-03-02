@@ -38,6 +38,7 @@ class WorkspaceController extends Controller
         $this->workspaceRepository = $workspaceRepository;
         $this->workspaceService = $workspaceService;
         $this->registryRepository = $registryRepository;
+
     }
 
     /**
@@ -149,6 +150,7 @@ class WorkspaceController extends Controller
      */
     public function destroy(Request $request, Project $project, Workspace $workspace)
     {
+
         $request->validate([
             'password' => ['required', 'current_password'],
         ]);
@@ -164,6 +166,8 @@ class WorkspaceController extends Controller
      */
     public function dashboard(Project $project, Workspace $workspace)
     {
+        $this->authorize('view', $workspace);
+
         $hasRegistries = Registry::whereHas('workspaces', function ($query) use ($workspace) {
             $query->where('workspaces.id', $workspace->id);
         })->exists();
