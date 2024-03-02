@@ -15,12 +15,6 @@ const props = defineProps({
     workspace: {
         type: Object
     },
-    canViewProject: {
-        type: Boolean
-    },
-    auth: {
-        type: Object
-    }
 })
 
 const showingNavigationDropdown = ref(false);
@@ -32,6 +26,8 @@ const navigation = useNavigationStore();
 onMounted(() => {
     navigation.updateCanManageProject(usePage().props.auth.canManageProject);
 })
+
+const canViewProject = usePage().props.auth.canViewProject;
 
 const user = usePage().props.auth.user;
 
@@ -50,6 +46,7 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
         <div class="min-h-screen flex-col flex bg-gray-100 dark:bg-gray-900">
             <nav class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
                 <!-- Primary Navigation Menu -->
+
                 <div class=" px-4 ">
                     <div class="flex justify-between h-16">
                         <div class="flex">

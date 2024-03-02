@@ -16,6 +16,13 @@ class EloquentWorkspaceRepository implements WorkspaceRepositoryInterface
         return Workspace::where('project_id', $project->id);
     }
 
+    public function getUserWorkspacesByProjectQuery(Project $project, User $user)
+    {
+        return Workspace::where('project_id', $project->id)->whereHas('users', function ($query) use ($user) {
+            $query->where('users.id', $user->id);
+        });
+    }
+
     public function getWorkspacesByProjectIds(Project $project)
     {
         return $this->getWorkspacesByProjectQuery($project)->pluck('id')->toArray();

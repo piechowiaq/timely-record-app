@@ -10,6 +10,8 @@ interface WorkspaceRepositoryInterface
 {
     public function getWorkspacesByProjectQuery(Project $project);
 
+    public function getUserWorkspacesByProjectQuery(Project $project, User $user);
+
     public function getWorkspacesIds($workspaces);
 
     public function getUpToDateRegistries(Workspace $workspace);

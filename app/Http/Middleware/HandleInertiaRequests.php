@@ -34,10 +34,13 @@ class HandleInertiaRequests extends Middleware
         $user = auth()->user();
 
         $canManageProject = false;
+        $canViewProject = false;
+
         if ($user && $user->project_id) {
             // Assuming you use route model binding or retrieve it somehow
             $project = Project::find($user->project_id);
             $canManageProject = $project ? $user->can('manage', $project) : false;
+            $canViewProject = $project ? $user->can('view', $project) : false;
         }
 
         return [
@@ -45,6 +48,7 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user()?->load('workspaces'),
                 'canManageProject' => $canManageProject,
+                'canViewProject' => $canViewProject,
             ],
             'flash' => function () use ($request) {
                 return [
