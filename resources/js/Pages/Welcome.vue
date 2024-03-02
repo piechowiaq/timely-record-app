@@ -15,6 +15,16 @@ const page = usePage();
 const user = page.props.auth.user;
 const projectId = user ? user.project_id : null;
 
+const logout = () => {
+    axios.post('/logout').then(() => {
+        // After logout, force reload to the homepage or navigate as needed
+        // Note: Adjust as needed if you have specific requirements after logout
+        window.location.href = '/';
+    }).catch(error => {
+        console.error('Logout failed:', error);
+    });
+};
+
 
 </script>
 
@@ -32,9 +42,10 @@ const projectId = user ? user.project_id : null;
             >Dashboard
             </Link
             >
-            <Link v-if="projectId" :href="route('logout')" method="post" as="button">
+            <button v-if="projectId" @click="logout"
+                    class="ml-4 font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-gray-500">
                 Log Out
-            </Link>
+            </button>
 
             <template v-else>
                 <Link
