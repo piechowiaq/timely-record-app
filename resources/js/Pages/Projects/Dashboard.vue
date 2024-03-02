@@ -6,7 +6,7 @@ defineProps({
     workspaces: {
         type: Object,
     },
-    canCreateWorkspace: {
+    canManageProject: {
         type: Boolean,
     }
 
@@ -27,7 +27,7 @@ const getWorkspaceBorderColor = (workspace) => {
 <template>
     <Head title="Project"/>
 
-    <AuthenticatedLayout>
+    <AuthenticatedLayout :canManageProject="canManageProject">
         <template #header>
             <h2 class="text-white dark:text-gray-700 leading-tight">Project Dashboard</h2>
         </template>
@@ -44,7 +44,8 @@ const getWorkspaceBorderColor = (workspace) => {
                         associated with this project or with your credentials.
                     </p>
 
-                    <Link v-if="canCreateWorkspace"
+
+                    <Link v-if="canManageProject"
                           :href="route('workspaces.create', projectId )"
                           class="text-cyan-600 hover:text-cyan-700 text-sm">
                         Create Workspace

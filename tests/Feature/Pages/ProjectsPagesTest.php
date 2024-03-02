@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Database\Seeders\RolesAndPermissionsSeeder;
 use Inertia\Testing\AssertableInertia as Assert;
 
 use function Pest\Laravel\actingAs;
@@ -8,7 +9,12 @@ use function Pest\Laravel\get;
 
 it('shows workspaces names and locations', function () {
 
+    $this->seed(RolesAndPermissionsSeeder::class);
+
     $user = User::factory()->withWorkspaces(4)->create();
+
+    $user->assignRole('user');
+
     actingAs($user);
 
     $workspaces = $user->project->workspaces;

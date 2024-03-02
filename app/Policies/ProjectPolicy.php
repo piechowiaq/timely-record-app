@@ -20,18 +20,12 @@ class ProjectPolicy
      */
     public function view(User $user, Project $project): bool
     {
-        // Ensure the user has the permission to view projects in general.
-        $canViewProject = $user->can('view project');
+        // Unauthorized if the user has the 'user' role and exactly one workspace.
+        if ($user->hasRole('user') && $user->workspaces()->count() === 1) {
+            return false;
+        }
 
-        // Ensure the user has the 'user' role and exactly one workspace.
-        $isUserRoleWithSingleWorkspace = $user->hasRole('user') && $user->workspaces()->count() === 1;
-
-        // Ensure the project the user is trying to view is indeed their project.
-        $isUsersProject = $user->project_id === $project->id;
-
-        // The user can view the project if all conditions are met: they have the permission,
-        // they are a 'user' with exactly one workspace, and the project is theirs.
-        return $canViewProject && $isUserRoleWithSingleWorkspace && $isUsersProject;
+        return $user->can('view project') && $user->project_id === $project->id;
     }
 
     /**
@@ -74,8 +68,8 @@ class ProjectPolicy
         //
     }
 
-    public function createWorkspace(User $user, Project $project): bool
+    public function manage(User $user, Project $project): bool
     {
-        return $user->hasRole('project-admin') || $user->hasRole('admin');
+        return ! $user->hasRole('user');
     }
 }

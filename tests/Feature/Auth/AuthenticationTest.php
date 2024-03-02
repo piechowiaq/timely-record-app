@@ -3,6 +3,7 @@
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 
+use function Pest\Laravel\get;
 use function Pest\Laravel\post;
 
 test('login screen can be rendered', function () {
@@ -32,10 +33,16 @@ it('redirects authenticated user with role of project-admin with no workspace to
 
     $user->assignRole('project-admin');
 
-    post('/login', [
+    $response = post('/login', [
         'email' => $user->email,
         'password' => 'password',
-    ])->assertRedirect(route('workspaces.create', ['project' => $user->project]));
+    ]);
+
+    // Attempt to access the projects.dashboard route
+    $response = get(route('projects.dashboard', ['project' => $user->project]));
+
+    // Assert the user is redirected to the workspaces.create route
+    $response->assertRedirect(route('workspaces.create', ['project' => $user->project]));
 
 });
 

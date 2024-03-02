@@ -18,7 +18,6 @@ class ProjectController extends Controller
     public function __construct(ProjectService $projectService)
     {
         $this->projectService = $projectService;
-        $this->authorizeResource(Project::class, 'project');
     }
 
     /**
@@ -34,8 +33,7 @@ class ProjectController extends Controller
 
         return Inertia::render('Projects/Dashboard', [
             'workspaces' => $workspaces,
-            'canCreateWorkspace' => auth()->user()->can('createWorkspace', $project),
-
+            'canManageProject' => auth()->user()->can('manage', $project),
         ]);
     }
 }

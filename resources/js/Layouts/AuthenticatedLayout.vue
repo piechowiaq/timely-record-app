@@ -1,5 +1,5 @@
 <script setup>
-import {ref} from 'vue';
+import {onMounted, ref} from 'vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
@@ -17,6 +17,9 @@ const props = defineProps({
     },
     canViewProject: {
         type: Boolean
+    },
+    canManageProject: {
+        type: Boolean
     }
 })
 
@@ -25,6 +28,10 @@ const showingNavigationDropdown = ref(false);
 const projectId = usePage().props.auth.user.project_id;
 
 const navigation = useNavigationStore();
+
+onMounted(() => {
+    navigation.updateCanManageProject(props.canManageProject);
+})
 
 const user = usePage().props.auth.user;
 
@@ -175,6 +182,7 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
                                 <ResponsiveNavLink :disabled="userHasNoWorkspace" as="button"
                                                    :href="route(option.route, { project: projectId})"
                                                    :active="route().current(option.route)"
+
                                 >
                                     {{ option.name }}
                                 </ResponsiveNavLink>

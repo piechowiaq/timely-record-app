@@ -30,7 +30,7 @@ test('new users can register', function () {
 
     $project = User::latest()->first()->project_id;
 
-    $response->assertRedirect(route('workspaces.create', compact('project')));
+    $response->assertRedirect(route('projects.dashboard', compact('project')));
 
 });
 

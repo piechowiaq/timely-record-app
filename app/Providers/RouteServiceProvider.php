@@ -25,7 +25,6 @@ class RouteServiceProvider extends ServiceProvider
 
         // Default fallback for unauthenticated users.
         return '/';
-
     }
 
     /**
