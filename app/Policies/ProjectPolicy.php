@@ -20,14 +20,18 @@ class ProjectPolicy
      */
     public function view(User $user, Project $project): bool
     {
-        // Check if the user can view the project
+        // Ensure the user has the permission to view projects in general.
         $canViewProject = $user->can('view project');
 
-        // Additional conditions: user must have the 'user' role and exactly one workspace
-        $isUserRoleWithSingleWorkspace = $user->hasRole('user') && $user->workspaces()->count() > 1;
+        // Ensure the user has the 'user' role and exactly one workspace.
+        $isUserRoleWithSingleWorkspace = $user->hasRole('user') && $user->workspaces()->count() === 1;
 
-        // Return true if the user can view the project AND is a 'user' with exactly one workspace
-        return $canViewProject && $isUserRoleWithSingleWorkspace;
+        // Ensure the project the user is trying to view is indeed their project.
+        $isUsersProject = $user->project_id === $project->id;
+
+        // The user can view the project if all conditions are met: they have the permission,
+        // they are a 'user' with exactly one workspace, and the project is theirs.
+        return $canViewProject && $isUserRoleWithSingleWorkspace && $isUsersProject;
     }
 
     /**

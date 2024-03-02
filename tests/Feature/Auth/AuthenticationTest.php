@@ -24,9 +24,13 @@ test('users can authenticate using the login screen', function () {
 
 });
 
-it('redirects authenticated user with no workspace to workspaces.creat route', function () {
+it('redirects authenticated user with role of project-admin with no workspace to workspaces.create route', function () {
 
     $user = User::factory()->create();
+
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $user->assignRole('project-admin');
 
     post('/login', [
         'email' => $user->email,
