@@ -45,6 +45,8 @@ class WorkspaceController extends Controller
      */
     public function index(Project $project, Request $request)
     {
+        $this->authorize('manage', $project);
+
         $paginatedWorkspaces = $this->workspaceRepository->getWorkspacesByProjectQuery($project)
             ->applyFilters($request)
             ->paginate(10)
@@ -83,7 +85,7 @@ class WorkspaceController extends Controller
         // Redirect to the appropriate route
         if ($redirectToDashboard) {
             // If it's their first workspace, redirect to the workspace dashboard
-            return redirect()->route('workspaces.dashboard', ['project' => $project->id, 'workspace' => $workspace->id])
+            return redirect()->route('projects.dashboard', ['project' => $project->id])
                 ->with('success', 'Workspace created.');
         } else {
             // Handle redirection for users who already have other workspaces, if needed

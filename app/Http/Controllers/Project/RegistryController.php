@@ -30,6 +30,8 @@ class RegistryController extends Controller
 
     public function index(Request $request, Project $project): Response
     {
+        $this->authorize('manage', $project);
+
         $paginatedRegistries = $this->registryRepository->getRegistriesByProjectQuery($project)
             ->applyFilters($request)
             ->paginate(10)

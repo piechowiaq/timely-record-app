@@ -18,8 +18,8 @@ const props = defineProps({
     canViewProject: {
         type: Boolean
     },
-    canManageProject: {
-        type: Boolean
+    auth: {
+        type: Object
     }
 })
 
@@ -30,7 +30,7 @@ const projectId = usePage().props.auth.user.project_id;
 const navigation = useNavigationStore();
 
 onMounted(() => {
-    navigation.updateCanManageProject(props.canManageProject);
+    navigation.updateCanManageProject(usePage().props.auth.canManageProject);
 })
 
 const user = usePage().props.auth.user;

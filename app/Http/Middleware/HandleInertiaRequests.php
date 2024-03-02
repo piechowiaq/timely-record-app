@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Project;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tightenco\Ziggy\Ziggy;
@@ -30,10 +31,20 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = auth()->user();
+
+        $canManageProject = false;
+        if ($user && $user->project_id) {
+            // Assuming you use route model binding or retrieve it somehow
+            $project = Project::find($user->project_id);
+            $canManageProject = $project ? $user->can('manage', $project) : false;
+        }
+
         return [
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user()?->load('workspaces'),
+                'canManageProject' => $canManageProject,
             ],
             'flash' => function () use ($request) {
                 return [

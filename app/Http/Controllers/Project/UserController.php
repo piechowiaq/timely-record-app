@@ -46,6 +46,8 @@ class UserController extends Controller
      */
     public function index(Project $project, Request $request): Response
     {
+        $this->authorize('manage', $project);
+
         $paginatedUsers = $this->userRepository->getUsersByProjectWithRolesQuery($project)
             ->applyFilters($request)
             ->paginate(10)

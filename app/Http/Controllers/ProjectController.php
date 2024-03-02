@@ -33,7 +33,6 @@ class ProjectController extends Controller
 
         return Inertia::render('Projects/Dashboard', [
             'workspaces' => $workspaces,
-            'canManageProject' => auth()->user()->can('manage', $project),
         ]);
     }
 }

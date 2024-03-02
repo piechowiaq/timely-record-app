@@ -21,23 +21,23 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('test', function () {
-    $registries = \App\Models\Registry::paginate(10)->withQueryString();
+//Route::get('test', function () {
+//    $registries = \App\Models\Registry::paginate(10)->withQueryString();
+//
+//    $allRegistriesIds = \App\Models\Registry::all()->pluck('id');
+//
+//    $workspace = \App\Models\Workspace::findOrFail(1);
+//
+//    return Inertia::render('Test', [
+//        'paginatedRegistries' => $registries,
+//        'allRegistriesIds' => $allRegistriesIds,
+//        'workspaceRegistriesIds' => $workspace->registries->pluck('id'),
+//    ]);
+//})->name('test');
 
-    $allRegistriesIds = \App\Models\Registry::all()->pluck('id');
-
-    $workspace = \App\Models\Workspace::findOrFail(1);
-
-    return Inertia::render('Test', [
-        'paginatedRegistries' => $registries,
-        'allRegistriesIds' => $allRegistriesIds,
-        'workspaceRegistriesIds' => $workspace->registries->pluck('id'),
-    ]);
-})->name('test');
-
-Route::post('test', function (Illuminate\Http\Request $request) {
-    dd($request);
-})->name('test');
+//Route::post('test', function (Illuminate\Http\Request $request) {
+//    dd($request);
+//})->name('test');
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
