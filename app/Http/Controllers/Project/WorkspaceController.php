@@ -164,6 +164,10 @@ class WorkspaceController extends Controller
      */
     public function dashboard(Project $project, Workspace $workspace)
     {
+        $hasRegistries = Registry::whereHas('workspaces', function ($query) use ($workspace) {
+            $query->where('workspaces.id', $workspace->id);
+        })->exists();
+
         Registry::whereHas('workspaces', function ($query) use ($workspace) {
             $query->where('workspaces.id', $workspace->id);
         })
@@ -196,6 +200,7 @@ class WorkspaceController extends Controller
             'workspace' => $workspace,
             'mostOutdatedRegistries' => $mostOutdatedRegistries,
             'recentlyUpdatedRegistries' => $recentlyUpdatedRegistries,
+            'hasRegistries' => $hasRegistries,
             'percentageOfUpToDate' => $percentageOfUpToDate,
             'countOfUpToDateRegistries' => $countOfUpToDateRegistries,
             'countOfExpiredRegistries' => $countOfExpiredRegistries,

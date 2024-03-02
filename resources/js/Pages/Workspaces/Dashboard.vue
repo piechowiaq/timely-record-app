@@ -31,6 +31,9 @@ defineProps({
     },
     canViewProject: {
         type: Boolean
+    },
+    hasRegistries: {
+        type: Boolean
     }
 })
 
@@ -49,7 +52,7 @@ const projectId = usePage().props.auth.user.project_id;
         </template>
 
         <div class="px-2 pb-2 sm:flex sm:space-x-2">
-          
+
             <!-- Registries Section -->
 
             <RegistriesCard :workspace="workspace"
@@ -58,6 +61,7 @@ const projectId = usePage().props.auth.user.project_id;
                             :countOfExpiredRegistries="countOfExpiredRegistries"
                             :mostOutdatedRegistries="mostOutdatedRegistries"
                             :recentlyUpdatedRegistries="recentlyUpdatedRegistries"
+                            :hasRegistries="hasRegistries"
                             :expiringSoonRegistries="expiringSoonRegistries" class=" sm:w-1/2 "/>
 
             <!-- Trainings Section -->

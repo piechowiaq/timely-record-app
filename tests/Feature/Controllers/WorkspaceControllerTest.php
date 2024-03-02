@@ -22,9 +22,9 @@ it('can store a first workspace', function () {
 
     $workspace = Workspace::latest()->first();
 
-    $response->assertRedirect(route('workspaces.dashboard', [
+    $response->assertRedirect(route('projects.dashboard', [
         'project' => $user->project_id,
-        'workspace' => $workspace->id,
+
     ]))->assertSessionHas('success', 'Workspace created.');
 
     expect(Workspace::latest()->first())
