@@ -39,6 +39,7 @@ class UserController extends Controller
         $this->userService = $userService;
         $this->roleRepository = $roleRepository;
         $this->workspaceRepository = $workspaceRepository;
+        $this->authorizeResource(User::class, 'user');
     }
 
     /**
