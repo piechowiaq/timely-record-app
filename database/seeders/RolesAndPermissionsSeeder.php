@@ -112,17 +112,11 @@ class RolesAndPermissionsSeeder extends Seeder
         Role::create(['name' => 'manager'])
             ->givePermissionTo([
                 // User permissions
-                'view user',
-                'create user',
-                'update user',
-                'delete user',
+
                 // Project permissions
                 'view project',
                 // Workspace permissions
                 'view workspace',
-                'create workspace',
-                'update workspace',
-                'delete workspace',
                 // Registry permissions
                 'view registry',
                 // Report permissions
@@ -136,8 +130,7 @@ class RolesAndPermissionsSeeder extends Seeder
         Role::create(['name' => 'user'])
             ->givePermissionTo([
                 // User permissions
-                'view user',
-                'update user',
+
                 // Project permissions
                 'view project',
                 // Workspace permissions

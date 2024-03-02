@@ -20,7 +20,7 @@ class ReportPolicy
      */
     public function view(User $user, Report $report): bool
     {
-        //
+        return $user->hasPermissionTo('view report');
     }
 
     /**
@@ -36,7 +36,7 @@ class ReportPolicy
      */
     public function update(User $user, Report $report): bool
     {
-        //
+        return $user->hasPermissionTo('update report');
     }
 
     /**
@@ -44,7 +44,7 @@ class ReportPolicy
      */
     public function delete(User $user, Report $report): bool
     {
-        //
+        return $user->hasPermissionTo('delete report');
     }
 
     /**

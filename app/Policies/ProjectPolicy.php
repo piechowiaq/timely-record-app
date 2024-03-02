@@ -70,6 +70,6 @@ class ProjectPolicy
 
     public function manage(User $user, Project $project): bool
     {
-        return ! $user->hasRole('user');
+        return ! $user->hasAnyRole('user', 'manager');
     }
 }

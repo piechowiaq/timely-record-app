@@ -18,6 +18,11 @@ use Inertia\Response;
 
 class WorkspaceRegistryReportController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Report::class, 'report');
+    }
+
     public function create(Project $project, Workspace $workspace, Request $request): Response
     {
 
