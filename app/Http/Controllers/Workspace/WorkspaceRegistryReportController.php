@@ -55,6 +55,14 @@ class WorkspaceRegistryReportController extends Controller
         return Redirect::route('workspace.registries.show', ['project' => $project, 'workspace' => $workspace, 'registry' => $registry])->with('success', 'Report uploaded.');
     }
 
+    /**
+     * Display the specified resource.
+     */
+    public function show(Project $project, Workspace $workspace, Registry $registry, Report $report)
+    {
+        //
+    }
+
     public function edit(Project $project, Workspace $workspace, Registry $registry, Report $report)
     {
         return Inertia::render('Workspaces/Registries/Reports/Edit', [

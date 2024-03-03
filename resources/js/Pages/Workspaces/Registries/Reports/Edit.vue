@@ -11,129 +11,132 @@ import DangerButton from "@/Components/DangerButton.vue";
 
 
 const props = defineProps({
-  report: Object,
-  workspace: Object,
-  registry: Object,
-  project: Object,
+    report: Object,
+    workspace: Object,
+    registry: Object,
+    project: Object,
 })
 
 const projectId = usePage().props.auth.user.project_id;
 
 const form = useForm(useRemember(reactive({
-      notes: props.report.notes,
-      report_date: props.report.report_date,
-      registry_id: props.registry.id,
-      workspace_id: props.workspace.id,
+        notes: props.report.notes,
+        report_date: props.report.report_date,
+        registry_id: props.registry.id,
+        workspace_id: props.workspace.id,
     }))
 )
 
 const update = () => {
-  form.patch(route('workspace.registry.reports.update', {
-    project: props.project.id,
-    workspace: props.workspace.id,
-    registry: props.registry.id,
-    report: props.report.id
-  }));
+    form.patch(route('workspace.registry.reports.update', {
+        project: props.project.id,
+        workspace: props.workspace.id,
+        registry: props.registry.id,
+        report: props.report.id
+    }));
 };
 
 const destroy = (report) => {
-  router.delete(route('workspace.registry.reports.destroy', {
-    project: props.project.id,
-    workspace: props.workspace.id,
-    registry: props.registry.id,
-    report: props.report.id
-  }))
+    router.delete(route('workspace.registry.reports.destroy', {
+        project: props.project.id,
+        workspace: props.workspace.id,
+        registry: props.registry.id,
+        report: props.report.id
+    }))
 };
 
 </script>
 
 <template>
-  <Head title="Workspace"/>
+    <Head title="Workspace"/>
 
-  <AuthenticatedLayout :workspace="workspace">
+    <AuthenticatedLayout :workspace="workspace">
 
-    <template #header>
-      <h2 class="text-white dark:text-gray-700 leading-tight">
-        <Link :href="route('workspace.registries.index',  { project: projectId, workspace: workspace})">Registries &lt
-        </Link>
-        <Link
-            :href="route('workspace.registries.show',  { project: projectId, workspace: workspace, registry: registry})">
-          {{ registry.name }} &lt
-        </Link>
-        Edit Report
-      </h2>
-    </template>
+        <template #header>
+            <h2 class="text-white dark:text-gray-700 leading-tight">
+                <Link :href="route('workspace.registries.index',  { project: projectId, workspace: workspace})">
+                    Registries &lt
+                </Link>
+                <Link
+                    :href="route('workspace.registries.show',  { project: projectId, workspace: workspace, registry: registry})">
+                    {{ registry.name }} &lt
+                </Link>
+                Edit Report
+            </h2>
+        </template>
 
-    <div class="px-2 pb-2">
-      <div class="space-y-2">
-        <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow">
-          <section class="max-w-xl">
-            <header>
-              <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Edit Report</h2>
+        <div class="px-2 pb-2">
+            <div class="space-y-2">
+                <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow">
+                    <section class="max-w-xl">
+                        <header>
+                            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Edit Report</h2>
 
-              <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                Please provide required data to edit report.
-              </p>
-            </header>
-            <form @submit.prevent="update" class="mt-6 space-y-6">
+                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                                Please provide required data to edit report.
+                            </p>
+                        </header>
+                        <form @submit.prevent="update" class="mt-6 space-y-6">
 
-              <div>
-                <InputLabel for="report_date" value="Report Date"/>
+                            <div>
+                                <InputLabel for="report_date" value="Report Date"/>
 
-                <TextInput
-                    id="report_date"
-                    type="date"
-                    class="mt-1 block w-full"
-                    v-model="form.report_date"
-                    required
-                    autofocus
-                    autocomplete="report_date"
-                />
+                                <TextInput
+                                    id="report_date"
+                                    type="date"
+                                    class="mt-1 block w-full"
+                                    v-model="form.report_date"
+                                    required
+                                    autofocus
+                                    autocomplete="report_date"
+                                />
 
-                <InputError class="mt-2" :message="form.errors.report_date"/>
-              </div>
+                                <InputError class="mt-2" :message="form.errors.report_date"/>
+                            </div>
 
 
-              <div>
-                <InputLabel for="notes" value="Notes"/>
+                            <div>
+                                <InputLabel for="notes" value="Notes"/>
 
-                <TextInput
-                    id="notes"
-                    type="text"
-                    class="mt-1 block w-full"
-                    v-model="form.notes"
-                    required
-                    autofocus
-                    autocomplete="notes"
-                />
+                                <TextInput
+                                    id="notes"
+                                    type="text"
+                                    class="mt-1 block w-full"
+                                    v-model="form.notes"
+                                    required
+                                    autofocus
+                                    autocomplete="notes"
+                                />
 
-                <InputError class="mt-2" :message="form.errors.notes"/>
-              </div>
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-4">
-                  <PrimaryButton :disabled="form.processing">Update</PrimaryButton>
-                  <Transition
-                      enter-active-class="transition ease-in-out"
-                      enter-from-class="opacity-0"
-                      leave-active-class="transition ease-in-out"
-                      leave-to-class="opacity-0"
-                  >
-                    <p v-if="form.recentlySuccessful" class="text-sm text-gray-600 dark:text-gray-400">
-                      Updated.</p>
-                  </Transition>
+                                <InputError class="mt-2" :message="form.errors.notes"/>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-4">
+                                    <PrimaryButton :disabled="form.processing">Update</PrimaryButton>
+                                    <Transition
+                                        enter-active-class="transition ease-in-out"
+                                        enter-from-class="opacity-0"
+                                        leave-active-class="transition ease-in-out"
+                                        leave-to-class="opacity-0"
+                                    >
+                                        <p v-if="form.recentlySuccessful"
+                                           class="text-sm text-gray-600 dark:text-gray-400">
+                                            Updated.</p>
+                                    </Transition>
 
+                                </div>
+                                <DangerButton type="button" @click.once="destroy(report)" tabindex="-1" value="Delete">
+                                    Delete Report
+                                </DangerButton>
+                            </div>
+
+
+                        </form>
+                    </section>
                 </div>
-                <DangerButton type="button" @click.once="destroy(report)" tabindex="-1" value="Delete">Delete Report
-                </DangerButton>
-              </div>
-
-
-            </form>
-          </section>
+            </div>
         </div>
-      </div>
-    </div>
-  </AuthenticatedLayout>
+    </AuthenticatedLayout>
 
 </template>
 

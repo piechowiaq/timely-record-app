@@ -35,7 +35,7 @@ const userHasNoWorkspace = !user.workspaces || !user.workspaces.length
 
 const page = usePage().props.route;
 
-const showWorkspaceNavigation = Boolean(props.workspace) && !page.endsWith('/edit');
+const showWorkspaceNavigation = Boolean(props.workspace);
 const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit') || !Boolean(props.workspace)
 
 
