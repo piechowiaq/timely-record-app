@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -38,6 +39,8 @@ class WorkspaceRegistryReportController extends Controller
 
     public function store(StoreReportRequest $request, Project $project, Workspace $workspace)
     {
+        $path = $request->file('file')->store(null, 'reports');
+
         $registry = Registry::find($request->registry_id);
 
         $report_date = new Carbon($request->report_date);
@@ -46,9 +49,12 @@ class WorkspaceRegistryReportController extends Controller
         $report = new Report();
         $report->report_date = $request->report_date;
         $report->expiry_date = $expiryDate;
-        $report->notes = $request->notes;
+        $report->filename = basename($path);
+        $report->url = Storage::disk('assets')->url($path);
+        $report->extension = $request->file('file')->extension();
         $report->workspace_id = $request->workspace_id;
         $report->registry_id = $request->registry_id;
+        $report->project_id = $project->id;
         $report->created_by_user_id = Auth::id();
         $report->save();
 
@@ -60,7 +66,8 @@ class WorkspaceRegistryReportController extends Controller
      */
     public function show(Project $project, Workspace $workspace, Registry $registry, Report $report)
     {
-        //
+
+        return response(Storage::disk('reports')->get('/reports/'.$report->filename));
     }
 
     public function edit(Project $project, Workspace $workspace, Registry $registry, Report $report)

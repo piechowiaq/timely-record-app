@@ -93,7 +93,7 @@ Route::middleware('auth', 'verified', 'web')->group(function () {
     Route::patch('/projects/{project}/workspaces/{workspace}/registries/{registry}/reports/{report}', [WorkspaceRegistryReportController::class, 'update'])->name('workspace.registry.reports.update');
     Route::delete('/projects/{project}/workspaces/{workspace}/registries/{registry}/reports/{report}', [WorkspaceRegistryReportController::class, 'destroy'])->name('workspace.registry.reports.destroy');
     Route::post('/projects/{project}/workspaces/{workspace}/registries/reports', [WorkspaceRegistryReportController::class, 'store'])->name('workspace.registry.reports.store');
-    Route::get('/projects/{project}/workspaces/{workspace}/registries/{registry}/reports/{report}', [WorkspaceRegistryReportController::class, 'edit'])->name('workspace.registry.reports.show');
+    Route::get('/projects/{project}/workspaces/{workspace}/registries/{registry}/reports/{report}', [WorkspaceRegistryReportController::class, 'show'])->name('workspace.registry.reports.show');
 
 });
 

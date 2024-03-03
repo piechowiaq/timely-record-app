@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('filename');
             $table->string('url');
             $table->string('extension');
-            $table->longText('notes')->nullable();
             $table->unsignedBigInteger('workspace_id');
             $table->unsignedBigInteger('registry_id');
             $table->unsignedBigInteger('project_id');
