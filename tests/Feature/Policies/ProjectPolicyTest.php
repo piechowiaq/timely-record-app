@@ -1,14 +1,15 @@
 <?php
 
 use App\Models\User;
-use Database\Seeders\RolesAndPermissionsSeeder;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 
-it('allows a user with role user that has more then one workspace to view their project dashboard', function () {
+beforeEach(function () {
+    $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+});
 
-    $this->seed(RolesAndPermissionsSeeder::class);
+it('allows a user with role user that has more then one workspace to view their project dashboard', function () {
 
     $user = User::factory()->withWorkspaces(2)->create();
 
@@ -20,8 +21,6 @@ it('allows a user with role user that has more then one workspace to view their 
 });
 
 it('forbid user with role user that has only one workspace to view their project dashboard', function () {
-
-    $this->seed(RolesAndPermissionsSeeder::class);
 
     $user = User::factory()->withWorkspaces(1)->create();
 
@@ -38,6 +37,8 @@ it('forbid user with role user that has only one workspace to view their project
 it('does not allow a user to view another dashboard', function () {
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
+
+    $user->assignRole('user');
 
     actingAs($user)
         ->get(route('projects.dashboard', $otherUser->project))

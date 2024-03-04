@@ -2,21 +2,22 @@
 
 use App\Models\Project;
 use App\Models\User;
-use Spatie\Permission\Models\Role;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\delete;
 use function Pest\Laravel\patch;
 use function Pest\Laravel\post;
 
-//beforeEach(function () {
-//    $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
-//});
+beforeEach(function () {
+    $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+});
 
 it('can store a user with roles and workspaces', function () {
 
     $user = User::factory()->withWorkspaces(5)->create();
     actingAs($user);
+
+    $user->assignRole('admin');
 
     // Set a delay so the test doesn't fail due to duplicate timestamps
 
@@ -27,14 +28,14 @@ it('can store a user with roles and workspaces', function () {
     $workspaces = $user->workspaces;
     $selectedWorkspaceIds = $workspaces->pluck('id')->take(3)->toArray();
 
-    $role = Role::create(['name' => 'admin']);
+    $role = 'admin';
 
     $userData = [
         'first_name' => 'John',
         'last_name' => 'Doe',
         'email' => 'john@example.com',
         'workspacesIds' => $selectedWorkspaceIds,
-        'role' => $role->name,
+        'role' => $role,
     ];
 
     // Act: Perform the action you want to test
@@ -59,16 +60,18 @@ it('does not create a new user with provided data', function () {
     $user = User::factory()->create();
     actingAs($user);
 
+    $user->assignRole('admin');
+
     $project = $user->project;
     $workspaces = \App\Models\Workspace::factory()->count(5)->create();
-    $role = Role::create(['name' => 'admin']);
+    $role = 'admin';
 
     $userData = [
         'first_name' => 'John',
         'last_name' => 'Doe',
         'email' => 'john@example.com',
         'workspacesIds' => $workspaces->pluck('id')->toArray(),
-        'role' => $role->name,
+        'role' => $role,
     ];
 
     $initialUserCount = User::count();
@@ -86,6 +89,7 @@ it('can update a user with new roles and workspaces', function () {
     $user = User::factory()->withWorkspaces(5)->create();
     actingAs($user);
     // Set a delay so the test doesn't fail due to duplicate timestamps
+    $user->assignRole('admin');
 
     usleep(1000000);
 
@@ -94,14 +98,14 @@ it('can update a user with new roles and workspaces', function () {
     $workspaces = $user->workspaces;
     $selectedWorkspaceIds = $workspaces->pluck('id')->take(3)->toArray();
 
-    $role = Role::create(['name' => 'admin']);
+    $role = 'admin';
 
     $userData = [
         'first_name' => 'John',
         'last_name' => 'Doe',
         'email' => 'john@example.com',
         'workspacesIds' => $selectedWorkspaceIds,
-        'role' => $role->name,
+        'role' => $role,
     ];
 
     // Act: Perform the action you want to test
@@ -110,14 +114,14 @@ it('can update a user with new roles and workspaces', function () {
 
     $updatedSelectedWorkspaceIds = $workspaces->pluck('id')->take(2)->toArray();
 
-    $role = Role::create(['name' => 'manager']);
+    $role = 'manager';
 
     $updatedUserData = [
         'first_name' => 'Jane',
         'last_name' => 'Smith',
         'email' => 'jane@example.com',
         'workspacesIds' => $updatedSelectedWorkspaceIds,
-        'role' => $role->name,
+        'role' => $role,
     ];
 
     $response = patch(route('users.update', ['project' => $project, 'user' => $user->id]), $updatedUserData);
@@ -139,6 +143,8 @@ it('can delete a user', function () {
     actingAs($user);
     // Set a delay so the test doesn't fail due to duplicate timestamps
 
+    $user->assignRole('admin');
+
     usleep(1000000);
 
     $project = $user->project;
@@ -146,14 +152,14 @@ it('can delete a user', function () {
     $workspaces = $user->workspaces;
     $selectedWorkspaceIds = $workspaces->pluck('id')->take(3)->toArray();
 
-    $role = Role::create(['name' => 'admin']);
+    $role = 'admin';
 
     $userData = [
         'first_name' => 'John',
         'last_name' => 'Doe',
         'email' => 'john@example.com',
         'workspacesIds' => $selectedWorkspaceIds,
-        'role' => $role->name,
+        'role' => $role,
     ];
 
     // Act: Perform the action you want to test
@@ -179,11 +185,6 @@ it('allows logged in user to view only their project and its workspaces', functi
 
     $project = $user->project;
     $otherProject = Project::factory()->create();
-
-    // Attempt to access the user's project
-    //    $response = $this->get(route('projects.dashboard', $project->id));
-    //
-    //    $response->assertOk();
 
     $response = $this->get(route('projects.dashboard', $otherProject->id));
 

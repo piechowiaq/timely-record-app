@@ -16,6 +16,7 @@ it('shows workspace name', function () {
     $user = User::factory()->withWorkspaces()->create();
     actingAs($user);
 
+    $user->assignRole('user');
     $workspace = Workspace::first();
 
     $response = get(route('workspaces.dashboard', ['project' => $user->project_id, 'workspace' => $workspace->id]));
