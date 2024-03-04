@@ -26,8 +26,6 @@ class StoreReportRequest extends FormRequest
             'workspace_id' => ['required', 'exists:workspaces,id'],
             'registry_id' => ['required', 'exists:registries,id'],
 
-            'file' => ['required', 'file', 'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx', 'max:2048'],
-
         ];
     }
 }

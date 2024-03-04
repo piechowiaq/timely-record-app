@@ -221,10 +221,10 @@ const toDateString = (dateString) => {
                       v-if="mostCurrentReport.expiry_date"
                       class="hover:bg-gray-100 group flex items-center"
                   >
-<Link
-    :href="route('workspace.registry.reports.show', { project: projectId, workspace: workspace.id, registry: registry.id,  report: mostCurrentReport.id })">
+<a target="_blank"
+   :href="route('workspace.registry.reports.show', { project: projectId, workspace: workspace.id, registry: registry.id,  report: mostCurrentReport.id })">
                     <i class="fa-solid fa-download block m-auto group-hover:fill-cyan-600 fill-gray-600 p-2"></i>
-</Link>
+</a>
                   </span>
 
                                 <i v-else class="fa-solid fa-download text-gray-300 block m-auto h-6 w-6"></i>

@@ -39,9 +39,24 @@ class WorkspaceRegistryReportController extends Controller
 
     public function store(StoreReportRequest $request, Project $project, Workspace $workspace)
     {
-        $path = $request->file('file')->store(null, 'reports');
-
         $registry = Registry::find($request->registry_id);
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $filename = $file->getClientOriginalName();
+            $file->storeAs('reports', $filename, 's3');
+        }
+
+        $file = Storage::get('reports/'.$filename);
+
+        Storage::put('reports/'.$filename, $file);
+
+        //        return Storage::disk('s3')->response('reports/'.$filename);
+        //        return Storage::disk('s3')->url('reports/'.$filename);
+
+        // Getting image Storage::disk('reports')->get($path)
+        // Getting url Storage::disk('reports')->url($path) https://timelyrecord-private.s3.eu-central-1.amazonaws.com/reports/AzT6ON2FaozjXOR870oYeHjfDrFeHSVKtZfbKcfv.jpg
+        // Getting streamed response Storage::disk('reports')->response($path)
 
         $report_date = new Carbon($request->report_date);
         $expiryDate = $report_date->addMonths($registry->validity_period)->toDateString();
@@ -49,8 +64,8 @@ class WorkspaceRegistryReportController extends Controller
         $report = new Report();
         $report->report_date = $request->report_date;
         $report->expiry_date = $expiryDate;
-        $report->filename = basename($path);
-        $report->url = Storage::disk('assets')->url($path);
+        $report->filename = $filename;
+        $report->url = Storage::disk('s3')->url($filename);
         $report->extension = $request->file('file')->extension();
         $report->workspace_id = $request->workspace_id;
         $report->registry_id = $request->registry_id;
@@ -67,7 +82,9 @@ class WorkspaceRegistryReportController extends Controller
     public function show(Project $project, Workspace $workspace, Registry $registry, Report $report)
     {
 
-        return response(Storage::disk('reports')->get('/reports/'.$report->filename));
+        return Storage::disk('s3')->response('reports/'.$report->filename);
+
+        //        return Storage::disk('s3')->response('reports/'.$report->filename);
     }
 
     public function edit(Project $project, Workspace $workspace, Registry $registry, Report $report)
