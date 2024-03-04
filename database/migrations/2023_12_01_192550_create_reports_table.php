@@ -15,9 +15,7 @@ return new class extends Migration
             $table->id();
             $table->date('report_date');
             $table->date('expiry_date');
-            $table->string('filename');
-            $table->string('url');
-            $table->string('extension');
+            $table->string('report_path');
             $table->unsignedBigInteger('workspace_id');
             $table->unsignedBigInteger('registry_id');
             $table->unsignedBigInteger('project_id');

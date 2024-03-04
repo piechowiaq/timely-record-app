@@ -217,17 +217,15 @@ const toDateString = (dateString) => {
                                 }} </span>
                             </td>
                             <td class=" p-2 w-24">
-                  <span
-                      v-if="mostCurrentReport.expiry_date"
-                      class="hover:bg-gray-100 group flex items-center"
-                  >
-<a target="_blank"
-   :href="route('workspace.registry.reports.show', { project: projectId, workspace: workspace.id, registry: registry.id,  report: mostCurrentReport.id })">
-                    <i class="fa-solid fa-download block m-auto group-hover:fill-cyan-600 fill-gray-600 p-2"></i>
-</a>
-                  </span>
 
-                                <i v-else class="fa-solid fa-download text-gray-300 block m-auto h-6 w-6"></i>
+
+                                <a v-if="mostCurrentReport.expiry_date"
+                                   class="group flex justify-center items-center bg-yellow-500 hover:bg-yellow-600"
+                                   :href="route('workspace.registry.reports.show', { project: projectId, workspace: workspace.id, registry: registry.id, report: mostCurrentReport.id })"
+                                   target="_blank"
+                                >
+                                    <i class="fa-solid fa-download p-2 text-black"></i>
+                                </a>
 
 
                             </td>
@@ -289,6 +287,8 @@ const toDateString = (dateString) => {
 
                             </td>
                             <td class=" p-2 px-2 w-16">
+
+
                                 <i class="fa-solid fa-bell text-red-200"
                                    v-if="isReportExpired(report.expiry_date)"/>
 
@@ -305,16 +305,15 @@ const toDateString = (dateString) => {
                             </td>
 
                             <td class=" p-2 w-24">
-                  <span
-                      v-if="report.expiry_date"
-                      class="hover:bg-gray-100 group flex items-center"
-                  >
 
-                    <i class="fa-solid fa-download block m-auto group-hover:fill-cyan-600 fill-gray-600 p-2"></i>
 
-                  </span>
-
-                                <i v-else class="fa-solid fa-download text-gray-300 block m-auto"></i>
+                                <a v-if="report.expiry_date"
+                                   class="group flex justify-center items-center bg-yellow-200 hover:bg-yellow-400"
+                                   :href="route('workspace.registry.reports.show', { project: projectId, workspace: workspace.id, registry: registry.id, report: mostCurrentReport.id })"
+                                   target="_blank"
+                                >
+                                    <i class="fa-solid fa-download p-2 text-gray-400"></i>
+                                </a>
 
 
                             </td>

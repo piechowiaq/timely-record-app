@@ -7,6 +7,10 @@ use Inertia\Testing\AssertableInertia as Assert;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 
+beforeEach(function () {
+    $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+});
+
 it('it shows a list of registers that belong to workspace', function () {
 
     $user = User::factory()->withWorkspaces(4)->create();

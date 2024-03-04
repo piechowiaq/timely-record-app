@@ -2,6 +2,10 @@
 
 use App\Models\User;
 
+beforeEach(function () {
+    $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+});
+
 test('confirm password screen can be rendered', function () {
     $user = User::factory()->create();
 

@@ -45,9 +45,7 @@ class ReportFactory extends Factory
         return [
             'report_date' => $reportDate,
             'expiry_date' => $expiryDate,
-            'filename' => $this->faker->word,
-            'url' => $this->faker->url,
-            'extension' => $this->faker->fileExtension,
+            'report_path' => $this->faker->url,
             'workspace_id' => Workspace::factory(),
             'registry_id' => $registry->id,
             'project_id' => $project->id,

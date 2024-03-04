@@ -23,9 +23,6 @@ class UpdateReportRequest extends FormRequest
     {
         return [
             'report_date' => ['required', 'date', 'before_or_equal:today'],
-            'notes' => ['string', 'max:255'],
-            'workspace_id' => ['required', 'exists:workspaces,id'],
-            'registry_id' => ['required', 'exists:registries,id'],
         ];
     }
 }

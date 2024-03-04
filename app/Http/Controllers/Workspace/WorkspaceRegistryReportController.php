@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Workspace;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreReportRequest;
-use App\Http\Requests\UpdateReportRequest;
 use App\Models\Project;
 use App\Models\Registry;
 use App\Models\Report;
@@ -40,23 +39,10 @@ class WorkspaceRegistryReportController extends Controller
     public function store(StoreReportRequest $request, Project $project, Workspace $workspace)
     {
         $registry = Registry::find($request->registry_id);
+        $file = $request->file('report_path');
+        $fileName = preg_replace('/[^A-Za-z0-9\-_\.]/', '_', now()->format('YmdHis').'_'.$project->id.'_'.$workspace->id.'_'.$registry->name.'.'.$request->file('report_path')->extension());
 
-        if ($request->hasFile('file')) {
-            $file = $request->file('file');
-            $filename = $file->getClientOriginalName();
-            $file->storeAs('reports', $filename, 's3');
-        }
-
-        $file = Storage::get('reports/'.$filename);
-
-        Storage::put('reports/'.$filename, $file);
-
-        //        return Storage::disk('s3')->response('reports/'.$filename);
-        //        return Storage::disk('s3')->url('reports/'.$filename);
-
-        // Getting image Storage::disk('reports')->get($path)
-        // Getting url Storage::disk('reports')->url($path) https://timelyrecord-private.s3.eu-central-1.amazonaws.com/reports/AzT6ON2FaozjXOR870oYeHjfDrFeHSVKtZfbKcfv.jpg
-        // Getting streamed response Storage::disk('reports')->response($path)
+        $file->storeAs($project->id.'/'.$workspace->id.'/'.$registry->id, $fileName, 'reports');
 
         $report_date = new Carbon($request->report_date);
         $expiryDate = $report_date->addMonths($registry->validity_period)->toDateString();
@@ -64,9 +50,7 @@ class WorkspaceRegistryReportController extends Controller
         $report = new Report();
         $report->report_date = $request->report_date;
         $report->expiry_date = $expiryDate;
-        $report->filename = $filename;
-        $report->url = Storage::disk('s3')->url($filename);
-        $report->extension = $request->file('file')->extension();
+        $report->report_path = $fileName;
         $report->workspace_id = $request->workspace_id;
         $report->registry_id = $request->registry_id;
         $report->project_id = $project->id;
@@ -82,9 +66,8 @@ class WorkspaceRegistryReportController extends Controller
     public function show(Project $project, Workspace $workspace, Registry $registry, Report $report)
     {
 
-        return Storage::disk('s3')->response('reports/'.$report->filename);
+        return Storage::disk('reports')->response($project->id.'/'.$workspace->id.'/'.$registry->id.'/'.$report->report_path);
 
-        //        return Storage::disk('s3')->response('reports/'.$report->filename);
     }
 
     public function edit(Project $project, Workspace $workspace, Registry $registry, Report $report)
@@ -97,16 +80,14 @@ class WorkspaceRegistryReportController extends Controller
         ]);
     }
 
-    public function update(UpdateReportRequest $request, Project $project, Workspace $workspace, Registry $registry, Report $report)
+    public function update(Request $request, Project $project, Workspace $workspace, Registry $registry, Report $report)
     {
+
         $report_date = new Carbon($request->report_date);
         $expiryDate = $report_date->addMonths($registry->validity_period)->toDateString();
 
         $report->report_date = $request->report_date;
         $report->expiry_date = $expiryDate;
-        $report->notes = $request->notes;
-        $report->workspace_id = $request->workspace_id;
-        $report->registry_id = $request->registry_id;
         $report->updated_by_user_id = Auth::id();
         $report->save();
 
@@ -118,6 +99,7 @@ class WorkspaceRegistryReportController extends Controller
      */
     public function destroy(Project $project, Workspace $workspace, Registry $registry, Report $report)
     {
+        Storage::disk('reports')->delete($project->id.'/'.$workspace->id.'/'.$registry->id.'/'.$report->report_path);
 
         $report->delete();
 

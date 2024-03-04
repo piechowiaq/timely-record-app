@@ -129,6 +129,7 @@ class WorkspaceController extends Controller
      */
     public function update(UpdateWorkspaceRequest $request, Project $project, Workspace $workspace)
     {
+
         $this->workspaceService->updateWorkspace($workspace, $request->only('name', 'location'));
 
         return redirect()->route('workspaces.edit', ['project' => $project, 'workspace' => $workspace])->with('success', 'Workspace updated.');

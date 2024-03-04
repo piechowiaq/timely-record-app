@@ -6,6 +6,10 @@ use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\URL;
 
+beforeEach(function () {
+    $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+});
+
 test('email verification screen can be rendered', function () {
     $user = User::factory()->create([
         'email_verified_at' => null,

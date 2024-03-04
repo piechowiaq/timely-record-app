@@ -82,6 +82,8 @@ test('users can not authenticate with invalid password', function () {
 });
 
 test('users can logout', function () {
+
+    $this->seed(RolesAndPermissionsSeeder::class);
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)->post('/logout');

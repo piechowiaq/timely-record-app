@@ -45,7 +45,7 @@ let filteredRegistries = computed(() =>
 )
 
 const form = useForm(useRemember(reactive({
-        file: null,
+        report_path: null,
         report_date: '',
         registry_id: selected.value ? selected.value.id : '',
         workspace_id: props.workspace.id,
@@ -183,15 +183,14 @@ const store = () => {
                                 <InputError class="mt-2" :message="form.errors.report_date"/>
                             </div>
                             <div>
-                                <InputLabel for="fileUpload" value="File"/>
+                                <InputLabel for="report_path" value="Upload Report"/>
 
-                                <input type="file" id="fileUpload" name="fileUpload"
-                                       @input="form.file = $event.target.files[0]"
+                                <input type="file" id="report_path" name="report_path"
+                                       @input="form.report_path = $event.target.files[0]"
                                        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-cyan-500 dark:focus:border-cyan-600 focus:ring-cyan-500 dark:focus:ring-cyan-600 shadow-sm"
                                 />
-                                {{ form.errors }}
+                                <InputError class="mt-2" :message="form.errors.report_path"/>
 
-                                <InputError class="mt-2" :message="form.errors.file"/>
 
                                 <progress v-if="form.progress" :value="form.progress.percentage" max="100">
                                     {{ form.progress.percentage }}%

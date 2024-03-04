@@ -8,6 +8,10 @@ use function Pest\Laravel\delete;
 use function Pest\Laravel\patch;
 use function Pest\Laravel\post;
 
+beforeEach(function () {
+    $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+});
+
 it('can store a first workspace', function () {
 
     $user = User::factory()->create();

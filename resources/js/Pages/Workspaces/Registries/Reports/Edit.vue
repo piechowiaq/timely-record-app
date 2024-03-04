@@ -20,21 +20,9 @@ const props = defineProps({
 const projectId = usePage().props.auth.user.project_id;
 
 const form = useForm(useRemember(reactive({
-        notes: props.report.notes,
         report_date: props.report.report_date,
-        registry_id: props.registry.id,
-        workspace_id: props.workspace.id,
     }))
 )
-
-const update = () => {
-    form.patch(route('workspace.registry.reports.update', {
-        project: props.project.id,
-        workspace: props.workspace.id,
-        registry: props.registry.id,
-        report: props.report.id
-    }));
-};
 
 const destroy = (report) => {
     router.delete(route('workspace.registry.reports.destroy', {
@@ -64,7 +52,7 @@ const destroy = (report) => {
                 Edit Report
             </h2>
         </template>
-
+     
         <div class="px-2 pb-2">
             <div class="space-y-2">
                 <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow">
@@ -76,7 +64,9 @@ const destroy = (report) => {
                                 Please provide required data to edit report.
                             </p>
                         </header>
-                        <form @submit.prevent="update" class="mt-6 space-y-6">
+                        <form
+                            @submit.prevent="form.patch(route('workspace.registry.reports.update', { project: projectId, workspace: workspace.id,  registry: registry.id, report: report.id }))"
+                            class="mt-6 space-y-6">
 
                             <div>
                                 <InputLabel for="report_date" value="Report Date"/>
@@ -94,22 +84,6 @@ const destroy = (report) => {
                                 <InputError class="mt-2" :message="form.errors.report_date"/>
                             </div>
 
-
-                            <div>
-                                <InputLabel for="notes" value="Notes"/>
-
-                                <TextInput
-                                    id="notes"
-                                    type="text"
-                                    class="mt-1 block w-full"
-                                    v-model="form.notes"
-                                    required
-                                    autofocus
-                                    autocomplete="notes"
-                                />
-
-                                <InputError class="mt-2" :message="form.errors.notes"/>
-                            </div>
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-4">
                                     <PrimaryButton :disabled="form.processing">Update</PrimaryButton>
