@@ -3,6 +3,7 @@ name: Timely-Record
 environments:
   production:
     memory: 1024
+    storage: timelyrecord
     database: timely_record
     domain: timelyrecord.com
     cli-memory: 512

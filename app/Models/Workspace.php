@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\ProjectScope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -62,5 +63,15 @@ class Workspace extends Model
 
         return $query;
 
+    }
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new ProjectScope);
+    }
+
+    public function getValidRegistriesCountAttribute()
+    {
+        return $this->registries()->withValidReport()->count();
     }
 }

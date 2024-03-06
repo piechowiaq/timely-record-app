@@ -34,4 +34,9 @@ class Report extends Model
     {
         return $this->belongsTo(User::class, 'created_by_user_id');
     }
+
+    public function scopeValid($query)
+    {
+        return $query->where('expiry_date', '>', now());
+    }
 }

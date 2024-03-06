@@ -29,6 +29,13 @@ class Registry extends Model
         return $this->hasMany(Report::class);
     }
 
+    public function scopeWithValidReport($query)
+    {
+        return $query->whereHas('reports', function ($query) {
+            $query->where('expiry_date', '>', now());
+        });
+    }
+
     public function scopeApplyFilters(Builder $query, Request $request): Builder
     {
         $search = $request->input('search');
@@ -51,4 +58,21 @@ class Registry extends Model
         'project_id',
 
     ];
+
+    public function getLatestValidReportForWorkspace($workspaceId)
+    {
+        // Directly query the reports table using the Report model
+        return Report::where('registry_id', $this->id)
+            ->where('workspace_id', $workspaceId)
+            ->where('expiry_date', '>', now())
+            ->latest('expiry_date')
+            ->first();
+    }
+
+    public function scopeBelongsToWorkspace($query, $workspaceId)
+    {
+        return $query->whereHas('workspaces', function (Builder $query) use ($workspaceId) {
+            $query->where('workspace_id', $workspaceId);
+        });
+    }
 }

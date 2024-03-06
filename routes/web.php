@@ -7,6 +7,7 @@ use App\Http\Controllers\Project\WorkspaceController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\Workspace\WorkspaceRegistryController;
 use App\Http\Controllers\Workspace\WorkspaceRegistryReportController;
+use App\Models\Registry;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -22,18 +23,37 @@ use Inertia\Inertia;
 */
 
 Route::get('test', function () {
-    \Illuminate\Support\Facades\Storage::put('test.txt', 'Hello World');
+    $workspaceId = 4; // The workspace ID you're interested in
 
-    $content = \Illuminate\Support\Facades\Storage::get('test.txt');
+    $registries = Registry::whereHas('workspaces', function ($query) use ($workspaceId) {
+        $query->where('workspace_id', $workspaceId);
+    })->get();
 
-    var_dump($content);
+    // Initialize counters
+    $registriesWithValidReportCount = 0;
+    $registriesWithoutValidReportCount = 0;
 
-    return 'File was created';
-})->name('test');
+    foreach ($registries as $registry) {
+        // Utilize the custom method to fetch the latest valid report for the registry, scoped to the workspace
+        $latestValidReport = $registry->getLatestValidReportForWorkspace($workspaceId);
 
-//Route::post('test', function (Illuminate\Http\Request $request) {
-//    dd($request);
-//})->name('test');
+        if ($latestValidReport) {
+            $registriesWithValidReportCount++; // Increment if the registry has at least one valid report
+            echo "Registry ID: {$registry->id}, Latest Valid Report ID: {$latestValidReport->id} for Workspace ID: {$workspaceId}\n";
+        } else {
+            $registriesWithoutValidReportCount++; // Increment if the registry has no valid reports
+            echo "Registry ID: {$registry->id} has no valid reports for Workspace ID: {$workspaceId}.\n";
+        }
+    }
+    $registriesCount = $registries->count();
+
+    $validReportsPercentage = $registriesCount > 0 ? ($registriesWithValidReportCount / $registriesCount) * 100 : 0;
+
+    echo "\nTotal Registries with At Least One Valid Report: $registriesWithValidReportCount\n";
+    echo "Total Registries without Valid Reports: $registriesWithoutValidReportCount\n";
+    echo "Registries count : $validReportsPercentage\n %";
+    echo "Total Registries without Valid Reports: $registriesWithoutValidReportCount\n";
+})->name('test')->middleware('auth');
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
