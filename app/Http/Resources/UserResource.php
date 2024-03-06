@@ -21,7 +21,6 @@ class UserResource extends JsonResource
             'role' => $this->roles->pluck('name')->join(', '), // Handle roles
             'email' => $this->email,
             'email_verified' => $this->hasVerifiedEmail(),
-            'workspacesIds' => $this->workspaces->pluck('id'), // Handle workspaces
 
         ];
     }

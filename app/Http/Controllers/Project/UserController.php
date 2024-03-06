@@ -49,9 +49,12 @@ class UserController extends Controller
     {
         $this->authorize('manage', $project);
 
-        $paginatedUsers = $this->userRepository->getUsersByProjectWithRolesQuery($project)
-            ->applyFilters($request)
-            ->paginate(10)
+        $paginatedUsers = User::query()
+            ->whereDoesntHave('roles', function ($query) {
+                $query->where('name', 'project-admin');
+            })
+            ->applyFilters($request) // Assuming this is a custom scope you've defined
+            ->paginate(3)
             ->withQueryString();
 
         return Inertia::render('Users/Index', [
@@ -68,19 +71,18 @@ class UserController extends Controller
         $roles = $roleRepository->getAvailableRoles();
 
         // Fetch all workspaces related to the user's project
-        $paginatedWorkspaces = $this->workspaceRepository
-            ->getWorkspacesByProjectQuery(auth()->user()->project)
+        $paginatedWorkspaces = auth()->user()->workspaces()
             ->paginate(5)
             ->withQueryString();
 
         $project = $request->user()->project;
 
-        $allWorkspacesIds = $this->workspaceRepository->getWorkspacesByProjectIds($project);
+        $allWorkspacesIds = auth()->user()->workspaces();
 
         return Inertia::render('Users/Create', [
             'roles' => $roles,
             'paginatedWorkspaces' => WorkspaceResource::collection($paginatedWorkspaces),
-            'workspacesIds' => $this->workspaceRepository->getWorkspacesIds($paginatedWorkspaces),
+            'workspacesIds' => $paginatedWorkspaces->pluck('id')->toArray(),
             'allWorkspacesIds' => $allWorkspacesIds,
             'project' => $project,
         ]);
@@ -108,7 +110,7 @@ class UserController extends Controller
         // Fetch roles excluding 'super-admin'
         $roles = $this->roleRepository->getAvailableRoles();
 
-        $allWorkspacesIds = $this->workspaceRepository->getWorkspacesByProjectIds($project);
+        $allWorkspacesIds = auth()->user()->workspaces();
 
         $paginatedWorkspaces = $this->workspaceRepository
             ->getWorkspacesByProjectQuery($project)
@@ -120,7 +122,7 @@ class UserController extends Controller
             'roles' => $roles,
             'paginatedWorkspaces' => $paginatedWorkspaces,
             'allWorkspacesIds' => $allWorkspacesIds, // Pass all workspace IDs from the current project
-            'workspacesIds' => $this->workspaceRepository->getWorkspacesIdsByUser($user), // Pass all workspace IDs from the current paginated set
+            'workspacesIds' => $user->pluck('id')->toArray(), // Pass all workspace IDs from the current paginated set
         ]);
     }
 

@@ -18,7 +18,7 @@ const props = defineProps({
     paginatedWorkspaces: Object,
     workspacesIds: Array,
     user: Object,
-    allWorkspacesIds: Array,
+    allWorkspacesIds: Object,
 });
 
 const projectId = usePage().props.auth.user.project_id;

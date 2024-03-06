@@ -13,9 +13,6 @@ const props = defineProps({
     filters: {
         type: Object,
     },
-    users: {
-        type: Object,
-    },
 });
 
 const projectId = usePage().props.auth.user.project_id;
@@ -68,7 +65,7 @@ const getSortIconClass = (field) => {
                                 class="ml-3 text-sm text-gray-500 hover:text-gray-700 focus:text-cyan-600"
                                 @click="resetSearch">Reset
                         </button>
-
+                     
                     </div>
                     <Link :href="route('users.create', projectId)" class="text-cyan-600 hover:text-cyan-700 text-sm">
                         Create
