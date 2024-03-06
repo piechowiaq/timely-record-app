@@ -39,4 +39,21 @@ class Report extends Model
     {
         return $query->where('expiry_date', '>', now());
     }
+
+    public function scopeValidWorkspaceRegistry($query, $workspaceId = null, $registryId = null)
+    {
+        // Always apply the validity filter based on expiry_date
+        $query->where('expiry_date', '>', now());
+
+        // Conditionally add workspace and registry filters if IDs are provided
+        if (! is_null($workspaceId)) {
+            $query->where('workspace_id', $workspaceId);
+        }
+
+        if (! is_null($registryId)) {
+            $query->where('registry_id', $registryId);
+        }
+
+        return $query;
+    }
 }

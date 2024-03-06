@@ -17,7 +17,7 @@ it('shows workspaces names and locations', function () {
 
     actingAs($user);
 
-    $workspaces = $user->project->workspaces;
+    $workspaces = $user->workspaces;
 
     $response = get(route('projects.dashboard', ['project' => $user->project_id]));
 

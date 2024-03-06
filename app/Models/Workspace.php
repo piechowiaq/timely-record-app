@@ -70,8 +70,21 @@ class Workspace extends Model
         static::addGlobalScope(new ProjectScope);
     }
 
-    public function getValidRegistriesCountAttribute()
+    /**
+     * Get the registry metrics for the workspace.
+     */
+    public function registryMetrics(): float|int
     {
-        return $this->registries()->withValidReport()->count();
+        $registries = $this->registries()->with(['reports' => function ($query) {
+            $query->validWorkspaceRegistry($this->id);
+        }])->get();
+
+        $registriesWithValidReport = $registries->filter(function ($registry) {
+            return $registry->reports->isNotEmpty();
+        });
+
+        $registryMetrics = $registries->count() > 0 ? ($registriesWithValidReport->count() / $registries->count()) * 100 : 0;
+
+        return round($registryMetrics);
     }
 }

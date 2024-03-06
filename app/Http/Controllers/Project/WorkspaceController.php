@@ -48,7 +48,7 @@ class WorkspaceController extends Controller
     {
         $this->authorize('manage', $project);
 
-        $paginatedWorkspaces = $this->workspaceRepository->getWorkspacesByProjectQuery($project)
+        $paginatedWorkspaces = auth()->user()->workspaces()
             ->applyFilters($request)
             ->paginate(10)
             ->withQueryString();
@@ -64,9 +64,7 @@ class WorkspaceController extends Controller
      */
     public function create(Project $project)
     {
-        return Inertia::render('Workspaces/Create', [
-            'project' => $project,
-        ]);
+        return Inertia::render('Workspaces/Create');
     }
 
     /**
