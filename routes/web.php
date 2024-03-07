@@ -40,6 +40,7 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'verified', 'web', 'role.redirect'])->group(function () {
     Route::get('/projects/{project}/dashboard', ProjectController::class)->name('projects.dashboard');
+    //    Route::get('/dashboard', ProjectController::class)->name('projects.dashboard');
 });
 
 Route::middleware('auth', 'verified', 'web')->group(function () {

@@ -3,6 +3,7 @@
 namespace App\Repositories\Eloquent;
 
 use App\Models\Project;
+use App\Models\User;
 use App\Models\Workspace;
 use App\Repositories\Contracts\WorkspaceRepositoryInterface;
 
@@ -20,10 +21,11 @@ class EloquentWorkspaceRepository implements WorkspaceRepositoryInterface
     //        });
     //    }
     //
-    //    public function getWorkspacesByProjectIds(Project $project)
-    //    {
-    //        return $this->getWorkspacesByProjectQuery($project)->pluck('id')->toArray();
-    //    }
+    public function getWorkspacesByProjectIds(Project $project)
+    {
+        return $this->getWorkspacesByProjectQuery($project)->pluck('id')->toArray();
+    }
+
     //
     //    public function getWorkspacesIds($workspaces)
     //    {
@@ -79,8 +81,8 @@ class EloquentWorkspaceRepository implements WorkspaceRepositoryInterface
     //        return $results->toArray();
     //    }
     //
-    //    public function getWorkspacesIdsByUser(User $user)
-    //    {
-    //        return $user->workspaces->pluck('id') ?? collect();
-    //    }
+    public function getWorkspacesIdsByUser(User $user)
+    {
+        return $user->workspaces->pluck('id') ?? collect();
+    }
 }
