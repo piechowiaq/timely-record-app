@@ -39,7 +39,7 @@ class SendUserRegistrationNotification extends Notification
     {
         $registrationUrl = $this->registrationUrl($user);
 
-        return $this->buildMailMessage($registrationUrl, Str::ucfirst($user->name));
+        return $this->buildMailMessage($registrationUrl, Str::ucfirst($user->first_name));
     }
 
     /**

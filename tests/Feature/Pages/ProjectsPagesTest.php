@@ -25,13 +25,13 @@ it('shows workspaces names and locations', function () {
 
     $response->assertInertia(fn (Assert $page) => $page
         ->component('Projects/Dashboard')
-        ->has('workspaces', 4)
-        ->where('workspaces.0.name', $workspaces[0]['name'])
-        ->where('workspaces.0.location', $workspaces[0]['location'])
-        ->where('workspaces.1.name', $workspaces[1]['name'])
-        ->where('workspaces.1.location', $workspaces[1]['location'])
-        ->where('workspaces.2.name', $workspaces[2]['name'])
-        ->where('workspaces.2.location', $workspaces[2]['location'])
-        ->where('workspaces.3.name', $workspaces[3]['name']));
+        ->has('workspaces.data', 4)
+        ->where('workspaces.data.0.name', $workspaces[0]['name'])
+        ->where('workspaces.data.0.location', $workspaces[0]['location'])
+        ->where('workspaces.data.1.name', $workspaces[1]['name'])
+        ->where('workspaces.data.1.location', $workspaces[1]['location'])
+        ->where('workspaces.data.2.name', $workspaces[2]['name'])
+        ->where('workspaces.data.2.location', $workspaces[2]['location'])
+        ->where('workspaces.data.3.name', $workspaces[3]['name']));
 
 });

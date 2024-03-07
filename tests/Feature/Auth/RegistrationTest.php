@@ -1,11 +1,13 @@
 <?php
 
+use App\Models\Project;
 use App\Models\User;
 use App\Notifications\SendUserRegistrationNotification;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
 
+use function Pest\Laravel\actingAs;
 use function Pest\Laravel\post;
 
 test('registration screen can be rendered', function () {
@@ -37,25 +39,26 @@ test('new users can register', function () {
 it('triggers a UserRegistrationNotification when a user is passed', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
-
-    post('/register', [
-        'first_name' => 'Test User',
-        'last_name' => 'Test User',
-        'email' => 'test@example.com',
-        'password' => 'password',
-        'password_confirmation' => 'password',
-    ]);
-
-    $this->assertAuthenticated();
-
+    // Arrange
     Notification::fake();
 
-    $user = User::factory()->create();
+    $project = Project::factory()->create();
 
-    post(route('registration.send', $user));
+    // Assuming you have a User model, and it uses the HasFactory trait
+    $authUser = User::factory()->create(['project_id' => $project->id]);
+    $authUser->assignRole('project-admin');
 
+    actingAs($authUser);
+
+    // Ensure the newly created user is associated with the same project
+    $user = User::factory()->create(['project_id' => $project->id]);
+
+    // Trigger the action that would send the notification
+    post(route('registration.send', ['user' => $user->id]));
+
+    // Assert
     Notification::assertSentTo(
-        $user, SendUserRegistrationNotification::class
+        [$user], SendUserRegistrationNotification::class
     );
 });
 
@@ -63,17 +66,19 @@ it('redirects correctly after sending the user registration notification', funct
 
     $this->seed(RolesAndPermissionsSeeder::class);
 
-    post('/register', [
-        'first_name' => 'Test User',
-        'last_name' => 'Test User',
-        'email' => 'test@example.com',
-        'password' => 'password',
-        'password_confirmation' => 'password',
-    ]);
+    $project = Project::factory()->create();
+
+    // Assuming you have a User model, and it uses the HasFactory trait
+    $authUser = User::factory()->create(['project_id' => $project->id]);
+    $authUser->assignRole('project-admin');
+
+    actingAs($authUser);
+
+    // Ensure the newly created user is associated with the same project
 
     $this->assertAuthenticated();
 
-    $user = User::factory()->create();
+    $user = User::factory()->create(['project_id' => $project->id]);
 
     $response = post(route('registration.send', $user));
 

@@ -32,7 +32,7 @@ const sendRegistrationLink = () => {
                 User not yet registered. Send link and advise user to check email for registration link.
             </p>
         </header>
-
+        {{ user.data }}
         <form @submit.prevent="sendRegistrationLink">
             <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                 Send Registration Link
