@@ -32,7 +32,7 @@ const getWorkspaceBorderColor = (workspace) => {
         </template>
 
         <div class="px-2 pb-2">
-            <div v-if="!workspaces.data.length">
+            <div v-if="!workspaces.length">
                 <section
                     class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow flex-grow">
 
@@ -51,7 +51,7 @@ const getWorkspaceBorderColor = (workspace) => {
                 </section>
             </div>
             <div v-else class="grid md:grid-cols-2 gap-2 grid-cols-1">
-                <section v-for="workspace in workspaces.data" :key="workspace.id"
+                <section v-for="workspace in workspaces" :key="workspace.id"
                          class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow flex-grow justify-between flex">
                     <header>
                         <Link :href="route('workspaces.dashboard', { project: projectId, workspace: workspace.id} )">

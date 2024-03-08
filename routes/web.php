@@ -7,6 +7,7 @@ use App\Http\Controllers\Project\WorkspaceController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\Workspace\WorkspaceRegistryController;
 use App\Http\Controllers\Workspace\WorkspaceRegistryReportController;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -22,8 +23,8 @@ use Inertia\Inertia;
 */
 
 Route::get('test', function () {
-
-})->name('test')->middleware('auth');
+    return UserResource::make(\App\Models\User::find(1));
+})->name('test');
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
