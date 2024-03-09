@@ -15,6 +15,7 @@ class RoleBasedRedirect
      */
     public function handle(Request $request, Closure $next): Response
     {
+
         $user = auth()->user();
 
         if ($user->hasRole('project-admin') && $user->workspaces->isEmpty()) {

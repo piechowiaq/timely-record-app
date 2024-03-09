@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Resources\WorkspaceResource;
 use App\Models\Project;
 use Illuminate\Auth\Access\AuthorizationException;
-use Inertia\Inertia;
 use Inertia\Response;
 
 class ProjectController extends Controller
@@ -15,11 +14,13 @@ class ProjectController extends Controller
      *
      * @throws AuthorizationException
      */
-    public function __invoke(Project $project): Response
+    public function __invoke(): Response
     {
+        $project = Project::find(session('project_id'));
+
         $this->authorize('view', $project);
 
-        return Inertia::render('Projects/Dashboard', [
+        return inertia('Projects/Dashboard', [
             'workspaces' => WorkspaceResource::collection($project->workspaces),
         ]);
     }

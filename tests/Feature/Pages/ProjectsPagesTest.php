@@ -14,6 +14,7 @@ it('shows workspaces names and locations', function () {
     $user = User::factory()->withWorkspaces(4)->create();
 
     $user->assignRole('user');
+    session(['project_id' => $user->project_id]);
 
     actingAs($user);
 
