@@ -12,7 +12,7 @@ import Pagination from "@/Components/Pagination.vue";
 
 const props = defineProps({
     roles: Array,
-    paginatedWorkspaces: Object,
+    workspaces: Object,
     workspacesIds: Array,
 
 });
@@ -34,7 +34,7 @@ const page = usePage();
 // A computed property to safely access the current path from the paginatedRegistries.
 const currentPath = computed(() => {
     // Check if paginatedRegistries and its path property exist
-    return page.props.paginatedWorkspaces?.path;
+    return page.props.workspaces?.path;
 });
 
 
@@ -185,14 +185,14 @@ const submitForm = () => {
                                             </label>
                                         </div>
 
-                                        <Pagination :links="paginatedWorkspaces.meta.links"
+                                        <Pagination :links="workspaces.meta.links"
                                                     class="flex items-center justify-end py-2"></Pagination>
                                     </div>
 
 
-                                    <div v-for="(workspace, index) in paginatedWorkspaces.data"
+                                    <div v-for="(workspace, index) in workspaces.data"
                                          :key="workspace.id"
-                                         :class="{'border-b': index !== paginatedWorkspaces.data.length - 1}"
+                                         :class="{'border-b': index !== workspaces.data.length - 1}"
                                          class="flex items-center py-2">
                                         <input
                                             type="checkbox"

@@ -15,7 +15,7 @@ import DeleteUserForm from "@/Pages/Users/Partials/DeleteUserForm.vue";
 
 const props = defineProps({
     roles: Array,
-    paginatedWorkspaces: Object,
+    workspaces: Object,
     workspacesIds: Array,
     user: Object,
     allWorkspacesIds: Object,
@@ -26,10 +26,10 @@ const projectId = usePage().props.auth.user.project_id;
 const workspacesStore = useWorkspacesStore();
 
 const form = useForm({
-    first_name: props.user.data.first_name,
-    last_name: props.user.data.last_name,
-    email: props.user.data.email,
-    role: props.user.data.role,
+    first_name: props.user.first_name,
+    last_name: props.user.last_name,
+    email: props.user.email,
+    role: props.user.role,
     workspacesIds: [],
 });
 
@@ -38,7 +38,7 @@ const page = usePage();
 // A computed property to safely access the current path from the paginatedRegistries.
 const currentPath = computed(() => {
     // Check if paginatedRegistries and its path property exist
-    return page.props.paginatedWorkspaces?.path;
+    return page.props.workspaces?.path;
 });
 
 watchEffect(() => {
@@ -57,7 +57,7 @@ onUnmounted(() => {
 
     // If navigating away from the specific edit-registries route,
     // clear selected registries and reset initialization state.
-    if (currentPath.value !== route('users.edit', {project: projectId, user: props.user.data.id})) {
+    if (currentPath.value !== route('users.edit', {project: projectId, user: props.user.id})) {
         workspacesStore.clearSelectedWorkspaces();
     }
 });
@@ -75,7 +75,7 @@ const handleCheckboxChange = (workspaceId) => {
 };
 
 function submit() {
-    form.patch(route('users.update', {project: projectId, user: props.user.data.id}))
+    form.patch(route('users.update', {project: projectId, user: props.user.id}))
 }
 </script>
 
@@ -194,14 +194,14 @@ function submit() {
                                                 Select All
                                             </label>
                                         </div>
-                                        <Pagination :links="paginatedWorkspaces.links"
+                                        <Pagination :links="workspaces.meta.links"
                                                     class="flex items-center justify-end py-2"></Pagination>
                                     </div>
 
 
-                                    <div v-for="(workspace, index) in paginatedWorkspaces.data"
+                                    <div v-for="(workspace, index) in workspaces.data"
                                          :key="workspace.id"
-                                         :class="{'border-b': index !== paginatedWorkspaces.data.length - 1}"
+                                         :class="{'border-b': index !== workspaces.data.length - 1}"
                                          class="flex items-center py-2">
                                         <input
                                             type="checkbox"

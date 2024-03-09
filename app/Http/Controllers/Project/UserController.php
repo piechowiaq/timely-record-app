@@ -77,9 +77,9 @@ class UserController extends Controller
 
         $allWorkspacesIds = $this->workspaceRepository->getWorkspacesByProjectIds($project);
 
-        return Inertia::render('Users/Create', [
+        return inertia('Users/Create', [
             'roles' => $roles,
-            'paginatedWorkspaces' => WorkspaceResource::collection($paginatedWorkspaces),
+            'workspaces' => WorkspaceResource::collection($paginatedWorkspaces),
             'workspacesIds' => $this->workspaceRepository->getWorkspacesIds($paginatedWorkspaces),
             'allWorkspacesIds' => $allWorkspacesIds,
             'project' => $project,
@@ -118,7 +118,7 @@ class UserController extends Controller
         return Inertia::render('Users/Edit', [
             'user' => UserResource::make($user),
             'roles' => $roles,
-            'paginatedWorkspaces' => $paginatedWorkspaces,
+            'workspaces' => WorkspaceResource::collection($paginatedWorkspaces),
             'allWorkspacesIds' => $allWorkspacesIds, // Pass all workspace IDs from the current project
             'workspacesIds' => $this->workspaceRepository->getWorkspacesIdsByUser($user), // Pass all workspace IDs from the current paginated set
         ]);

@@ -26,11 +26,11 @@ class EloquentWorkspaceRepository implements WorkspaceRepositoryInterface
         return $this->getWorkspacesByProjectQuery($project)->pluck('id')->toArray();
     }
 
-    //
-    //    public function getWorkspacesIds($workspaces)
-    //    {
-    //        return $workspaces->pluck('id')->toArray();
-    //    }
+    public function getWorkspacesIds($workspaces)
+    {
+        return $workspaces->pluck('id')->toArray();
+    }
+
     //
     //    protected function baseRegistryQuery(Workspace $workspace): \Illuminate\Database\Query\Builder
     //    {
