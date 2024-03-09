@@ -19,6 +19,22 @@ it('requires authentication', function () {
         ->assertRedirect(route('login'));
 });
 
+it('requires authorization', function () {
+
+    $roles = ['user', 'manager'];
+
+    foreach ($roles as $role) {
+        $user = User::factory()->create();
+        $user->assignRole($role);
+        session(['project_id' => $user->project_id]);
+
+        actingAs($user)
+            ->get(route('users.create', $user->project_id))
+            ->assertForbidden();
+    }
+
+});
+
 it('returns a correct component', function () {
 
     $user = User::factory()->create();

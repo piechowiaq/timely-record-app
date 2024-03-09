@@ -6,16 +6,9 @@ import {ref, watch} from "vue";
 import Pagination from "@/Components/Pagination.vue";
 import {debounce} from "lodash";
 
-const props = defineProps({
-    paginatedUsers: {
-        type: Object,
-    },
-    filters: {
-        type: Object,
-    },
-});
+const props = defineProps(['users', 'filters']);
 
-const projectId = usePage().props.auth.user.project_id;
+const projectId = usePage().props.projectId;
 
 const index = ref({
     search: props.filters.search,
@@ -65,7 +58,7 @@ const getSortIconClass = (field) => {
                                 class="ml-3 text-sm text-gray-500 hover:text-gray-700 focus:text-cyan-600"
                                 @click="resetSearch">Reset
                         </button>
-                     
+
                     </div>
                     <Link :href="route('users.create', projectId)" class="text-cyan-600 hover:text-cyan-700 text-sm">
                         Create
@@ -98,8 +91,8 @@ const getSortIconClass = (field) => {
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="(user, index) in paginatedUsers.data" :key="user.id"
-                            :class="{'bg-white dark:bg-gray-800': true, 'border-b dark:border-gray-700': index !== paginatedUsers.data.length - 1}">
+                        <tr v-for="(user, index) in users.data" :key="user.id"
+                            :class="{'bg-white dark:bg-gray-800': true, 'border-b dark:border-gray-700': index !== users.data.length - 1}">
 
                             <th scope="row"
                                 class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
@@ -128,7 +121,7 @@ const getSortIconClass = (field) => {
                     </table>
                 </div>
 
-                <Pagination :links="paginatedUsers.meta.links"
+                <Pagination :links="users.meta.links"
                             class="flex items-center justify-end py-2"></Pagination>
             </div>
         </div>

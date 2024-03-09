@@ -67,7 +67,7 @@ class HandleInertiaRequests extends Middleware
                 'canViewProject' => $canViewProject,
                 'canCreateReport' => $canCreateReport,
             ],
-            'project' => session('project_id'),
+            'projectId' => session('project_id'),
 
         ];
     }

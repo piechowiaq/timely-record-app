@@ -45,17 +45,24 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Project $project, Request $request): Response
+    public function index(Request $request): Response
     {
+        $project = Project::find(session('project_id'));
+
         $this->authorize('manage', $project);
 
-        $paginatedUsers = $this->userRepository->getUsersByProjectWithRolesQuery($project)
+        $users = User::with('roles')
+            ->where('project_id', $project->id)
+            ->whereDoesntHave('roles', function ($query) {
+                $query->where('name', '=', 'project-admin');
+            })
+            ->where('id', '<>', auth()->id())
             ->applyFilters($request)
             ->paginate(10)
             ->withQueryString();
 
         return Inertia::render('Users/Index', [
-            'paginatedUsers' => UserResource::collection($paginatedUsers),
+            'users' => UserResource::collection($users),
             'filters' => $request->all(['search', 'field', 'direction']),
         ]);
     }

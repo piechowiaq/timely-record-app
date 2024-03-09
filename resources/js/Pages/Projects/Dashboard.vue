@@ -13,7 +13,7 @@ const canManageProject = usePage().props.auth.canManageProject;
 
 const projectId = usePage().props.auth.user.project_id;
 
-const project = usePage().props.project;
+const project = usePage().props.projectId;
 
 
 const getWorkspaceBorderColor = (workspace) => {

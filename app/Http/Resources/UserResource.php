@@ -18,10 +18,9 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
-            'role' => $this->roles->pluck('name')->join(', '), // Handle roles
+            'role' => $this->roles->first()?->name,
             'email' => $this->email,
             'email_verified' => $this->hasVerifiedEmail(),
-
         ];
     }
 }
