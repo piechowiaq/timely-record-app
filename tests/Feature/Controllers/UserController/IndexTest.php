@@ -3,14 +3,11 @@
 use App\Http\Resources\UserResource;
 use App\Models\Project;
 use App\Models\User;
+use Database\Seeders\DatabaseSeeder;
 use Database\Seeders\RolesAndPermissionsSeeder;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
-
-beforeEach(function () {
-    $this->seed(RolesAndPermissionsSeeder::class);
-});
 
 it('requires authentication', function () {
 
@@ -21,12 +18,14 @@ it('requires authentication', function () {
 
 it('requires authorization', function () {
 
+    $this->seed(RolesAndPermissionsSeeder::class);
+
     $roles = ['user', 'manager'];
 
     foreach ($roles as $role) {
         $user = User::factory()->create();
         $user->assignRole($role);
-        session(['project_id' => $user->project_id]);
+        //        session(['project_id' => $user->project_id]);
 
         actingAs($user)
             ->get(route('users.index'))
@@ -36,6 +35,8 @@ it('requires authorization', function () {
 });
 
 it('returns a correct component', function () {
+
+    $this->seed(RolesAndPermissionsSeeder::class);
 
     $user = User::factory()->create();
     $user->assignRole('admin');
@@ -47,22 +48,21 @@ it('returns a correct component', function () {
 
 });
 
-it('passes project users to the view excluding project-admin role and auth user', function () {
+it('passes auth user workspaces users to the view excluding project-admin role and auth user', function () {
 
-    $user = User::factory()->withWorkspaces(2)->create();
-    $user->assignRole('admin');
+    $this->seed(DatabaseSeeder::class);
+
+    $user = User::role('admin')->first();
     session(['project_id' => $user->project_id]);
 
-    User::factory()->count(5)->withRoles()->create([
-        'project_id' => $user->project_id,
-    ]);
+    $authUserWorkspaces = $user->workspaces->pluck('id')->toArray();
 
-    $users = User::with('roles')->where('project_id', $user->project_id)->whereDoesntHave('roles', function ($query) {
-        $query->where('name', '=', 'project-admin');
-    })->where('id', '<>', $user->id)->get();
+    $users = User::inWorkspaces($authUserWorkspaces)
+        ->with('roles')
+        ->withRolesEligibleToView('admin')
+        ->get();
 
     actingAs($user)->
     get(route('users.index'))
         ->assertHasPaginatedResource('users', UserResource::collection($users));
-
 });

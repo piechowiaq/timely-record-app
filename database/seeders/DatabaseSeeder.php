@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $projects = Project::factory(3)->create();
-        $users = User::factory(25)->recycle($projects)->create();
+        $users = User::factory(125)->recycle($projects)->create();
         $workspaces = Workspace::factory(15)->recycle($projects)->create();
 
         $roles = Role::whereNotIn('name', ['project-admin', 'super-admin'])->get();

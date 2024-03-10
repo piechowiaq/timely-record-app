@@ -54,18 +54,16 @@ class UserController extends Controller
 
         $this->authorize('manage', $project);
 
-        $users = User::with('roles')
-            ->where('project_id', $project->id)
-            ->whereDoesntHave('roles', function ($query) {
-                $query->where('name', '=', 'project-admin');
-            })
-            ->where('id', '<>', auth()->id())
+        $authUserWorkspacesIds = auth()->user()->workspaces->pluck('id')->toArray();
 
+        $users = User::inWorkspaces($authUserWorkspacesIds)
+            ->with('roles')
+            ->withRolesEligibleToView(auth()->user()->getRoleNames()->first())
             ->applyFilters($request)
             ->paginate(10)
             ->withQueryString();
 
-        return Inertia::render('Users/Index', [
+        return inertia('Users/Index', [
             'users' => UserResource::collection($users),
             'filters' => $request->all(['search', 'field', 'direction']),
         ]);
@@ -74,9 +72,9 @@ class UserController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(RoleRepositoryInterface $roleRepository, Request $request): Response
+    public function create(): Response
     {
-        $roles = Role::eligible(auth()->user()->getRoleNames()->first())->get();
+        $roles = Role::eligibleToAssign(auth()->user()->getRoleNames()->first())->get();
 
         $workspaces = Workspace::whereIn('id', auth()->user()->workspaces->pluck('id')->toArray())
             ->paginate(5)

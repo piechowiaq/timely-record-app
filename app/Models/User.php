@@ -101,14 +101,27 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * Scope a query to only include users who share at least one workspace with the authenticated user.
+     * Scope a query to include users who are part of the given workspaces.
      */
-    public function scopeWithAuthUserWorkspaces(Builder $query): Builder
+    public function scopeInWorkspaces(Builder $query, array $workspaceIds): void
     {
-        $workspaceIds = auth()->user()->workspaces()->pluck('workspaces.id');
-
-        return $query->whereHas('workspaces', function ($query) use ($workspaceIds) {
+        $query->whereHas('workspaces', function ($query) use ($workspaceIds) {
             $query->whereIn('workspaces.id', $workspaceIds);
         });
+    }
+
+    /**
+     * Scope a query to apply role filters.
+     */
+    public function scopeWithRolesEligibleToView(Builder $query, string $userRole): void
+    {
+        $query->whereHas('roles', function ($query) use ($userRole) {
+            if ($userRole === 'project-admin') {
+                $query->whereNotIn('roles.name', ['project-admin', 'super-admin']);
+            } else {
+                $query->whereNotIn('roles.name', ['admin', 'project-admin', 'super-admin']);
+            }
+        });
+
     }
 }

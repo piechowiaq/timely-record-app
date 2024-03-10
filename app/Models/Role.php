@@ -7,7 +7,7 @@ use Spatie\Permission\Models\Role as SpatieRole;
 
 class Role extends SpatieRole
 {
-    public function scopeEligible(Builder $query, string $userRole): void
+    public function scopeEligibleToAssign(Builder $query, string $userRole): void
     {
         if ($userRole === 'project-admin') {
             $query->whereNotIn('name', ['project-admin', 'super-admin']);
