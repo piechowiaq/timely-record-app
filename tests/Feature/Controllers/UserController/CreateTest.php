@@ -13,8 +13,6 @@ use function Pest\Laravel\get;
 
 it('requires authentication', function () {
 
-    User::factory()->create();
-
     get(route('users.create'))
         ->assertRedirect(route('login'));
 });
@@ -28,7 +26,6 @@ it('requires authorization', function () {
     foreach ($roles as $role) {
         $user = User::factory()->create();
         $user->assignRole($role);
-        session(['project_id' => $user->project_id]);
 
         actingAs($user)
             ->get(route('users.create', $user->project_id))
@@ -55,7 +52,6 @@ it('passes auth user workspaces to the view', function () {
     $this->seed(DatabaseSeeder::class);
 
     $user = User::role('admin')->first();
-    //    session(['project_id' => $user->project_id]);
 
     actingAs($user)->
     get(route('users.create', [$user->project_id]))
@@ -68,7 +64,6 @@ it('passes eligible roles to the view', function () {
     $this->seed(DatabaseSeeder::class);
 
     $user = User::role('admin')->first();
-    //    session(['project_id' => $user->project_id]);
 
     $roles = Role::whereNotIn('name', ['project-admin', 'super-admin', 'admin'])->get();
 
@@ -83,7 +78,6 @@ it('passes user workspaces ids to the view', function () {
     $this->seed(DatabaseSeeder::class);
 
     $user = User::role('admin')->first();
-    //    session(['project_id' => $user->project_id]);
 
     actingAs($user)->
     get(route('users.create', [$user->project_id]))

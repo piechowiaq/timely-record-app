@@ -106,7 +106,7 @@ class UserController extends Controller
      */
     public function edit(Project $project, User $user): Response
     {
-        // Fetch roles excluding 'super-admin'
+
         $roles = $this->roleRepository->getAvailableRoles();
 
         $allWorkspacesIds = $this->workspaceRepository->getWorkspacesByProjectIds($project);

@@ -12,6 +12,7 @@ import Pagination from "@/Components/Pagination.vue";
 
 const props = defineProps(['roles', 'workspaces', 'workspacesIds']);
 
+
 const projectId = usePage().props.projectId;
 
 const workspacesStore = useWorkspacesStore();
@@ -85,6 +86,7 @@ const submitForm = () => {
                     <section class="max-w-xl">
                         <header>
                             <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Create User Form</h2>
+
                             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
                                 Please provide required data to create new user.
                             </p>
@@ -147,7 +149,7 @@ const submitForm = () => {
                                             type="radio"
                                             :id="`radio-${role.id}`"
                                             :value="role.name"
-                                            v-model="form.role.name"
+                                            v-model="form.role"
                                             class="border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
                                         />
                                         <label :for="`radio-${role.id}`" class="ml-2 cursor-pointer text-sm">
