@@ -43,6 +43,8 @@ uses(TestCase::class, RefreshDatabase::class)->in('Feature');
 |
 */
 
+const PASSWORD = 'a';
+
 function login($user = null)
 {
     return test()->actingAs($user ?? User::factory()->create());

@@ -64,7 +64,7 @@ test('user can soft delete their account', function () {
     $response = $this
         ->actingAs($user)
         ->delete('/profile', [
-            'password' => 'password',
+            'password' => PASSWORD,
         ]);
 
     $response

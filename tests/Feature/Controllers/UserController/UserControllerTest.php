@@ -169,7 +169,7 @@ it('can delete a user', function () {
     $createdUser = User::latest()->first();
 
     // Act: Perform the delete action
-    $response = delete(route('users.destroy', ['project' => $project->id, 'user' => $createdUser->id]), ['password' => 'password']);
+    $response = delete(route('users.destroy', ['project' => $project->id, 'user' => $createdUser->id]), ['password' => PASSWORD]);
 
     // Assert: Check if the user was deleted
     $response->assertRedirect(route('users.index', ['project' => $project]))

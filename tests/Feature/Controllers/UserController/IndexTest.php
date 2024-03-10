@@ -49,11 +49,11 @@ it('returns a correct component', function () {
 
 it('passes project users to the view excluding project-admin role and auth user', function () {
 
-    $user = User::factory()->create();
+    $user = User::factory()->withWorkspaces(2)->create();
     $user->assignRole('admin');
     session(['project_id' => $user->project_id]);
 
-    User::factory()->count(3)->withRoles()->create([
+    User::factory()->count(5)->withRoles()->create([
         'project_id' => $user->project_id,
     ]);
 

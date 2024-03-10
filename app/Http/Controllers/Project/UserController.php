@@ -57,6 +57,7 @@ class UserController extends Controller
                 $query->where('name', '=', 'project-admin');
             })
             ->where('id', '<>', auth()->id())
+
             ->applyFilters($request)
             ->paginate(10)
             ->withQueryString();
@@ -70,8 +71,10 @@ class UserController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(RoleRepositoryInterface $roleRepository, Request $request, Project $project): Response
+    public function create(RoleRepositoryInterface $roleRepository, Request $request): Response
     {
+        $project = Project::find(session('project_id'));
+
         $roles = $roleRepository->getAvailableRoles();
 
         // Fetch all workspaces related to the user's project

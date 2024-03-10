@@ -21,7 +21,7 @@ class ProjectController extends Controller
         $this->authorize('view', $project);
 
         return inertia('Projects/Dashboard', [
-            'workspaces' => WorkspaceResource::collection($project->workspaces),
+            'workspaces' => WorkspaceResource::collection(auth()->user()->workspaces),
         ]);
     }
 }

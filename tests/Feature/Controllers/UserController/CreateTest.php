@@ -15,7 +15,7 @@ it('requires authentication', function () {
 
     $user = User::factory()->create();
 
-    get(route('users.create', [$user->project_id]))
+    get(route('users.create'))
         ->assertRedirect(route('login'));
 });
 

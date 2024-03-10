@@ -2,13 +2,13 @@
 
 use App\Http\Resources\WorkspaceResource;
 use App\Models\User;
-use Database\Seeders\RolesAndPermissionsSeeder;
+use Database\Seeders\DatabaseSeeder;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 
 beforeEach(function () {
-    $this->seed(RolesAndPermissionsSeeder::class);
+    $this->seed(DatabaseSeeder::class);
 });
 
 it('requires authentication', function () {
@@ -20,8 +20,7 @@ it('requires authentication', function () {
 
 it('returns a correct component', function () {
 
-    $user = User::factory()->create();
-    $user->assignRole('admin');
+    $user = User::role('project-admin')->first();
     session(['project_id' => $user->project_id]);
 
     actingAs($user)->
@@ -32,12 +31,11 @@ it('returns a correct component', function () {
 
 it('passes project workspaces to the view', function () {
 
-    $user = User::factory()->withWorkspaces(5)->create();
-    $user->assignRole('admin');
+    $user = User::role('project-admin')->first();
     session(['project_id' => $user->project_id]);
 
     actingAs($user)->
-    get(route('projects.dashboard', [$user->project_id]))
-        ->assertHasResource('workspaces', WorkspaceResource::collection($user->project->workspaces));
+    get(route('projects.dashboard'))
+        ->assertHasResource('workspaces', WorkspaceResource::collection($user->workspaces));
 
 });

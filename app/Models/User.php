@@ -99,4 +99,16 @@ class User extends Authenticatable implements MustVerifyEmail
 
         return $query;
     }
+
+    /**
+     * Scope a query to only include users who share at least one workspace with the authenticated user.
+     */
+    public function scopeWithAuthUserWorkspaces(Builder $query): Builder
+    {
+        $workspaceIds = auth()->user()->workspaces()->pluck('workspaces.id');
+
+        return $query->whereHas('workspaces', function ($query) use ($workspaceIds) {
+            $query->whereIn('workspaces.id', $workspaceIds);
+        });
+    }
 }
