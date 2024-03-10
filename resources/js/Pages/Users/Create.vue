@@ -10,14 +10,9 @@ import {computed, onUnmounted, watchEffect} from 'vue';
 import {useWorkspacesStore} from "@/Stores/WorkspacesStore.js";
 import Pagination from "@/Components/Pagination.vue";
 
-const props = defineProps({
-    roles: Array,
-    workspaces: Object,
-    workspacesIds: Array,
+const props = defineProps(['roles', 'workspaces', 'workspacesIds']);
 
-});
-
-const projectId = usePage().props.auth.user.project_id;
+const projectId = usePage().props.projectId;
 
 const workspacesStore = useWorkspacesStore();
 
@@ -90,7 +85,6 @@ const submitForm = () => {
                     <section class="max-w-xl">
                         <header>
                             <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Create User Form</h2>
-
                             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
                                 Please provide required data to create new user.
                             </p>
@@ -146,18 +140,18 @@ const submitForm = () => {
                                 <InputLabel for="role" value="Role"/>
                                 <div class="border px-2 mt-1 shadow-sm">
 
-                                    <div v-for="(role, index) in roles" :key="role"
+                                    <div v-for="(role, index) in roles" :key="role.id"
                                          :class="{'border-b': index !== roles.length - 1}"
                                          class="flex items-center py-2">
                                         <input
                                             type="radio"
-                                            :id="`radio-${role}`"
-                                            :value="role"
-                                            v-model="form.role"
+                                            :id="`radio-${role.id}`"
+                                            :value="role.name"
+                                            v-model="form.role.name"
                                             class="border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
                                         />
-                                        <label :for="`radio-${role}`" class="ml-2 cursor-pointer text-sm">
-                                            {{ role }}
+                                        <label :for="`radio-${role.id}`" class="ml-2 cursor-pointer text-sm">
+                                            {{ role.name }}
                                         </label>
                                     </div>
 

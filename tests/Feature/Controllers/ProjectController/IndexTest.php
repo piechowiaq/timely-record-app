@@ -7,10 +7,6 @@ use Database\Seeders\DatabaseSeeder;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 
-beforeEach(function () {
-    $this->seed(DatabaseSeeder::class);
-});
-
 it('requires authentication', function () {
 
     get(route('projects.dashboard'))
@@ -20,7 +16,9 @@ it('requires authentication', function () {
 
 it('returns a correct component', function () {
 
-    $user = User::role('project-admin')->first();
+    $this->seed(DatabaseSeeder::class);
+
+    $user = User::role('admin')->first();
     session(['project_id' => $user->project_id]);
 
     actingAs($user)->
@@ -31,7 +29,9 @@ it('returns a correct component', function () {
 
 it('passes project workspaces to the view', function () {
 
-    $user = User::role('project-admin')->first();
+    $this->seed(DatabaseSeeder::class);
+
+    $user = User::role('admin')->first();
     session(['project_id' => $user->project_id]);
 
     actingAs($user)->

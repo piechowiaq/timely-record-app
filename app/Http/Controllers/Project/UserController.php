@@ -5,10 +5,13 @@ namespace App\Http\Controllers\Project;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Http\Resources\RoleResource;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\WorkspaceResource;
 use App\Models\Project;
+use App\Models\Role;
 use App\Models\User;
+use App\Models\Workspace;
 use App\Repositories\Contracts\RoleRepositoryInterface;
 use App\Repositories\Contracts\UserRepositoryInterface;
 use App\Repositories\Contracts\WorkspaceRepositoryInterface;
@@ -73,26 +76,16 @@ class UserController extends Controller
      */
     public function create(RoleRepositoryInterface $roleRepository, Request $request): Response
     {
-        $project = Project::find(session('project_id'));
+        $roles = Role::eligible(auth()->user()->getRoleNames()->first())->get();
 
-        $roles = $roleRepository->getAvailableRoles();
-
-        // Fetch all workspaces related to the user's project
-        $paginatedWorkspaces = $this->workspaceRepository
-            ->getWorkspacesByProjectQuery(auth()->user()->project)
+        $workspaces = Workspace::whereIn('id', auth()->user()->workspaces->pluck('id')->toArray())
             ->paginate(5)
             ->withQueryString();
 
-        $project = $request->user()->project;
-
-        $allWorkspacesIds = $this->workspaceRepository->getWorkspacesByProjectIds($project);
-
         return inertia('Users/Create', [
-            'roles' => $roles,
-            'workspaces' => WorkspaceResource::collection($paginatedWorkspaces),
-            'workspacesIds' => $this->workspaceRepository->getWorkspacesIds($paginatedWorkspaces),
-            'allWorkspacesIds' => $allWorkspacesIds,
-            'project' => $project,
+            'roles' => RoleResource::collection($roles),
+            'workspaces' => WorkspaceResource::collection($workspaces),
+            'workspacesIds' => $workspaces->pluck('id')->toArray(),
         ]);
     }
 
