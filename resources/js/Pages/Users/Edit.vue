@@ -13,15 +13,9 @@ import Pagination from "@/Components/Pagination.vue";
 import RegistrationLink from "@/Pages/Users/Partials/RegistrationLink.vue";
 import DeleteUserForm from "@/Pages/Users/Partials/DeleteUserForm.vue";
 
-const props = defineProps({
-    roles: Array,
-    workspaces: Object,
-    workspacesIds: Array,
-    user: Object,
-    allWorkspacesIds: Object,
-});
+const props = defineProps(['user', 'roles', 'workspaces', 'userWorkspacesIds', 'workspacesIds']);
 
-const projectId = usePage().props.auth.user.project_id;
+const projectId = usePage().props.projectId;
 
 const workspacesStore = useWorkspacesStore();
 
@@ -30,7 +24,7 @@ const form = useForm({
     last_name: props.user.last_name,
     email: props.user.email,
     role: props.user.role,
-    workspacesIds: [],
+    userWorkspacesIds: [],
 });
 
 const page = usePage();
@@ -45,11 +39,11 @@ watchEffect(() => {
     // Initializes the selected registries in the store with the IDs provided in props.workspaceRegistriesIds.
     // This only happens once when the component is mounted and if the store has not been initialized yet.
     if (!workspacesStore.isInitialized) {
-        workspacesStore.initializeWorkspaces(props.workspacesIds, props.allWorkspacesIds.length);
+        workspacesStore.initializeWorkspaces(props.userWorkspacesIds, props.workspacesIds.length);
     }
     // Keeps the form's registriesIds in sync with the store's selected registries.
     // Whenever the selected registries in the store change, this watchEffect updates the form's registriesIds accordingly.
-    form.workspacesIds = workspacesStore.selectedWorkspacesIdsArray;
+    form.userWorkspacesIds = workspacesStore.selectedWorkspacesIdsArray;
 });
 
 onUnmounted(() => {
@@ -65,13 +59,13 @@ onUnmounted(() => {
 
 // Function to handle changes in 'Select All' checkbox.
 const handleSelectAll = (selectAll) => {
-    workspacesStore.setSelectAll(selectAll, props.allWorkspacesIds);
+    workspacesStore.setSelectAll(selectAll, props.workspacesIds);
 };
 
 // Function to handle changes in individual registry selection.
 const handleCheckboxChange = (workspaceId) => {
     workspacesStore.toggleWorkspace(workspaceId);
-    workspacesStore.updateSelectAllState(props.allWorkspacesIds.length);
+    workspacesStore.updateSelectAllState(props.workspacesIds.length);
 };
 
 function submit() {
@@ -156,18 +150,18 @@ function submit() {
                                 <InputLabel for="role" value="Role"/>
                                 <div class="border px-2 mt-1 shadow-sm">
 
-                                    <div v-for="(role, index) in roles" :key="role"
+                                    <div v-for="(role, index) in roles" :key="role.id"
                                          :class="{'border-b': index !== roles.length - 1}"
                                          class="flex items-center py-2">
                                         <input
                                             type="radio"
-                                            :id="`radio-${role}`"
-                                            :value="role"
+                                            :id="`radio-${role.id}`"
+                                            :value="role.name"
                                             v-model="form.role"
                                             class="border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
                                         />
-                                        <label :for="`radio-${role}`" class="ml-2 cursor-pointer text-sm">
-                                            {{ role }}
+                                        <label :for="`radio-${role.id}`" class="ml-2 cursor-pointer text-sm">
+                                            {{ role.name }}
                                         </label>
                                     </div>
 
@@ -224,7 +218,7 @@ function submit() {
 
                                 </div>
 
-                                <InputError class="mt-2" :message="form.errors.workspacesIds"/>
+                                <InputError class="mt-2" :message="form.errors.userWorkspacesIds"/>
                             </div>
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-4">

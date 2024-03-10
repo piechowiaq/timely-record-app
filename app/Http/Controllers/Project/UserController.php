@@ -104,24 +104,21 @@ class UserController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Project $project, User $user): Response
+    public function edit(User $user): Response
     {
+        $roles = Role::eligibleToAssign(auth()->user()->getRoleNames()->first())->get();
 
-        $roles = $this->roleRepository->getAvailableRoles();
-
-        $allWorkspacesIds = $this->workspaceRepository->getWorkspacesByProjectIds($project);
-
-        $paginatedWorkspaces = $this->workspaceRepository
-            ->getWorkspacesByProjectQuery($project)
+        $workspaces = Workspace::whereIn('id', auth()->user()->workspaces->pluck('id')->toArray())
             ->paginate(5)
             ->withQueryString();
 
         return Inertia::render('Users/Edit', [
             'user' => UserResource::make($user),
-            'roles' => $roles,
-            'workspaces' => WorkspaceResource::collection($paginatedWorkspaces),
-            'allWorkspacesIds' => $allWorkspacesIds, // Pass all workspace IDs from the current project
-            'workspacesIds' => $this->workspaceRepository->getWorkspacesIdsByUser($user), // Pass all workspace IDs from the current paginated set
+            'roles' => RoleResource::collection($roles),
+            'workspaces' => WorkspaceResource::collection($workspaces),
+            'userWorkspacesIds' => $user->workspaces->pluck('id')->toArray(),
+            'workspacesIds' => $workspaces->pluck('id')->toArray(),
+
         ]);
     }
 

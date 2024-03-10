@@ -25,6 +25,18 @@ class DatabaseSeeder extends Seeder
         $users = User::factory(25)->recycle($projects)->create();
         $workspaces = Workspace::factory(15)->recycle($projects)->create();
 
+        //        $users = User::factory(25)->make()->each(function ($user) use ($projects) {
+        //            $project = $projects->random();
+        //            $user->project_id = $project->id;
+        //            $user->save();
+        //        });
+        //
+        //        $workspaces = Workspace::factory(15)->make()->each(function ($workspace) use ($projects) {
+        //            $project = $projects->random();
+        //            $workspace->project_id = $project->id;
+        //            $workspace->save();
+        //        });
+
         $roles = Role::whereNotIn('name', ['project-admin', 'super-admin'])->get();
 
         foreach ($projects as $project) {
@@ -43,14 +55,13 @@ class DatabaseSeeder extends Seeder
 
         foreach ($users as $user) {
 
-            $matchingWorkspaces = $workspaces->filter(function ($workspace) use ($user) {
-                return $workspace->project_id === $user->project_id;
-            });
+            $sameProjectWorkspaces = $workspaces->where('project_id', $user->project_id);
 
-            if ($matchingWorkspaces->isNotEmpty()) {
+            if ($sameProjectWorkspaces->isNotEmpty()) {
 
-                $selectedWorkspace = $matchingWorkspaces->random();
-                $user->workspaces()->attach($selectedWorkspace->id);
+                $workspacesToAttach = $sameProjectWorkspaces->random(min(2, $sameProjectWorkspaces->count()))->pluck('id');
+
+                $user->workspaces()->attach($workspacesToAttach);
             }
         }
     }

@@ -96,7 +96,7 @@ const getSortIconClass = (field) => {
 
                             <th scope="row"
                                 class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                <Link :href="route('users.edit', [ projectId, user.id])"
+                                <Link :href="route('users.edit', user.id)"
                                       class="text-cyan-600 hover:text-cyan-700">
                                     {{ user.first_name }} {{ user.last_name }}
                                 </Link>

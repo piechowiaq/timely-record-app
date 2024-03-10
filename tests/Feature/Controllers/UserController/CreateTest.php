@@ -42,7 +42,7 @@ it('returns a correct component', function () {
     $user->assignRole('admin');
 
     actingAs($user)->
-    get(route('users.create', [$user->project_id]))
+    get(route('users.create'))
         ->assertComponent('Users/Create');
 
 });
@@ -68,19 +68,19 @@ it('passes eligible roles to the view', function () {
     $roles = Role::whereNotIn('name', ['project-admin', 'super-admin', 'admin'])->get();
 
     actingAs($user)->
-    get(route('users.create', [$user->project_id]))
+    get(route('users.create'))
         ->assertHasResource('roles', RoleResource::collection($roles));
 
 });
 
-it('passes user workspaces ids to the view', function () {
+it('passes auth user workspaces ids to the view', function () {
 
     $this->seed(DatabaseSeeder::class);
 
     $user = User::role('admin')->first();
 
     actingAs($user)->
-    get(route('users.create', [$user->project_id]))
+    get(route('users.create'))
         ->assertInertia(fn (AssertableInertia $page) => $page
             ->has('workspacesIds', $user->workspaces->pluck('id')->count())
         );

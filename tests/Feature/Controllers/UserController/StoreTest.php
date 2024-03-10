@@ -1,12 +1,10 @@
 <?php
 
-use App\Models\Project;
-
 use function Pest\Laravel\post;
 
 it('requires authentication', function () {
 
-    post(route('users.store', Project::factory()->create()))
+    post(route('users.store'))
         ->assertRedirect(route('login'));
 
 });
