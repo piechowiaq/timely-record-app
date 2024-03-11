@@ -18,8 +18,9 @@ use App\Repositories\Contracts\WorkspaceRepositoryInterface;
 use App\Services\UserService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
-use Inertia\Inertia;
+use Illuminate\Support\Str;
 use Inertia\Response;
 
 class UserController extends Controller
@@ -90,14 +91,23 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreUserRequest $request, Project $project): RedirectResponse
+    public function store(StoreUserRequest $request): RedirectResponse
     {
-        $userData = $request->only('first_name', 'last_name', 'email', 'workspacesIds', 'role');
-        $userData['project_id'] = $project->id;
+        $project = Project::find(session('project_id'));
 
-        $this->userService->createUser($userData);
+        $user = User::create([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'password' => Hash::make(Str::random(10)),
+            'project_id' => $project->id,
+        ]);
 
-        return redirect()->route('users.index', ['project' => $project])
+        $user->project()->associate($project);
+        $user->workspaces()->sync($request->workspacesIds);
+        $user->assignRole($request->role);
+
+        return to_route('users.index')
             ->with('success', 'User created.');
     }
 
@@ -112,7 +122,7 @@ class UserController extends Controller
             ->paginate(5)
             ->withQueryString();
 
-        return Inertia::render('Users/Edit', [
+        return inertia('Users/Edit', [
             'user' => UserResource::make($user),
             'roles' => RoleResource::collection($roles),
             'workspaces' => WorkspaceResource::collection($workspaces),

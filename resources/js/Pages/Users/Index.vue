@@ -60,7 +60,7 @@ const getSortIconClass = (field) => {
                         </button>
 
                     </div>
-                    <Link :href="route('users.create', projectId)" class="text-cyan-600 hover:text-cyan-700 text-sm">
+                    <Link :href="route('users.create')" class="text-cyan-600 hover:text-cyan-700 text-sm">
                         Create
                         User
                     </Link>

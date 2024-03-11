@@ -25,7 +25,6 @@ it('requires authorization', function () {
     foreach ($roles as $role) {
         $user = User::factory()->create();
         $user->assignRole($role);
-        //        session(['project_id' => $user->project_id]);
 
         actingAs($user)
             ->get(route('users.index'))

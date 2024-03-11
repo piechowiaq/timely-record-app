@@ -24,18 +24,16 @@ class StoreUserRequest extends FormRequest
      */
     public function rules(): array
     {
-
-        $project = $this->route('project');
-
         return [
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'role' => 'required|exists:roles,name',
-            'workspacesIds' => ['required', 'array', Rule::exists('workspaces', 'id')->where(function ($query) {
-                $query->where('project_id', $this->session()->get('project_id'));
-            })],
-            'workspacesIds.*' => 'required|exists:workspaces,id',
+            'workspacesIds' => ['required', 'array'],
+            'workspacesIds.*' => ['required',
+                Rule::exists('workspaces', 'id')->where(function ($query) {
+                    $query->where('project_id', $this->session()->get('project_id'));
+                })],
         ];
     }
 }

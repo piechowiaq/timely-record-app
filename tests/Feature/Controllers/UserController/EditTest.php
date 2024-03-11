@@ -13,9 +13,7 @@ use function Pest\Laravel\get;
 
 it('requires authentication', function () {
 
-    $user = User::factory()->create();
-
-    get(route('users.edit', $user->id))
+    get(route('users.edit', User::factory()->create()))
         ->assertRedirect(route('login'));
 });
 
