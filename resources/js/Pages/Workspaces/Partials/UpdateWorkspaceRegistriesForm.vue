@@ -28,7 +28,8 @@ const page = usePage();
 // A computed property to safely access the current path from the paginatedRegistries.
 const currentPath = computed(() => {
     // Check if paginatedRegistries and its path property exist
-    return page.props.paginatedRegistries?.path;
+    // return page.props.paginatedRegistries?.path;
+    return page.props.ziggy.location;
 });
 
 
@@ -55,6 +56,7 @@ onUnmounted(() => {
         project: projectId,
         workspace: props.workspace.id
     })) {
+        console.log('clearing selected registries');
         registriesStore.clearSelectedRegistries();
     }
 });
@@ -121,7 +123,7 @@ const getSortIconClass = (field) => {
         <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Workspace Registries</h2>
 
         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            Synchronize workspace registries.
+            Synchronize workspace registries. {{ page.props.paginatedRegistries?.path }}{{ page.props.ziggy.location }}
         </p>
     </header>
 

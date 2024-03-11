@@ -6,7 +6,7 @@ import TextInput from "@/Components/TextInput.vue";
 import {Head, useForm, usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import {computed, watchEffect} from 'vue';
+import {computed, onUnmounted, watchEffect} from 'vue';
 import {useWorkspacesStore} from "@/Stores/WorkspacesStore.js";
 import Pagination from "@/Components/Pagination.vue";
 
@@ -29,9 +29,9 @@ const page = usePage();
 // A computed property to safely access the current path from the paginatedRegistries.
 const currentPath = computed(() => {
     // Check if paginatedRegistries and its path property exist
-    return page.props.workspaces?.path;
+    // return page.props.paginatedRegistries?.path;
+    return page.props.ziggy.location;
 });
-
 
 watchEffect(() => {
 
@@ -39,6 +39,18 @@ watchEffect(() => {
     // Whenever the selected registries in the store change, this watchEffect updates the form's registriesIds accordingly.
     form.workspacesIds = workspacesStore.selectedWorkspacesIdsArray;
 });
+
+onUnmounted(() => {
+    // Triggered when leaving the component.
+
+    // If navigating away from the specific edit-registries route,
+    // clear selected registries and reset initialization state.
+    if (currentPath.value !== route('users.create', {project: projectId})) {
+        console.log('clearing selected workspaces');
+        workspacesStore.clearSelectedWorkspaces();
+    }
+});
+
 
 // Function to handle changes in 'Select All' checkbox.
 const handleSelectAll = (selectAll) => {
