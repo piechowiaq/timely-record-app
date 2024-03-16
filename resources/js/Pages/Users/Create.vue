@@ -1,13 +1,14 @@
 <script setup>
 
 import TextInput from "@/Components/TextInput.vue";
-import {Head, router, usePage} from "@inertiajs/vue3";
+import {Head, useForm, usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import {computed, onUnmounted} from 'vue';
+import {computed, onUnmounted, watch} from 'vue';
 import Pagination from "@/Components/Pagination.vue";
 import {useUserStore} from "@/Stores/UserStore.js";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import InputError from "@/Components/InputError.vue";
 
 const props = defineProps(['roles', 'workspaces', 'workspacesIds']);
 
@@ -15,46 +16,21 @@ const projectId = usePage().props.projectId;
 
 const userStore = useUserStore();
 
-const firstName = computed({
-    get: () => userStore.getFirstName,
-    set: (value) => {
-        userStore.setFirstName(value);
-    }
-});
+const form = useForm(userStore.form);
 
-const lastName = computed({
-    get: () => userStore.getLastName,
-    set: (value) => {
-        userStore.setLastName(value);
-    }
-});
-const email = computed({
-    get: () => userStore.getEmail,
-    set: (value) => {
-        userStore.setEmail(value);
-    }
-});
-const selectedRole = computed({
-    get: () => userStore.getRole,
-    set: (value) => {
-        userStore.setRole(value);
-    }
-});
-
-const selectedWorkspacesIds = computed({
-    get: () => userStore.getWorkspacesIds,
-    set: (value) => {
-        userStore.setWorkspacesIds(value);
-    }
-});
+watch(form, () => {
+    userStore.updateForm(form);
+}, {deep: true});
 
 const selectAll = computed({
-    get: () => userStore.getWorkspacesIds.length === props.workspaces.meta.total,
+    get: () => form.workspacesIds.length === props.workspaces.meta.total,
     set: (value) => {
         if (value) {
+            form.workspacesIds = props.workspacesIds;
             userStore.setWorkspacesIds(props.workspacesIds)
         } else
-            userStore.setWorkspacesIds([]);
+            form.workspacesIds = [];
+        userStore.setWorkspacesIds([]);
     }
 });
 
@@ -66,30 +42,19 @@ onUnmounted(() => {
     }
 });
 
-
 function submit() {
-
-
-    router.post(route('users.store'), userStore.form, {
+    form.post(route('users.store'), {
         preserveScroll: true,
         onSuccess: () => {
             userStore.$reset()
-
-
         },
     })
 }
-
 
 </script>
 
 <template>
     <Head title="Create User"/>
-
-    {{ $page.props.errors }}
-
-    {{ page.props.errors }}
-
 
     <AuthenticatedLayout>
         <template #header>
@@ -116,12 +81,13 @@ function submit() {
                                     id="first_name"
                                     type="text"
                                     class="mt-1 block w-full"
-                                    v-model="firstName"
+                                    v-model="form.first_name"
                                     required
                                     autocomplete="first_name"
                                 />
 
-                                <!--                                <InputError class="mt-2" :message="errors.first_name"/>-->
+                                <InputError class="mt-2" :message="form.errors.first_name"/>
+
                             </div>
                             <div>
                                 <InputLabel for="last_name" value="Last Name"/>
@@ -130,12 +96,12 @@ function submit() {
                                     id="last_name"
                                     type="text"
                                     class="mt-1 block w-full"
-                                    v-model="lastName"
+                                    v-model="form.last_name"
                                     required
                                     autocomplete="last_name"
                                 />
 
-                                <!--                                <InputError class="mt-2" :message="form.errors.last_name"/>-->
+                                <InputError class="mt-2" :message="form.errors.last_name"/>
                             </div>
                             <div>
                                 <InputLabel for="email" value="Email"/>
@@ -144,12 +110,13 @@ function submit() {
                                     id="email"
                                     type="email"
                                     class="mt-1 block w-full"
-                                    v-model="email"
+                                    v-model="form.email"
                                     required
                                     autocomplete="username"
                                 />
-                                {{ email }}
-                                <!--                                <InputError class="mt-2" :message="form.errors.email"/>-->
+
+                                <InputError class="mt-2" :message="form.errors.email"/>
+
                             </div>
                             <!--Role-->
                             <div>
@@ -163,7 +130,7 @@ function submit() {
                                             type="radio"
                                             :id="`radio-${role.id}`"
                                             :value="role.name"
-                                            v-model="selectedRole"
+                                            v-model="form.role"
                                             class="border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
                                         />
                                         <label :for="`radio-${role.id}`" class="ml-2 cursor-pointer text-sm">
@@ -173,7 +140,9 @@ function submit() {
 
 
                                 </div>
-                                <!--                                <InputError class="mt-2" :message="form.errors.role"/>-->
+
+                                <InputError class="mt-2" :message="form.errors.role"/>
+
                             </div>
                             <!--Workspaces-->
                             <div>
@@ -206,7 +175,7 @@ function submit() {
                                         <input
                                             type="checkbox"
                                             :id="`checkbox-${workspace.id}`"
-                                            v-model="selectedWorkspacesIds"
+                                            v-model="form.workspacesIds"
                                             :value="workspace.id"
                                             class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
                                         />
@@ -223,21 +192,22 @@ function submit() {
                                     </div>
 
                                 </div>
-                                <!--                                <InputError class="mt-2" :message="form.errors.workspacesIds"/>-->
+                                <InputError class="mt-2" :message="form.errors.workspacesIds"/>
+
                             </div>
 
                             <div class="flex items-center gap-4">
 
-
-                                <PrimaryButton>Save</PrimaryButton>
+                                <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
                                 <Transition
                                     enter-active-class="transition ease-in-out"
                                     enter-from-class="opacity-0"
                                     leave-active-class="transition ease-in-out"
                                     leave-to-class="opacity-0"
                                 >
-                                    <p v-if="recentlySuccessful" class="text-sm text-gray-600 dark:text-gray-400">
+                                    <p v-if="form.recentlySuccessful" class="text-sm text-gray-600 dark:text-gray-400">
                                         Saved.</p>
+
                                 </Transition>
 
 
