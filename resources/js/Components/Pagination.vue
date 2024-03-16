@@ -1,7 +1,7 @@
 <script setup>
 
-import {Link} from "@inertiajs/vue3";
 import {defineProps} from "vue";
+import {Link} from '@inertiajs/vue3'
 
 const props = defineProps({
     links: Object,
@@ -16,11 +16,13 @@ const props = defineProps({
             <div v-if="link.url === null"
                  class="px-2 py-1 bg-white text-gray-200 text-xs"
                  v-html="link.label"/>
+
             <Link v-else
                   :href="link.url"
                   v-html="link.label"
                   preserve-scroll
-                  :class="`px-2 py-1 text-xs disabled:opacity-50 disabled:cursor-not-allowed ${link.active ? 'bg-gray-600 text-white' : 'bg-white hover:bg-gray-100 text-gray-600'}`"/>
+                  :class="`px-2 py-1 text-xs disabled:opacity-50 disabled:cursor-not-allowed ${link.active ? 'bg-gray-600 text-white' : 'bg-white hover:bg-gray-100 text-gray-600'}`">
+            </Link>
         </template>
     </div>
 </template>

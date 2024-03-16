@@ -7,7 +7,8 @@ use App\Http\Controllers\Project\WorkspaceController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\Workspace\WorkspaceRegistryController;
 use App\Http\Controllers\Workspace\WorkspaceRegistryReportController;
-use App\Http\Resources\UserResource;
+use App\Http\Resources\WorkspaceResource;
+use App\Models\Workspace;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -23,7 +24,15 @@ use Inertia\Inertia;
 */
 
 Route::get('test', function () {
-    return UserResource::make(\App\Models\User::find(1));
+    $workspaces = Workspace::query()
+        ->paginate(5)
+        ->withQueryString();
+
+    return inertia('Test', [
+
+        'workspaces' => WorkspaceResource::collection($workspaces),
+
+    ]);
 })->name('test');
 
 Route::get('/', function () {

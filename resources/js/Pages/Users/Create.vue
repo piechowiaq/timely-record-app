@@ -1,80 +1,95 @@
 <script setup>
 
-import InputError from "@/Components/InputError.vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
-import {Head, useForm, usePage} from "@inertiajs/vue3";
+import {Head, router, usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import {computed, onUnmounted, watchEffect} from 'vue';
-import {useWorkspacesStore} from "@/Stores/WorkspacesStore.js";
+import {computed, onUnmounted} from 'vue';
 import Pagination from "@/Components/Pagination.vue";
+import {useUserStore} from "@/Stores/UserStore.js";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 
 const props = defineProps(['roles', 'workspaces', 'workspacesIds']);
 
 const projectId = usePage().props.projectId;
 
-const workspacesStore = useWorkspacesStore();
+const userStore = useUserStore();
 
-const form = useForm({
-    first_name: '',
-    last_name: '',
-    email: '',
-    role: '',
-    workspacesIds: [],
+const firstName = computed({
+    get: () => userStore.getFirstName,
+    set: (value) => {
+        userStore.setFirstName(value);
+    }
+});
+
+const lastName = computed({
+    get: () => userStore.getLastName,
+    set: (value) => {
+        userStore.setLastName(value);
+    }
+});
+const email = computed({
+    get: () => userStore.getEmail,
+    set: (value) => {
+        userStore.setEmail(value);
+    }
+});
+const selectedRole = computed({
+    get: () => userStore.getRole,
+    set: (value) => {
+        userStore.setRole(value);
+    }
+});
+
+const selectedWorkspacesIds = computed({
+    get: () => userStore.getWorkspacesIds,
+    set: (value) => {
+        userStore.setWorkspacesIds(value);
+    }
+});
+
+const selectAll = computed({
+    get: () => userStore.getWorkspacesIds.length === props.workspaces.meta.total,
+    set: (value) => {
+        if (value) {
+            userStore.setWorkspacesIds(props.workspacesIds)
+        } else
+            userStore.setWorkspacesIds([]);
+    }
 });
 
 const page = usePage();
 
-// A computed property to safely access the current path from the paginatedRegistries.
-const currentPath = computed(() => {
-    // Check if paginatedRegistries and its path property exist
-    // return page.props.paginatedRegistries?.path;
-    return page.props.ziggy.location;
-});
-
-watchEffect(() => {
-
-    // Keeps the form's registriesIds in sync with the store's selected registries.
-    // Whenever the selected registries in the store change, this watchEffect updates the form's registriesIds accordingly.
-    form.workspacesIds = workspacesStore.selectedWorkspacesIdsArray;
-});
-
 onUnmounted(() => {
-    // Triggered when leaving the component.
-
-    // If navigating away from the specific edit-registries route,
-    // clear selected registries and reset initialization state.
-    if (currentPath.value !== route('users.create', {project: projectId})) {
-        console.log('clearing selected workspaces');
-        workspacesStore.clearSelectedWorkspaces();
+    if (page.props.ziggy.location !== route('users.create')) {
+        userStore.$reset()
     }
 });
 
 
-// Function to handle changes in 'Select All' checkbox.
-const handleSelectAll = (selectAll) => {
-    workspacesStore.setSelectAll(selectAll, props.workspacesIds);
-};
+function submit() {
 
-// Function to handle changes in individual registry selection.
-const handleCheckboxChange = (workspaceId) => {
-    workspacesStore.toggleWorkspace(workspaceId);
-    workspacesStore.updateSelectAllState(props.workspacesIds.length);
-};
 
-const submitForm = () => {
-    form.post(route('users.store', {project: projectId}), {
+    router.post(route('users.store'), userStore.form, {
+        preserveScroll: true,
         onSuccess: () => {
-            form.reset();
-            workspacesStore.clearSelectedWorkspaces();
+            userStore.$reset()
+
+
         },
-    });
-};
+    })
+}
+
+
 </script>
 
 <template>
-    <Head title="Workspace"/>
+    <Head title="Create User"/>
+
+    {{ $page.props.errors }}
+
+    {{ page.props.errors }}
+
 
     <AuthenticatedLayout>
         <template #header>
@@ -84,6 +99,7 @@ const submitForm = () => {
             <div class="space-y-2">
                 <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow">
                     <section class="max-w-xl">
+
                         <header>
                             <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Create User Form</h2>
 
@@ -91,7 +107,7 @@ const submitForm = () => {
                                 Please provide required data to create new user.
                             </p>
                         </header>
-                        <form @submit.prevent="submitForm" method="post"
+                        <form @submit.prevent="submit" method="post"
                               class="mt-6 space-y-6">
                             <div>
                                 <InputLabel for="name" value="First Name"/>
@@ -100,13 +116,12 @@ const submitForm = () => {
                                     id="first_name"
                                     type="text"
                                     class="mt-1 block w-full"
-                                    v-model="form.first_name"
+                                    v-model="firstName"
                                     required
-                                    autofocus
                                     autocomplete="first_name"
                                 />
 
-                                <InputError class="mt-2" :message="form.errors.first_name"/>
+                                <!--                                <InputError class="mt-2" :message="errors.first_name"/>-->
                             </div>
                             <div>
                                 <InputLabel for="last_name" value="Last Name"/>
@@ -115,13 +130,12 @@ const submitForm = () => {
                                     id="last_name"
                                     type="text"
                                     class="mt-1 block w-full"
-                                    v-model="form.last_name"
+                                    v-model="lastName"
                                     required
-                                    autofocus
                                     autocomplete="last_name"
                                 />
 
-                                <InputError class="mt-2" :message="form.errors.last_name"/>
+                                <!--                                <InputError class="mt-2" :message="form.errors.last_name"/>-->
                             </div>
                             <div>
                                 <InputLabel for="email" value="Email"/>
@@ -130,12 +144,12 @@ const submitForm = () => {
                                     id="email"
                                     type="email"
                                     class="mt-1 block w-full"
-                                    v-model="form.email"
+                                    v-model="email"
                                     required
                                     autocomplete="username"
                                 />
-
-                                <InputError class="mt-2" :message="form.errors.email"/>
+                                {{ email }}
+                                <!--                                <InputError class="mt-2" :message="form.errors.email"/>-->
                             </div>
                             <!--Role-->
                             <div>
@@ -149,7 +163,7 @@ const submitForm = () => {
                                             type="radio"
                                             :id="`radio-${role.id}`"
                                             :value="role.name"
-                                            v-model="form.role"
+                                            v-model="selectedRole"
                                             class="border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
                                         />
                                         <label :for="`radio-${role.id}`" class="ml-2 cursor-pointer text-sm">
@@ -159,7 +173,7 @@ const submitForm = () => {
 
 
                                 </div>
-                                <InputError class="mt-2" :message="form.errors.role"/>
+                                <!--                                <InputError class="mt-2" :message="form.errors.role"/>-->
                             </div>
                             <!--Workspaces-->
                             <div>
@@ -171,10 +185,8 @@ const submitForm = () => {
                                             <input
                                                 type="checkbox"
                                                 id="select-all"
-                                                v-model="workspacesStore.selectAll"
-                                                @change="handleSelectAll(workspacesStore.selectAll)"
+                                                v-model="selectAll"
                                                 class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
-
                                             />
                                             <label for="select-all" class="text-sm ml-2">
                                                 Select All
@@ -182,7 +194,8 @@ const submitForm = () => {
                                         </div>
 
                                         <Pagination :links="workspaces.meta.links"
-                                                    class="flex items-center justify-end py-2"></Pagination>
+                                                    class="flex items-center justify-end py-2"
+                                        ></Pagination>
                                     </div>
 
 
@@ -192,9 +205,9 @@ const submitForm = () => {
                                          class="flex items-center py-2">
                                         <input
                                             type="checkbox"
+                                            :id="`checkbox-${workspace.id}`"
+                                            v-model="selectedWorkspacesIds"
                                             :value="workspace.id"
-                                            :checked="workspacesStore.selectedWorkspacesIds.has(workspace.id)"
-                                            @change="() => handleCheckboxChange(workspace.id)"
                                             class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
                                         />
                                         <div class="text-sm flex flex-col justify-center">
@@ -210,20 +223,24 @@ const submitForm = () => {
                                     </div>
 
                                 </div>
-                                <InputError class="mt-2" :message="form.errors.workspacesIds"/>
+                                <!--                                <InputError class="mt-2" :message="form.errors.workspacesIds"/>-->
                             </div>
 
                             <div class="flex items-center gap-4">
-                                <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
+
+
+                                <PrimaryButton>Save</PrimaryButton>
                                 <Transition
                                     enter-active-class="transition ease-in-out"
                                     enter-from-class="opacity-0"
                                     leave-active-class="transition ease-in-out"
                                     leave-to-class="opacity-0"
                                 >
-                                    <p v-if="form.recentlySuccessful" class="text-sm text-gray-600 dark:text-gray-400">
+                                    <p v-if="recentlySuccessful" class="text-sm text-gray-600 dark:text-gray-400">
                                         Saved.</p>
                                 </Transition>
+
+
                             </div>
 
                         </form>

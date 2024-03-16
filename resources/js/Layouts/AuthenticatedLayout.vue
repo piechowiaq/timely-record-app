@@ -240,6 +240,7 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
                         <div class="container mx-auto px-4 py-2 sm:flex sm:h-10 justify-between  items-center ">
                             <slot name="header"/>
                             <FlashMessages/>
+
                         </div>
                     </header>
 
