@@ -27,10 +27,8 @@ const selectAll = computed({
     set: (value) => {
         if (value) {
             form.workspacesIds = props.workspacesIds;
-            userStore.setWorkspacesIds(props.workspacesIds)
         } else
             form.workspacesIds = [];
-        userStore.setWorkspacesIds([]);
     }
 });
 

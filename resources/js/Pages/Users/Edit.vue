@@ -6,70 +6,55 @@ import TextInput from "@/Components/TextInput.vue";
 import {Head, useForm, usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import {computed, onUnmounted, watchEffect} from 'vue';
-import {useWorkspacesStore} from "@/Stores/WorkspacesStore.js";
+import {computed, onUnmounted, watch} from 'vue';
 import Pagination from "@/Components/Pagination.vue";
 
 import RegistrationLink from "@/Pages/Users/Partials/RegistrationLink.vue";
 import DeleteUserForm from "@/Pages/Users/Partials/DeleteUserForm.vue";
+import {useUserStore} from "@/Stores/UserStore.js";
 
-const props = defineProps(['user', 'roles', 'workspaces', 'userWorkspacesIds', 'workspacesIds']);
+const props = defineProps(['user', 'roles', 'workspaces', 'workspacesIds']);
 
 const projectId = usePage().props.projectId;
 
-const workspacesStore = useWorkspacesStore();
+const userStore = useUserStore();
 
-const form = useForm({
-    first_name: props.user.first_name,
-    last_name: props.user.last_name,
-    email: props.user.email,
-    role: props.user.role,
-    userWorkspacesIds: [],
+
+if (userStore.initialized === false) {
+    userStore.updateForm(props.user);
+}
+const form = useForm(userStore.form);
+
+watch(form, () => {
+    userStore.updateForm(form);
+}, {deep: true});
+
+const selectAll = computed({
+    get: () => form.workspacesIds.length === props.workspaces.meta.total,
+    set: (value) => {
+        if (value) {
+            form.workspacesIds = props.workspacesIds;
+        } else
+            form.workspacesIds = [];
+    }
 });
 
 const page = usePage();
 
-// A computed property to safely access the current path from the paginatedRegistries.
-const currentPath = computed(() => {
-    // Check if paginatedRegistries and its path property exist
-    return page.props.workspaces?.path;
-});
-
-watchEffect(() => {
-    // Initializes the selected registries in the store with the IDs provided in props.workspaceRegistriesIds.
-    // This only happens once when the component is mounted and if the store has not been initialized yet.
-    if (!workspacesStore.isInitialized) {
-        workspacesStore.initializeWorkspaces(props.userWorkspacesIds, props.workspacesIds.length);
-    }
-    // Keeps the form's registriesIds in sync with the store's selected registries.
-    // Whenever the selected registries in the store change, this watchEffect updates the form's registriesIds accordingly.
-    form.userWorkspacesIds = workspacesStore.selectedWorkspacesIdsArray;
-});
-
 onUnmounted(() => {
-    // Triggered when leaving the component.
-
-    // If navigating away from the specific edit-registries route,
-    // clear selected registries and reset initialization state.
-    if (currentPath.value !== route('users.edit', {project: projectId, user: props.user.id})) {
-        workspacesStore.clearSelectedWorkspaces();
+    if (page.props.ziggy.location !== route('users.edit', {user: props.user.id})) {
+        userStore.$reset()
     }
 });
 
-
-// Function to handle changes in 'Select All' checkbox.
-const handleSelectAll = (selectAll) => {
-    workspacesStore.setSelectAll(selectAll, props.workspacesIds);
-};
-
-// Function to handle changes in individual registry selection.
-const handleCheckboxChange = (workspaceId) => {
-    workspacesStore.toggleWorkspace(workspaceId);
-    workspacesStore.updateSelectAllState(props.workspacesIds.length);
-};
 
 function submit() {
-    form.patch(route('users.update', {project: projectId, user: props.user.id}))
+    form.patch(route('users.update', {project: projectId, user: props.user.id}), {
+        preserveScroll: true,
+        onSuccess: () => {
+            userStore.$reset()
+        },
+    })
 }
 </script>
 
@@ -81,7 +66,6 @@ function submit() {
             <h2 class="text-white dark:text-gray-700 leading-tight">Edit User</h2>
         </template>
         <div class="px-2 pb-2">
-
             <div class="space-y-2">
                 <div v-if="!user.email_verified" class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow ">
 
@@ -102,15 +86,13 @@ function submit() {
                               method="post"
                               class="mt-6 space-y-6">
                             <div>
-                                <InputLabel for="name" value="First Name"/>
+                                <InputLabel for="first_name" value="First Name"/>
 
                                 <TextInput
                                     id="first_name"
                                     type="text"
                                     class="mt-1 block w-full"
                                     v-model="form.first_name"
-
-                                    autofocus
                                     autocomplete="first_name"
                                 />
 
@@ -125,7 +107,6 @@ function submit() {
                                     class="mt-1 block w-full"
                                     v-model="form.last_name"
                                     required
-                                    autofocus
                                     autocomplete="last_name"
                                 />
 
@@ -179,10 +160,9 @@ function submit() {
                                         <div class="flex">
                                             <input
                                                 type="checkbox"
-                                                v-model="workspacesStore.selectAll"
-                                                @change="handleSelectAll(workspacesStore.selectAll)"
+                                                id="select-all"
+                                                v-model="selectAll"
                                                 class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
-
                                             />
                                             <label for="select-all" class="text-sm ml-2">
                                                 Select All
@@ -199,9 +179,9 @@ function submit() {
                                          class="flex items-center py-2">
                                         <input
                                             type="checkbox"
+                                            :id="`checkbox-${workspace.id}`"
+                                            v-model="form.workspacesIds"
                                             :value="workspace.id"
-                                            :checked="workspacesStore.selectedWorkspacesIds.has(workspace.id)"
-                                            @change="() => handleCheckboxChange(workspace.id)"
                                             class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
                                         />
                                         <div class="text-sm flex flex-col justify-center">
@@ -218,7 +198,7 @@ function submit() {
 
                                 </div>
 
-                                <InputError class="mt-2" :message="form.errors.userWorkspacesIds"/>
+                                <InputError class="mt-2" :message="form.errors.workspacesIds"/>
                             </div>
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-4">
@@ -233,7 +213,18 @@ function submit() {
                                            class="text-sm text-gray-600 dark:text-gray-400">
                                             Saved.</p>
                                     </Transition>
-
+                                    Form Initialized: {{ userStore.initialized }}
+                                    <br>
+                                    <br>
+                                    PiniaUser: {{
+                                        userStore.form.first_name
+                                    }}
+                                    <br>
+                                    <br>Form:
+                                    {{ form.first_name }}
+                                    <br>
+                                    <br>Props:
+                                    {{ user.first_name }}
                                 </div>
                                 <DeleteUserForm :user="user" class="max-w-xl"/>
                             </div>

@@ -95,7 +95,6 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request): RedirectResponse
     {
-
         $project = Project::find(session('project_id'));
 
         $user = User::create([
@@ -121,7 +120,9 @@ class UserController extends Controller
     {
         $roles = Role::eligibleToAssign(auth()->user()->getRoleNames()->first())->get();
 
-        $workspaces = Workspace::whereIn('id', auth()->user()->workspaces->pluck('id')->toArray())
+        $workspacesIds = auth()->user()->workspaces->pluck('id')->toArray();
+
+        $workspaces = Workspace::whereIn('id', $workspacesIds)
             ->paginate(5)
             ->withQueryString();
 
@@ -129,9 +130,7 @@ class UserController extends Controller
             'user' => UserResource::make($user),
             'roles' => RoleResource::collection($roles),
             'workspaces' => WorkspaceResource::collection($workspaces),
-            'userWorkspacesIds' => $user->workspaces->pluck('id')->toArray(),
-            'workspacesIds' => $workspaces->pluck('id')->toArray(),
-
+            'workspacesIds' => $workspacesIds,
         ]);
     }
 

@@ -30,7 +30,7 @@ Route::get('test', function () {
 
     return inertia('Test', [
 
-        'workspaces' => WorkspaceResource::collection($workspaces),
+        'user' => WorkspaceResource::collection($workspaces),
 
     ]);
 })->name('test');

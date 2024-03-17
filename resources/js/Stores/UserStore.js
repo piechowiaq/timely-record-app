@@ -9,13 +9,15 @@ export const useUserStore = defineStore("UserStore", {
             role: '',
             workspacesIds: [],
         },
+        initialized: false,
     }),
     actions: {
         updateForm(formData) {
             this.form = {...this.form, ...formData};
+            this.initialized = true;
         },
-        setWorkspacesIds(value) {
-            this.form.workspacesIds = value;
+        setInitialized(value) {
+            this.initialized = value;
         },
     },
 })
