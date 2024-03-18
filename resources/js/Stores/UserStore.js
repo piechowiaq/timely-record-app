@@ -16,8 +16,5 @@ export const useUserStore = defineStore("UserStore", {
             this.form = {...this.form, ...formData};
             this.initialized = true;
         },
-        setInitialized(value) {
-            this.initialized = value;
-        },
     },
 })

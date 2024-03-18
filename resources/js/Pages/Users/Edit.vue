@@ -20,7 +20,6 @@ const projectId = usePage().props.projectId;
 const userStore = useUserStore();
 
 if (userStore.initialized === false) {
-
     userStore.updateForm(props.user);
 }
 

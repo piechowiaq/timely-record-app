@@ -4,7 +4,7 @@ import TextInput from "@/Components/TextInput.vue";
 import {Head, useForm, usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import {computed, onUnmounted, watch} from 'vue';
+import {computed, watch} from 'vue';
 import Pagination from "@/Components/Pagination.vue";
 import {useUserStore} from "@/Stores/UserStore.js";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
@@ -34,18 +34,9 @@ const selectAll = computed({
 
 const page = usePage();
 
-onUnmounted(() => {
-    if (page.props.ziggy.location !== route('users.create')) {
-        userStore.$reset()
-    }
-});
-
 function submit() {
     form.post(route('users.store'), {
         preserveScroll: true,
-        onSuccess: () => {
-            userStore.$reset()
-        },
     })
 }
 

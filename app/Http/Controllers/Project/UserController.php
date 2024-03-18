@@ -110,7 +110,7 @@ class UserController extends Controller
         $user->workspaces()->sync($request->workspacesIds);
         $user->assignRole($request->role);
 
-        return to_route('users.index')
+        return to_route('users.edit', $user->id)
             ->with('success', 'User created.');
     }
 
