@@ -17,7 +17,6 @@ export const useUserStore = defineStore("UserStore", {
             this.initialized = true;
         },
         setInitialized(value) {
-            console.log('from store');
             this.initialized = value;
         },
     },

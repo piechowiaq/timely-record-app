@@ -6,19 +6,7 @@ import TextInput from "@/Components/TextInput.vue";
 import {Head, useForm, usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import {
-    computed,
-    onBeforeMount,
-    onBeforeUnmount,
-    onBeforeUpdate,
-    onErrorCaptured,
-    onMounted,
-    onRenderTracked,
-    onRenderTriggered,
-    onUnmounted,
-    onUpdated,
-    watch
-} from 'vue';
+import {computed, onUnmounted} from 'vue';
 import Pagination from "@/Components/Pagination.vue";
 
 import RegistrationLink from "@/Pages/Users/Partials/RegistrationLink.vue";
@@ -31,82 +19,73 @@ const projectId = usePage().props.projectId;
 
 const userStore = useUserStore();
 
-
-onBeforeMount(() => {
-    console.log('onBeforeMount')
-})
-
-onBeforeUpdate(() => {
-    console.log('onBeforeUpdate')
-
-})
-
-onBeforeUnmount(() => {
-    console.log('onBeforeUnmount')
-})
-
-
-onMounted(() => {
-    console.log('onMounted')
-});
-
-onUpdated(() => {
-    console.log('onUpdated')
-});
-
-onErrorCaptured(() => {
-    console.log('onErrorCaptured')
-});
-
-onRenderTracked(() => {
-    console.log('onRenderTracked')
-});
-
-onRenderTriggered(() => {
-    console.log('onRenderTriggered')
-});
-
 if (userStore.initialized === false) {
-    console.log('initializing');
+
     userStore.updateForm(props.user);
 }
-const form = useForm(userStore.form);
 
-computed({
-    get() {
-        return form;
-    },
-    set(newValue) {
-        userStore.updateForm(newValue);
-    }
+const form = useForm({
+    first_name: userStore.form.first_name,
+    last_name: userStore.form.last_name,
+    email: userStore.form.email,
+    role: userStore.form.role,
+    workspacesIds: userStore.form.workspacesIds,
 });
 
-watch(form, () => {
+const firstName = computed({
+    get: () => form.first_name,
+    set: (value) => {
+        form.first_name = value;
+        userStore.updateForm({...userStore.form, first_name: value});
+    },
+});
 
-    userStore.updateForm(form);
+const lastName = computed({
+    get: () => form.last_name,
+    set: (value) => {
+        form.last_name = value;
+        userStore.updateForm({...userStore.form, last_name: value});
+    },
+});
 
+const email = computed({
+    get: () => form.email,
+    set: (value) => {
+        form.email = value;
+        userStore.updateForm({...userStore.form, email: value});
+    },
+});
 
-}, {deep: true});
+const selectedRole = computed({
+    get: () => form.role,
+    set: (value) => {
+        form.role = value;
+        userStore.updateForm({...userStore.form, role: value});
+    },
+});
+
+const workspacesIds = computed({
+    get: () => form.workspacesIds,
+    set: (value) => {
+        form.workspacesIds = value;
+        userStore.updateForm({...userStore.form, workspacesIds: value});
+    },
+});
 
 
 const selectAll = computed({
     get: () => form.workspacesIds.length === props.workspaces.meta.total,
     set: (value) => {
-        if (value) {
-            form.workspacesIds = props.workspacesIds;
-        } else
-            form.workspacesIds = [];
+        form.workspacesIds = value ? [...props.workspacesIds] : [];
+        userStore.updateForm({workspacesIds: form.workspacesIds});
     }
 });
 
 const page = usePage();
 
 onUnmounted(() => {
-    console.log('onUnmounted');
     if (page.props.ziggy.location !== route('users.edit', {user: props.user.id})) {
-        console.log('pre-resetting');
         userStore.$reset()
-        console.log('after-resetting');
     }
 });
 
@@ -155,7 +134,7 @@ function submit() {
                                     id="first_name"
                                     type="text"
                                     class="mt-1 block w-full"
-                                    v-model="form.first_name"
+                                    v-model="firstName"
                                     autocomplete="first_name"
                                 />
 
@@ -168,7 +147,7 @@ function submit() {
                                     id="last_name"
                                     type="text"
                                     class="mt-1 block w-full"
-                                    v-model="form.last_name"
+                                    v-model="lastName"
                                     required
                                     autocomplete="last_name"
                                 />
@@ -182,7 +161,7 @@ function submit() {
                                     id="email"
                                     type="email"
                                     class="mt-1 block w-full"
-                                    v-model="form.email"
+                                    v-model="email"
                                     required
                                     autocomplete="username"
                                 />
@@ -201,7 +180,7 @@ function submit() {
                                             type="radio"
                                             :id="`radio-${role.id}`"
                                             :value="role.name"
-                                            v-model="form.role"
+                                            v-model="selectedRole"
                                             class="border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
                                         />
                                         <label :for="`radio-${role.id}`" class="ml-2 cursor-pointer text-sm">
@@ -243,7 +222,7 @@ function submit() {
                                         <input
                                             type="checkbox"
                                             :id="`checkbox-${workspace.id}`"
-                                            v-model="form.workspacesIds"
+                                            v-model="workspacesIds"
                                             :value="workspace.id"
                                             class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
                                         />
@@ -276,18 +255,7 @@ function submit() {
                                            class="text-sm text-gray-600 dark:text-gray-400">
                                             Saved.</p>
                                     </Transition>
-                                    <!--                                    Form Initialized: {{ userStore.initialized }}-->
-                                    <!--                                    <br>-->
-                                    <!--                                    <br>-->
-                                    <!--                                    PiniaUser: {{-->
-                                    <!--                                        userStore.form.first_name-->
-                                    <!--                                    }}-->
-                                    <!--                                    <br>-->
-                                    <!--                                    <br>Form:-->
-                                    <!--                                    {{ form.first_name }}-->
-                                    <!--                                    <br>-->
-                                    <!--                                    <br>Props:-->
-                                    <!--                                    {{ user.first_name }}-->
+
                                 </div>
                                 <DeleteUserForm :user="user" class="max-w-xl"/>
                             </div>
