@@ -6,7 +6,19 @@ import TextInput from "@/Components/TextInput.vue";
 import {Head, useForm, usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import {computed, onUnmounted, watch} from 'vue';
+import {
+    computed,
+    onBeforeMount,
+    onBeforeUnmount,
+    onBeforeUpdate,
+    onErrorCaptured,
+    onMounted,
+    onRenderTracked,
+    onRenderTriggered,
+    onUnmounted,
+    onUpdated,
+    watch
+} from 'vue';
 import Pagination from "@/Components/Pagination.vue";
 
 import RegistrationLink from "@/Pages/Users/Partials/RegistrationLink.vue";
@@ -20,14 +32,62 @@ const projectId = usePage().props.projectId;
 const userStore = useUserStore();
 
 
+onBeforeMount(() => {
+    console.log('onBeforeMount')
+})
+
+onBeforeUpdate(() => {
+    console.log('onBeforeUpdate')
+
+})
+
+onBeforeUnmount(() => {
+    console.log('onBeforeUnmount')
+})
+
+
+onMounted(() => {
+    console.log('onMounted')
+});
+
+onUpdated(() => {
+    console.log('onUpdated')
+});
+
+onErrorCaptured(() => {
+    console.log('onErrorCaptured')
+});
+
+onRenderTracked(() => {
+    console.log('onRenderTracked')
+});
+
+onRenderTriggered(() => {
+    console.log('onRenderTriggered')
+});
+
 if (userStore.initialized === false) {
+    console.log('initializing');
     userStore.updateForm(props.user);
 }
 const form = useForm(userStore.form);
 
+computed({
+    get() {
+        return form;
+    },
+    set(newValue) {
+        userStore.updateForm(newValue);
+    }
+});
+
 watch(form, () => {
+
     userStore.updateForm(form);
+
+
 }, {deep: true});
+
 
 const selectAll = computed({
     get: () => form.workspacesIds.length === props.workspaces.meta.total,
@@ -42,19 +102,22 @@ const selectAll = computed({
 const page = usePage();
 
 onUnmounted(() => {
+    console.log('onUnmounted');
     if (page.props.ziggy.location !== route('users.edit', {user: props.user.id})) {
+        console.log('pre-resetting');
         userStore.$reset()
+        console.log('after-resetting');
     }
 });
 
 
 function submit() {
-    form.patch(route('users.update', {project: projectId, user: props.user.id}), {
+
+    form.put(route('users.update', {project: projectId, user: props.user.id}), {
         preserveScroll: true,
-        onSuccess: () => {
-            userStore.$reset()
-        },
+
     })
+
 }
 </script>
 
@@ -213,18 +276,18 @@ function submit() {
                                            class="text-sm text-gray-600 dark:text-gray-400">
                                             Saved.</p>
                                     </Transition>
-                                    Form Initialized: {{ userStore.initialized }}
-                                    <br>
-                                    <br>
-                                    PiniaUser: {{
-                                        userStore.form.first_name
-                                    }}
-                                    <br>
-                                    <br>Form:
-                                    {{ form.first_name }}
-                                    <br>
-                                    <br>Props:
-                                    {{ user.first_name }}
+                                    <!--                                    Form Initialized: {{ userStore.initialized }}-->
+                                    <!--                                    <br>-->
+                                    <!--                                    <br>-->
+                                    <!--                                    PiniaUser: {{-->
+                                    <!--                                        userStore.form.first_name-->
+                                    <!--                                    }}-->
+                                    <!--                                    <br>-->
+                                    <!--                                    <br>Form:-->
+                                    <!--                                    {{ form.first_name }}-->
+                                    <!--                                    <br>-->
+                                    <!--                                    <br>Props:-->
+                                    <!--                                    {{ user.first_name }}-->
                                 </div>
                                 <DeleteUserForm :user="user" class="max-w-xl"/>
                             </div>

@@ -59,7 +59,7 @@ Route::middleware('auth', 'verified', 'web')->group(function () {
     Route::get('users/create', [UserController::class, 'create'])->name('users.create');
     Route::post('users', [UserController::class, 'store'])->name('users.store');
     Route::get('users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
-    Route::patch('projects/{project}/users/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::put('users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('projects/{project}/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
     Route::get('projects/{project}/registries', [RegistryController::class, 'index'])->name('registries.index');

@@ -59,6 +59,7 @@ class UserController extends Controller
 
         $users = User::inWorkspaces($authUserWorkspacesIds)
             ->with('roles')
+            ->with('workspaces')
             ->withRolesEligibleToView(auth()->user()->getRoleNames()->first())
             ->applyFilters($request)
             ->paginate(10)
@@ -118,6 +119,7 @@ class UserController extends Controller
      */
     public function edit(User $user): Response
     {
+
         $roles = Role::eligibleToAssign(auth()->user()->getRoleNames()->first())->get();
 
         $workspacesIds = auth()->user()->workspaces->pluck('id')->toArray();
@@ -137,7 +139,7 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Project $project, User $user, UpdateUserRequest $request): RedirectResponse
+    public function update(User $user, UpdateUserRequest $request): RedirectResponse
     {
         $userData = $request->only('first_name', 'last_name', 'email', 'workspacesIds', 'role');
 
@@ -145,8 +147,8 @@ class UserController extends Controller
         $this->userService->updateUser($user, $userData);
 
         // Redirect back with success message
-        return redirect()->route('users.edit', ['project' => $project, 'user' => $user])
-            ->with('success', 'User updated successfully.');
+        return to_route('users.edit', $user->id)
+            ->with('success', 'User updated.');
     }
 
     /**
