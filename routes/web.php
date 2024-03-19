@@ -63,12 +63,12 @@ Route::middleware('auth', 'verified', 'web')->group(function () {
     Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
     Route::get('registries', [RegistryController::class, 'index'])->name('registries.index');
-    Route::get('projects/{project}/create', [RegistryController::class, 'create'])->name('registries.create');
-    Route::post('projects/{project}/registries', [RegistryController::class, 'store'])->name('registries.store');
-    Route::get('projects/{project}/registries/{registry}/edit', [RegistryController::class, 'edit'])->name('registries.edit');
-    Route::get('projects/{project}/registries/{registry}', [RegistryController::class, 'show'])->name('registries.show');
-    Route::patch('projects/{project}/registries/{registry}', [RegistryController::class, 'update'])->name('registries.update');
-    Route::delete('projects/{project}/registries/{registry}', [RegistryController::class, 'destroy'])->name('registries.destroy');
+    Route::get('registries/create', [RegistryController::class, 'create'])->name('registries.create');
+    Route::post('registries', [RegistryController::class, 'store'])->name('registries.store');
+    Route::get('registries/{registry}/edit', [RegistryController::class, 'edit'])->name('registries.edit');
+    Route::get('registries/{registry}', [RegistryController::class, 'show'])->name('registries.show');
+    Route::put('registries/{registry}', [RegistryController::class, 'update'])->name('registries.update');
+    Route::delete('registries/{registry}', [RegistryController::class, 'destroy'])->name('registries.destroy');
 
     Route::get('projects/{project}/workspaces/{workspace:id}/dashboard', [WorkspaceController::class, 'dashboard'])->name('workspaces.dashboard');
     Route::get('projects/{project}/workspaces/index', [WorkspaceController::class, 'index'])->name('workspaces.index');

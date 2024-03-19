@@ -6,6 +6,7 @@ use App\Http\Resources\WorkspaceResource;
 use App\Models\Role;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
+use Database\Seeders\RolesAndPermissionsSeeder;
 use Inertia\Testing\AssertableInertia;
 
 use function Pest\Laravel\actingAs;
@@ -15,6 +16,23 @@ it('requires authentication', function () {
 
     get(route('users.edit', User::factory()->create()))
         ->assertRedirect(route('login'));
+});
+
+it('requires authorization', function () {
+
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $roles = ['user', 'manager'];
+
+    foreach ($roles as $role) {
+        $user = User::factory()->create();
+        $user->assignRole($role);
+
+        actingAs($user)
+            ->get(route('users.edit', User::factory()->create(['project_id' => $user->project_id])))
+            ->assertForbidden();
+    }
+
 });
 
 it('returns a correct component', function () {

@@ -27,6 +27,7 @@ class RegistryController extends Controller
     ) {
         $this->registryService = $registryService;
         $this->registryRepository = $registryRepository;
+        $this->authorizeResource(Registry::class, 'registry');
     }
 
     public function index(Request $request): Response
@@ -60,14 +61,18 @@ class RegistryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreProjectRegistryRequest $request, Project $project)
+    public function store(StoreProjectRegistryRequest $request)
     {
-        $registryData = $request->only('name', 'description', 'validity_period');
-        $registryData['project_id'] = $project->id;
+        $project = Project::find(session('project_id'));
 
-        $this->registryService->createRegistry($registryData);
+        Registry::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'validity_period' => $request->validity_period,
+            'project_id' => $project->id,
+        ]);
 
-        return redirect()->route('registries.index', ['project' => $project])
+        return redirect()->route('registries.index')
             ->with('success', 'Custom registry created.');
     }
 
@@ -77,44 +82,49 @@ class RegistryController extends Controller
     public function show(Project $project, Registry $registry)
     {
         return Inertia::render('Registries/Show', [
-            'registry' => $registry,
+            'registry' => RegistryResource::make($registry),
         ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Project $project, Registry $registry)
+    public function edit(Registry $registry)
     {
         return Inertia::render('Registries/Edit', [
-            'registry' => $registry,
+            'registry' => RegistryResource::make($registry),
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Project $project, Registry $registry, UpdateProjectRegistryRequest $request)
+    public function update(Registry $registry, UpdateProjectRegistryRequest $request)
     {
-        $userRegistry = $request->only('name', 'description', 'validity_period');
+        $project = Project::find(session('project_id'));
 
-        $this->registryService->updateRegistry($registry, $userRegistry);
+        $registry->update([
+            'name' => $request->name,
+            'description' => $request->description,
+            'validity_period' => $request->validity_period,
+            'project_id' => $project->id,
+        ]);
 
-        return redirect()->route('registries.edit', ['project' => $project->id, 'registry' => $registry->id])
+        return redirect()->route('registries.edit', $registry->id)
             ->with('success', 'Custom Registry updated successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Project $project, Registry $registry, Request $request)
+    public function destroy(Registry $registry, Request $request)
     {
         $request->validate([
             'password' => ['required', 'current_password'],
         ]);
 
-        $this->registryService->deleteRegistry($registry);
+        $registry->delete();
 
-        return Redirect::route('registries.index', ['project' => $project])->with('success', 'Registry deleted.');
+        return Redirect::route('registries.index')->with('success', 'Registry deleted.');
     }
 }

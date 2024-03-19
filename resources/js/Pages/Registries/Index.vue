@@ -60,7 +60,7 @@ const getSortIconClass = (field) => {
                         </button>
 
                     </div>
-                    <Link :href="route('registries.create', projectId)"
+                    <Link :href="route('registries.create')"
                           class="text-cyan-600 hover:text-cyan-700 text-sm">
                         Create
                         Custom Registry
@@ -94,12 +94,12 @@ const getSortIconClass = (field) => {
                             <th scope="row"
                                 class="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                 <Link v-if="registry.project_id === null"
-                                      :href="route('registries.show', [ projectId, registry.id])"
+                                      :href="route('registries.show', registry.id)"
                                       class="text-cyan-600 hover:text-cyan-700">
                                     {{ registry.name }}
                                 </Link>
 
-                                <Link v-else :href="route('registries.edit', [ projectId, registry.id])"
+                                <Link v-else :href="route('registries.edit', registry.id)"
                                       class="text-cyan-600 hover:text-cyan-700">
                                     {{ registry.name }}
                                 </Link>
