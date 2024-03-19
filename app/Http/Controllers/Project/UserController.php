@@ -12,37 +12,16 @@ use App\Models\Project;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\Workspace;
-use App\Repositories\Contracts\RoleRepositoryInterface;
-use App\Repositories\Contracts\UserRepositoryInterface;
-use App\Repositories\Contracts\WorkspaceRepositoryInterface;
-use App\Services\UserService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
 use Inertia\Response;
 
 class UserController extends Controller
 {
-    private UserRepositoryInterface $userRepository;
-
-    private RoleRepositoryInterface $roleRepository;
-
-    private WorkspaceRepositoryInterface $workspaceRepository;
-
-    private UserService $userService;
-
-    public function __construct(
-        UserRepositoryInterface $userRepository,
-        UserService $userService,
-        RoleRepositoryInterface $roleRepository,
-        WorkspaceRepositoryInterface $workspaceRepository)
+    public function __construct()
     {
-        $this->userRepository = $userRepository;
-        $this->userService = $userService;
-        $this->roleRepository = $roleRepository;
-        $this->workspaceRepository = $workspaceRepository;
         $this->authorizeResource(User::class, 'user');
     }
 
@@ -141,12 +120,15 @@ class UserController extends Controller
      */
     public function update(User $user, UpdateUserRequest $request): RedirectResponse
     {
-        $userData = $request->only('first_name', 'last_name', 'email', 'workspacesIds', 'role');
+        $user->update([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+        ]);
 
-        // Update the user using the UserService
-        $this->userService->updateUser($user, $userData);
+        $user->workspaces()->sync($request->workspacesIds);
+        $user->syncRoles($request->role);
 
-        // Redirect back with success message
         return to_route('users.edit', $user->id)
             ->with('success', 'User updated.');
     }
@@ -154,14 +136,14 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Project $project, User $user, Request $request): RedirectResponse
+    public function destroy(User $user, Request $request): RedirectResponse
     {
         $request->validate([
             'password' => ['required', 'current_password'],
         ]);
 
-        $this->userService->deleteUser($user);
+        $user->hasRole('project-admin') || $user->hasRole('super-admin') ? $user->delete() : $user->forceDelete();
 
-        return Redirect::route('users.index', ['project' => $project])->with('success', 'User deleted.');
+        return to_route('users.index')->with('success', 'User deleted.');
     }
 }

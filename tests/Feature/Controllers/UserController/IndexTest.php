@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Resources\UserResource;
-use App\Models\Project;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
 use Database\Seeders\RolesAndPermissionsSeeder;
@@ -11,7 +10,7 @@ use function Pest\Laravel\get;
 
 it('requires authentication', function () {
 
-    get(route('users.index', Project::factory()->create()))
+    get(route('users.index'))
         ->assertRedirect(route('login'));
 
 });
@@ -59,8 +58,7 @@ it('passes auth user workspaces users to the view excluding project-admin role a
     $users = User::inWorkspaces($authUserWorkspaces)
         ->with('roles')
         ->with('workspaces')
-        ->withRolesEligibleToView('admin')
-        ->get();
+        ->withRolesEligibleToView('admin')->get();
 
     actingAs($user)->
     get(route('users.index'))

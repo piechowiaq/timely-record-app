@@ -25,18 +25,6 @@ class DatabaseSeeder extends Seeder
         $users = User::factory(25)->recycle($projects)->create();
         $workspaces = Workspace::factory(15)->recycle($projects)->create();
 
-        //        $users = User::factory(25)->make()->each(function ($user) use ($projects) {
-        //            $project = $projects->random();
-        //            $user->project_id = $project->id;
-        //            $user->save();
-        //        });
-        //
-        //        $workspaces = Workspace::factory(15)->make()->each(function ($workspace) use ($projects) {
-        //            $project = $projects->random();
-        //            $workspace->project_id = $project->id;
-        //            $workspace->save();
-        //        });
-
         $roles = Role::whereNotIn('name', ['project-admin', 'super-admin'])->get();
 
         foreach ($projects as $project) {

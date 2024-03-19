@@ -41,7 +41,7 @@ it('requires authorization', function () {
     }
 });
 
-it('updates existing user', function () {
+it('updates a user', function () {
 
     $this->seed(DatabaseSeeder::class);
 
@@ -69,7 +69,7 @@ it('updates existing user', function () {
     ]);
 });
 
-it('updates role of existing user', function () {
+it('updates role of user', function () {
 
     $this->seed(DatabaseSeeder::class);
 
@@ -96,7 +96,7 @@ it('updates role of existing user', function () {
 
 });
 
-it('syncs workspaces with existing user', function () {
+it('syncs workspaces with user', function () {
 
     $this->seed(DatabaseSeeder::class);
 

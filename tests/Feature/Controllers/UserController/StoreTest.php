@@ -96,7 +96,6 @@ it('syncs workspaces with a user', function () {
     $user = User::role('admin')->first();
     session(['project_id' => $user->project_id]);
 
-    $project = $user->project;
     $workspaces = $user->workspaces->pluck('id')->toArray();
 
     $data = value($this->validData);
