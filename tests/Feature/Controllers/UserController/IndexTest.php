@@ -58,6 +58,7 @@ it('passes auth user workspaces users to the view excluding project-admin role a
 
     $users = User::inWorkspaces($authUserWorkspaces)
         ->with('roles')
+        ->with('workspaces')
         ->withRolesEligibleToView('admin')
         ->get();
 

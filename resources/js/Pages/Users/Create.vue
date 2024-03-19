@@ -4,7 +4,7 @@ import TextInput from "@/Components/TextInput.vue";
 import {Head, useForm, usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import {computed, watch} from 'vue';
+import {computed} from 'vue';
 import Pagination from "@/Components/Pagination.vue";
 import {useUserStore} from "@/Stores/UserStore.js";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
@@ -16,23 +16,62 @@ const projectId = usePage().props.projectId;
 
 const userStore = useUserStore();
 
-const form = useForm(userStore.form);
+const form = useForm({
+    first_name: userStore.form.first_name,
+    last_name: userStore.form.last_name,
+    email: userStore.form.email,
+    role: userStore.form.role,
+    workspacesIds: userStore.form.workspacesIds,
+});
 
-watch(form, () => {
-    userStore.updateForm(form);
-}, {deep: true});
+const firstName = computed({
+    get: () => form.first_name,
+    set: (value) => {
+        form.first_name = value;
+        userStore.updateForm({...userStore.form, first_name: value});
+    },
+});
+
+const lastName = computed({
+    get: () => form.last_name,
+    set: (value) => {
+        form.last_name = value;
+        userStore.updateForm({...userStore.form, last_name: value});
+    },
+});
+
+const email = computed({
+    get: () => form.email,
+    set: (value) => {
+        form.email = value;
+        userStore.updateForm({...userStore.form, email: value});
+    },
+});
+
+const selectedRole = computed({
+    get: () => form.role,
+    set: (value) => {
+        form.role = value;
+        userStore.updateForm({...userStore.form, role: value});
+    },
+});
+
+const workspacesIds = computed({
+    get: () => form.workspacesIds,
+    set: (value) => {
+        form.workspacesIds = value;
+        userStore.updateForm({...userStore.form, workspacesIds: value});
+    },
+});
+
 
 const selectAll = computed({
     get: () => form.workspacesIds.length === props.workspaces.meta.total,
     set: (value) => {
-        if (value) {
-            form.workspacesIds = props.workspacesIds;
-        } else
-            form.workspacesIds = [];
+        form.workspacesIds = value ? [...props.workspacesIds] : [];
+        userStore.updateForm({workspacesIds: form.workspacesIds});
     }
 });
-
-const page = usePage();
 
 function submit() {
     form.post(route('users.store'), {
@@ -70,7 +109,7 @@ function submit() {
                                     id="first_name"
                                     type="text"
                                     class="mt-1 block w-full"
-                                    v-model="form.first_name"
+                                    v-model="firstName"
                                     required
                                     autocomplete="first_name"
                                 />
@@ -85,7 +124,7 @@ function submit() {
                                     id="last_name"
                                     type="text"
                                     class="mt-1 block w-full"
-                                    v-model="form.last_name"
+                                    v-model="lastName"
                                     required
                                     autocomplete="last_name"
                                 />
@@ -99,7 +138,7 @@ function submit() {
                                     id="email"
                                     type="email"
                                     class="mt-1 block w-full"
-                                    v-model="form.email"
+                                    v-model="email"
                                     required
                                     autocomplete="username"
                                 />
@@ -119,7 +158,7 @@ function submit() {
                                             type="radio"
                                             :id="`radio-${role.id}`"
                                             :value="role.name"
-                                            v-model="form.role"
+                                            v-model="selectedRole"
                                             class="border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
                                         />
                                         <label :for="`radio-${role.id}`" class="ml-2 cursor-pointer text-sm">
@@ -164,7 +203,7 @@ function submit() {
                                         <input
                                             type="checkbox"
                                             :id="`checkbox-${workspace.id}`"
-                                            v-model="form.workspacesIds"
+                                            v-model="workspacesIds"
                                             :value="workspace.id"
                                             class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
                                         />

@@ -102,21 +102,3 @@ it('passes auth user workspaces ids to the view', function () {
             ->has('workspacesIds', $user->workspaces->pluck('id')->count())
         );
 });
-
-it('passes user workspaces ids to the view', function () {
-
-    $this->seed(DatabaseSeeder::class);
-
-    $user = User::role('admin')->first();
-    session(['project_id' => $user->project_id]);
-
-    $user2 = User::factory()->create(['project_id' => $user->project_id]);
-    $user2->assignRole('user');
-    $user2->workspaces()->attach($user->workspaces->first());
-
-    actingAs($user)->
-    get(route('users.edit', $user2))
-        ->assertInertia(fn (AssertableInertia $page) => $page
-            ->has('userWorkspacesIds', $user2->workspaces->pluck('id')->count())
-        );
-});

@@ -6,7 +6,7 @@ import TextInput from "@/Components/TextInput.vue";
 import {Head, useForm, usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import {computed, onUnmounted} from 'vue';
+import {computed} from 'vue';
 import Pagination from "@/Components/Pagination.vue";
 
 import RegistrationLink from "@/Pages/Users/Partials/RegistrationLink.vue";
@@ -80,22 +80,10 @@ const selectAll = computed({
     }
 });
 
-const page = usePage();
-
-onUnmounted(() => {
-    if (page.props.ziggy.location !== route('users.edit', {user: props.user.id})) {
-        userStore.$reset()
-    }
-});
-
-
 function submit() {
-
-    form.put(route('users.update', {project: projectId, user: props.user.id}), {
+    form.put(route('users.update', props.user.id), {
         preserveScroll: true,
-
     })
-
 }
 </script>
 
