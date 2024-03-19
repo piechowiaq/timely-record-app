@@ -85,7 +85,6 @@ class UserController extends Controller
             'project_id' => $project->id,
         ]);
 
-        $user->project()->associate($project);
         $user->workspaces()->sync($request->workspacesIds);
         $user->assignRole($request->role);
 

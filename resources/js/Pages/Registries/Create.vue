@@ -15,6 +15,12 @@ const form = useForm({
     validity_period: '',
 });
 
+function submit() {
+    form.post(route('registries.store'), {
+        preserveScroll: true,
+    })
+}
+
 </script>
 
 <template>
@@ -37,7 +43,7 @@ const form = useForm({
                             </p>
                         </header>
 
-                        <form @submit.prevent="form.post(route('registries.store'))"
+                        <form @submit.prevent="submit"
                               method="post"
                               class="mt-6 space-y-6">
                             <div>

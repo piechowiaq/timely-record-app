@@ -28,7 +28,7 @@ it('requires authorization', function () {
         $user->assignRole($role);
 
         actingAs($user)
-            ->get(route('users.create', $user->project_id))
+            ->get(route('users.create'))
             ->assertForbidden();
     }
 

@@ -12,7 +12,6 @@ use App\Repositories\Contracts\RegistryRepositoryInterface;
 use App\Services\RegistryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
-use Inertia\Inertia;
 use Inertia\Response;
 
 class RegistryController extends Controller
@@ -42,7 +41,7 @@ class RegistryController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return Inertia::render('Registries/Index', [
+        return inertia('Registries/Index', [
             'registries' => RegistryResource::collection($registries),
             'filters' => $request->all(['search', 'field', 'direction']),
         ]);
@@ -53,7 +52,7 @@ class RegistryController extends Controller
      */
     public function create(Project $project): Response
     {
-        return Inertia::render('Registries/Create', [
+        return inertia('Registries/Create', [
             'project' => $project,
         ]);
     }
@@ -81,7 +80,7 @@ class RegistryController extends Controller
      */
     public function show(Project $project, Registry $registry)
     {
-        return Inertia::render('Registries/Show', [
+        return inertia('Registries/Show', [
             'registry' => RegistryResource::make($registry),
         ]);
     }
@@ -91,7 +90,7 @@ class RegistryController extends Controller
      */
     public function edit(Registry $registry)
     {
-        return Inertia::render('Registries/Edit', [
+        return inertia('Registries/Edit', [
             'registry' => RegistryResource::make($registry),
         ]);
     }

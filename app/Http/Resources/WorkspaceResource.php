@@ -14,11 +14,14 @@ class WorkspaceResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $this->resource->loadMissing('registries');
+
         return [
             'id' => $this->id,
             'name' => $this->name,
             'location' => $this->location,
             'registryMetrics' => $this->registryMetrics(),
+            'registriesIds' => RegistryResource::collection($this->registries)->pluck('id')->toArray(),
         ];
     }
 }
