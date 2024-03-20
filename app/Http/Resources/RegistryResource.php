@@ -11,7 +11,6 @@ class RegistryResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        $this->resource->loadMissing('workspaces');
 
         return [
             'id' => $this->id,
@@ -19,7 +18,12 @@ class RegistryResource extends JsonResource
             'validity_period' => $this->validity_period,
             'project_id' => $this->project_id,
             'description' => $this->description,
-            'workspacesIds' => WorkspaceResource::collection($this->workspaces)->pluck('id')->toArray(),
+            $this->whenLoaded('workspaces', function () {
+                return [
+                    'workspacesIds' => $this->workspaces->pluck('id')->toArray(),
+                ];
+            }),
+
         ];
     }
 }

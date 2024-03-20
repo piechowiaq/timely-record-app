@@ -115,7 +115,7 @@ class WorkspaceController extends Controller
 
         $registries = Registry::where('project_id', $project->id)
             ->orWhereNull('project_id')
-            ->with('workspaces')
+
             ->applyFilters($request)
             ->paginate(10)
             ->withQueryString();
