@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Workspace;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\Project;
+use App\Http\Resources\RegistryResource;
+use App\Http\Resources\WorkspaceResource;
 use App\Models\Registry;
 use App\Models\Workspace;
 use App\Repositories\Contracts\RegistryRepositoryInterface;
@@ -41,52 +41,34 @@ class WorkspaceController extends Controller
     /**
      * Show the dashboard for the specified resource.
      */
-    public function dashboard(Project $project, Workspace $workspace)
+    public function dashboard(Workspace $workspace)
     {
         $this->authorize('view', $workspace);
 
-        $hasRegistries = Registry::whereHas('workspaces', function ($query) use ($workspace) {
-            $query->where('workspaces.id', $workspace->id);
-        })->exists();
+        $workspaceId = $workspace->id;
 
-        Registry::whereHas('workspaces', function ($query) use ($workspace) {
-            $query->where('workspaces.id', $workspace->id);
-        })
-            ->with(['reports' => function ($query) {
-                $query->select('registry_id', 'workspace_id', DB::raw('MAX(expiry_date) as max_expiry_date'))
-                    ->groupBy('registry_id', 'workspace_id');
-            }])
-            ->get()
-            ->map(function ($registry) {
-                // Assuming the 'reports' relationship will return a collection, even if it's empty
-                $latestReport = $registry->reports->first();
+        $registries = Registry::with(['reports' => function ($query) use ($workspaceId) {
+            $query->where('workspace_id', $workspaceId)
+                ->latest('expiry_date');
+        }])->whereHas('workspaces', function ($query) use ($workspaceId) {
+            $query->where('workspace_id', $workspaceId);
+        })->get();
 
-                return [
-                    'registry_id' => $registry->id,
-                    'name' => $registry->name,
-                    'expiry_date' => $latestReport ? $latestReport->max_expiry_date : null,
-                    'workspace_id' => $latestReport ? $latestReport->workspace_id : null,
-                ];
-            });
+        $outdatedRegistries = $registries->filter(function ($registry) {
+            return is_null($registry->reports->sortByDesc('expiry_date')->first()) || $registry->reports->sortByDesc('expiry_date')->first() < now();
+        })->sortBy('expiry_date')->take(3);
 
-        $mostOutdatedRegistries = $this->getMostOutdatedRegistries($workspace, 3);
-        $recentlyUpdatedRegistries = $this->getRecentlyUpdatedRegistries($workspace, 3);
-        $percentageOfUpToDate = $this->getPercentageOfUpToDate($workspace);
-        $countOfUpToDateRegistries = $this->countOfUpToDateRegistries($workspace);
-        $countOfExpiredRegistries = $this->countOfExpiredRegistries($workspace);
-        $expiringSoonRegistries = $this->getExpiringSoonRegistries($workspace, 3);
+        $expiringSoonRegistries = $registries->filter(function ($registry) {
+
+            return ! is_null($registry->reports->first()) && $registry->reports->first()->expiry_date > now() && $registry->reports->first()->expiry_date <= now()->addMonth();
+        })->sortBy('expiry_date')->take(3);
 
         return Inertia::render('Workspaces/Dashboard', [
-            'project' => $project,
-            'workspace' => $workspace,
-            'mostOutdatedRegistries' => $mostOutdatedRegistries,
-            'recentlyUpdatedRegistries' => $recentlyUpdatedRegistries,
-            'hasRegistries' => $hasRegistries,
-            'percentageOfUpToDate' => $percentageOfUpToDate,
-            'countOfUpToDateRegistries' => $countOfUpToDateRegistries,
-            'countOfExpiredRegistries' => $countOfExpiredRegistries,
-            'expiringSoonRegistries' => $expiringSoonRegistries,
-            'canViewProject' => auth()->user()->can('view', $project),
+            'workspace' => WorkspaceResource::make($workspace->loadMissing('registries')),
+            'mostOutdatedRegistries' => RegistryResource::collection($outdatedRegistries->loadMissing('reports')),
+            'expiringSoonRegistries' => RegistryResource::collection($expiringSoonRegistries->loadMissing('reports')),
+            'outdatedRegistries' => RegistryResource::collection($outdatedRegistries->loadMissing('reports')),
+            'registriesWithValidReports' => RegistryResource::collection($workspace->registriesWithValidReports),
         ]);
     }
 

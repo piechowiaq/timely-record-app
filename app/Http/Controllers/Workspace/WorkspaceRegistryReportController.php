@@ -39,10 +39,10 @@ class WorkspaceRegistryReportController extends Controller
     public function store(StoreReportRequest $request, Project $project, Workspace $workspace)
     {
         $registry = Registry::find($request->registry_id);
-        $file = $request->file('report_path');
-        $fileName = preg_replace('/[^A-Za-z0-9\-_\.]/', '_', now()->format('YmdHis').'_'.$project->id.'_'.$workspace->id.'_'.$registry->name.'.'.$request->file('report_path')->extension());
-
-        $file->storeAs($project->id.'/'.$workspace->id.'/'.$registry->id, $fileName, 'reports');
+        //        $file = $request->file('report_path');
+        //        $fileName = preg_replace('/[^A-Za-z0-9\-_\.]/', '_', now()->format('YmdHis').'_'.$project->id.'_'.$workspace->id.'_'.$registry->name.'.'.$request->file('report_path')->extension());
+        //
+        //        $file->storeAs($project->id.'/'.$workspace->id.'/'.$registry->id, $fileName, 'reports');
 
         $report_date = new Carbon($request->report_date);
         $expiryDate = $report_date->addMonths($registry->validity_period)->toDateString();
@@ -50,7 +50,7 @@ class WorkspaceRegistryReportController extends Controller
         $report = new Report();
         $report->report_date = $request->report_date;
         $report->expiry_date = $expiryDate;
-        $report->report_path = $fileName;
+        $report->report_path = 'hello';
         $report->workspace_id = $request->workspace_id;
         $report->registry_id = $request->registry_id;
         $report->project_id = $project->id;

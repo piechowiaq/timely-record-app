@@ -61,10 +61,18 @@ class Registry extends Model
 
     public function getLatestValidReportForWorkspace($workspaceId)
     {
-        // Directly query the reports table using the Report model
         return Report::where('registry_id', $this->id)
             ->where('workspace_id', $workspaceId)
             ->where('expiry_date', '>', now())
+            ->latest('expiry_date')
+            ->first();
+    }
+
+    public function getMostCurrentReport($workspaceId): Report
+    {
+        return Report::where('registry_id', $this->id)
+            ->where('workspace_id', $workspaceId)
+            ->where('expiry_date')
             ->latest('expiry_date')
             ->first();
     }
@@ -73,6 +81,13 @@ class Registry extends Model
     {
         return $query->whereHas('workspaces', function (Builder $query) use ($workspaceId) {
             $query->where('workspace_id', $workspaceId);
+        });
+    }
+
+    public function scopeValid(Builder $query)
+    {
+        return $query->whereHas('reports', function (Builder $query) {
+            $query->where('expiry_date', '>', now());
         });
     }
 }

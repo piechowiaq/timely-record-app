@@ -23,8 +23,7 @@ it('requires authorization', function () {
 
     actingAs($user)
         ->get(route('projects.dashboard'))
-        ->assertRedirect(route('workspaces.dashboard', [$user->project_id, $user->workspaces->first()->id]));
-    //TODO: parameter of project to be removed from the route
+        ->assertRedirect(route('workspaces.dashboard', $user->workspaces->first()->id));
 });
 
 it('returns a correct component', function () {

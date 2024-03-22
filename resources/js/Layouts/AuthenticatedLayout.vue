@@ -11,11 +11,7 @@ import FlashMessages from "@/Components/FlashMessages.vue";
 import {useRegistriesStore} from "@/Stores/RegistriesStore.js";
 
 const registriesStore = useRegistriesStore();
-const props = defineProps({
-    workspace: {
-        type: Object
-    },
-})
+const props = defineProps(['workspace']);
 
 const showingNavigationDropdown = ref(false);
 

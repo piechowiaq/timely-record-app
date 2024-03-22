@@ -4,9 +4,10 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Project\RegistryController;
 use App\Http\Controllers\Project\UserController;
 use App\Http\Controllers\Project\WorkspaceController;
-use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProjectController as ProjectDashboardController;
 use App\Http\Controllers\Workspace\WorkspaceRegistryController;
 use App\Http\Controllers\Workspace\WorkspaceRegistryReportController;
+use App\Http\Controllers\WorkspaceController as WorkspaceDashboardController;
 use App\Http\Resources\WorkspaceResource;
 use App\Models\Workspace;
 use Illuminate\Support\Facades\Route;
@@ -49,7 +50,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'verified', 'web', 'role.redirect'])->group(function () {
-    Route::get('/dashboard', ProjectController::class)->name('projects.dashboard');
+    Route::get('/dashboard', ProjectDashboardController::class)->name('projects.dashboard');
 });
 
 Route::middleware('auth', 'verified', 'web')->group(function () {
@@ -62,7 +63,7 @@ Route::middleware('auth', 'verified', 'web')->group(function () {
     Route::get('workspaces/{workspace}/index-registries', [WorkspaceController::class, 'indexRegistries'])->name('workspaces.index-registries');
     Route::put('workspaces/{workspace}/sync-registries', [WorkspaceController::class, 'syncRegistries'])->name('workspaces.sync-registries');
 
-    Route::get('projects/{project}/workspaces/{workspace:id}/dashboard', [WorkspaceController::class, 'dashboard'])->name('workspaces.dashboard');
+    Route::get('workspaces/{workspace:id}/dashboard', [WorkspaceDashboardController::class, 'dashboard'])->name('workspaces.dashboard');
 
     Route::get('/projects/{project}/workspaces/{workspace}/registries', [WorkspaceRegistryController::class, 'index'])->name('workspace.registries.index');
     Route::get('/projects/{project}/workspaces/{workspace}/registries/{registry}', [WorkspaceRegistryController::class, 'show'])->name('workspace.registries.show');

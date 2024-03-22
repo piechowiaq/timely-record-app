@@ -23,6 +23,11 @@ class RegistryResource extends JsonResource
                     'workspacesIds' => $this->workspaces->pluck('id')->toArray(),
                 ];
             }),
+            $this->whenLoaded('reports', function () {
+                return [
+                    'expiry_date' => $this->reports->first()->expiry_date ?? null,
+                ];
+            }),
 
         ];
     }

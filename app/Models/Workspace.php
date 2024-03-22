@@ -87,4 +87,15 @@ class Workspace extends Model
 
         return round($registryMetrics);
     }
+
+    public function registriesWithValidReports(): Builder|BelongsToMany|\LaravelIdea\Helper\App\Models\_IH_Registry_QB
+    {
+        $workspaceId = $this->id;
+
+        return $this->registries()
+            ->whereHas('reports', function ($query) use ($workspaceId) {
+                $query->where('expiry_date', '>', now())
+                    ->where('workspace_id', $workspaceId);
+            });
+    }
 }

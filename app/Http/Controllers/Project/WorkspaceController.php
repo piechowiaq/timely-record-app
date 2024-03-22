@@ -10,10 +10,6 @@ use App\Http\Resources\WorkspaceResource;
 use App\Models\Project;
 use App\Models\Registry;
 use App\Models\Workspace;
-use App\Repositories\Contracts\RegistryRepositoryInterface;
-use App\Repositories\Contracts\WorkspaceRepositoryInterface;
-use App\Services\RegistryService;
-use App\Services\WorkspaceService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -24,26 +20,9 @@ use Inertia\Response;
 
 class WorkspaceController extends Controller
 {
-    private RegistryService $registryService;
-
-    private WorkspaceRepositoryInterface $workspaceRepository;
-
-    private WorkspaceService $workspaceService;
-
-    private RegistryRepositoryInterface $registryRepository;
-
-    public function __construct(
-        RegistryService $registryService,
-        WorkspaceRepositoryInterface $workspaceRepository,
-        WorkspaceService $workspaceService,
-        RegistryRepositoryInterface $registryRepository
-    ) {
-        $this->registryService = $registryService;
-        $this->workspaceRepository = $workspaceRepository;
-        $this->workspaceService = $workspaceService;
-        $this->registryRepository = $registryRepository;
+    public function __construct()
+    {
         $this->authorizeResource(Workspace::class, 'workspace');
-
     }
 
     /**
@@ -115,7 +94,7 @@ class WorkspaceController extends Controller
 
         $registries = Registry::where('project_id', $project->id)
             ->orWhereNull('project_id')
-
+            ->with('workspaces')
             ->applyFilters($request)
             ->paginate(10)
             ->withQueryString();

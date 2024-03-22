@@ -56,7 +56,7 @@ const getWorkspaceBorderColor = (workspace) => {
                 <section v-for="workspace in workspaces" :key="workspace.id"
                          class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow flex-grow justify-between flex">
                     <header>
-                        <Link :href="route('workspaces.dashboard', { project: projectId, workspace: workspace.id} )">
+                        <Link :href="route('workspaces.dashboard', workspace.id )">
                             <h2 class="text-lg font-medium hover:text-cyan-700 text-gray-900 dark:text-gray-100">
                                 {{ workspace.name }}
                             </h2>
