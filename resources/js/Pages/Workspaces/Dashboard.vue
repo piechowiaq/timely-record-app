@@ -4,16 +4,18 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import RegistriesCard from "@/Pages/Workspaces/Partials/RegistriesCard.vue";
 import TrainingsCard from "@/Pages/Workspaces/Partials/TrainingsCard.vue";
 
-defineProps(['workspace',
-    'mostOutdatedRegistries',
-    'expiringSoonRegistries',
-    'registriesWithValidReports',
-    'recentlyUpdatedRegistries',
+const props = defineProps(['workspaceId',
+    'nonCompliantRegistries',
+    'expiringRegistries',
+    'upToDateRegistriesCount',
+    'registriesCount',
+    'registryMetrics',
+    'workspace'
 ]);
 
 const page = usePage();
 
-const hasRegistries = page.props.workspace.registriesIds.length > 0;
+const hasRegistries = props.registriesCount > 0;
 
 const projectId = usePage().props.projectId;
 
@@ -30,15 +32,14 @@ const projectId = usePage().props.projectId;
 
         <div class="px-2 pb-2 sm:flex sm:space-x-2">
 
-            <!-- Registries Section -->
-
-            <RegistriesCard :workspace="workspace"
-
-                            :countOfUpToDateRegistries="registriesWithValidReports.length"
-                            :countOfExpiredRegistries="workspace.registriesIds.length-registriesWithValidReports.length"
+            <RegistriesCard :workspaceId="workspaceId"
+                            :upToDateRegistriesCount="upToDateRegistriesCount"
+                            :nonCompliantRegistriesCount="registriesCount-upToDateRegistriesCount"
                             :hasRegistries="hasRegistries"
-                            :expiringSoonRegistries="expiringSoonRegistries"
-                            :mostOutdatedRegistries="mostOutdatedRegistries" class=" sm:w-1/2 "/>
+                            :expiringRegistries="expiringRegistries"
+                            :nonCompliantRegistries="nonCompliantRegistries"
+                            :registriesCount="registriesCount"
+                            :registryMetrics="registryMetrics" class=" sm:w-1/2 "/>
 
             <!-- Trainings Section -->
             <TrainingsCard class="sm:w-1/2 opacity-25"/>

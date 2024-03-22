@@ -14,6 +14,14 @@ class Registry extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name',
+        'description',
+        'validity_period',
+        'project_id',
+
+    ];
+
     public function workspaces(): BelongsToMany
     {
         return $this->belongsToMany(Workspace::class);
@@ -27,13 +35,6 @@ class Registry extends Model
     public function reports(): Relation
     {
         return $this->hasMany(Report::class);
-    }
-
-    public function scopeWithValidReport($query)
-    {
-        return $query->whereHas('reports', function ($query) {
-            $query->where('expiry_date', '>', now());
-        });
     }
 
     public function scopeApplyFilters(Builder $query, Request $request): Builder
@@ -51,43 +52,28 @@ class Registry extends Model
         return $query;
     }
 
-    protected $fillable = [
-        'name',
-        'description',
-        'validity_period',
-        'project_id',
-
-    ];
-
-    public function getLatestValidReportForWorkspace($workspaceId)
+    public function scopeUpToDate($query, $workspaceId): void
     {
-        return Report::where('registry_id', $this->id)
-            ->where('workspace_id', $workspaceId)
-            ->where('expiry_date', '>', now())
-            ->latest('expiry_date')
-            ->first();
-    }
-
-    public function getMostCurrentReport($workspaceId): Report
-    {
-        return Report::where('registry_id', $this->id)
-            ->where('workspace_id', $workspaceId)
-            ->where('expiry_date')
-            ->latest('expiry_date')
-            ->first();
-    }
-
-    public function scopeBelongsToWorkspace($query, $workspaceId)
-    {
-        return $query->whereHas('workspaces', function (Builder $query) use ($workspaceId) {
-            $query->where('workspace_id', $workspaceId);
+        $query->whereHas('reports', function ($query) use ($workspaceId) {
+            $query->where('workspace_id', $workspaceId)
+                ->where('expiry_date', '>', now());
         });
     }
+    //
+    //->reports->sortByDesc('expiry_date')->first()
 
-    public function scopeValid(Builder $query)
+    public function scopeExpiringSoon($query, $workspaceId): void
     {
-        return $query->whereHas('reports', function (Builder $query) {
-            $query->where('expiry_date', '>', now());
-        });
+        $query->whereHas('reports', function ($query) use ($workspaceId) {
+            $query->where('workspace_id', $workspaceId)
+                ->where('expiry_date', '>', now())
+                ->where('expiry_date', '<=', now()->addMonth());
+        })
+            ->with(['reports' => function ($query) use ($workspaceId) {
+                $query->where('workspace_id', $workspaceId)
+                    ->where('expiry_date', '>', now())
+                    ->where('expiry_date', '<=', now()->addMonth())
+                    ->latest('expiry_date');
+            }]);
     }
 }
