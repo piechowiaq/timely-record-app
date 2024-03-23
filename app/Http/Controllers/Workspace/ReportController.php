@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class WorkspaceRegistryReportController extends Controller
+class ReportController extends Controller
 {
     public function __construct()
     {

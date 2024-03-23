@@ -51,29 +51,4 @@ class Registry extends Model
 
         return $query;
     }
-
-    public function scopeUpToDate($query, $workspaceId): void
-    {
-        $query->whereHas('reports', function ($query) use ($workspaceId) {
-            $query->where('workspace_id', $workspaceId)
-                ->where('expiry_date', '>', now());
-        });
-    }
-    //
-    //->reports->sortByDesc('expiry_date')->first()
-
-    public function scopeExpiringSoon($query, $workspaceId): void
-    {
-        $query->whereHas('reports', function ($query) use ($workspaceId) {
-            $query->where('workspace_id', $workspaceId)
-                ->where('expiry_date', '>', now())
-                ->where('expiry_date', '<=', now()->addMonth());
-        })
-            ->with(['reports' => function ($query) use ($workspaceId) {
-                $query->where('workspace_id', $workspaceId)
-                    ->where('expiry_date', '>', now())
-                    ->where('expiry_date', '<=', now()->addMonth())
-                    ->latest('expiry_date');
-            }]);
-    }
 }

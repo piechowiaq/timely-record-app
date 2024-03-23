@@ -6,7 +6,7 @@ use App\Http\Controllers\Project\UserController;
 use App\Http\Controllers\Project\WorkspaceController;
 use App\Http\Controllers\ProjectController as ProjectDashboardController;
 use App\Http\Controllers\Workspace\RegistryController as WorkspaceRegistryController;
-use App\Http\Controllers\Workspace\WorkspaceRegistryReportController;
+use App\Http\Controllers\Workspace\ReportController;
 use App\Http\Controllers\WorkspaceController as WorkspaceDashboardController;
 use App\Http\Resources\WorkspaceResource;
 use App\Models\Workspace;
@@ -67,12 +67,13 @@ Route::middleware('auth', 'verified', 'web')->group(function () {
 
     Route::get('workspaces/{workspace}/registries', [WorkspaceRegistryController::class, 'index'])->name('workspaces.registries.index');
     Route::get('workspaces/{workspace}/registries/{registry}', [WorkspaceRegistryController::class, 'show'])->name('workspaces.registries.show');
-    Route::get('/projects/{project}/workspaces/{workspace}/registries/reports/create', [WorkspaceRegistryReportController::class, 'create'])->name('workspace.registry.reports.create');
-    Route::get('/projects/{project}/workspaces/{workspace}/registries/{registry}/reports/{report}/edit', [WorkspaceRegistryReportController::class, 'edit'])->name('workspace.registry.reports.edit');
-    Route::patch('/projects/{project}/workspaces/{workspace}/registries/{registry}/reports/{report}', [WorkspaceRegistryReportController::class, 'update'])->name('workspace.registry.reports.update');
-    Route::delete('/projects/{project}/workspaces/{workspace}/registries/{registry}/reports/{report}', [WorkspaceRegistryReportController::class, 'destroy'])->name('workspace.registry.reports.destroy');
-    Route::post('/projects/{project}/workspaces/{workspace}/registries/reports', [WorkspaceRegistryReportController::class, 'store'])->name('workspace.registry.reports.store');
-    Route::get('/projects/{project}/workspaces/{workspace}/registries/{registry}/reports/{report}', [WorkspaceRegistryReportController::class, 'show'])->name('workspace.registry.reports.show');
+
+    Route::get('/projects/{project}/workspaces/{workspace}/registries/reports/create', [ReportController::class, 'create'])->name('workspace.registry.reports.create');
+    Route::get('workspaces/{workspace}/registries/{registry}/reports/{report}/edit', [ReportController::class, 'edit'])->name('workspace.registry.reports.edit');
+    Route::patch('/projects/{project}/workspaces/{workspace}/registries/{registry}/reports/{report}', [ReportController::class, 'update'])->name('workspace.registry.reports.update');
+    Route::delete('/projects/{project}/workspaces/{workspace}/registries/{registry}/reports/{report}', [ReportController::class, 'destroy'])->name('workspace.registry.reports.destroy');
+    Route::post('/projects/{project}/workspaces/{workspace}/registries/reports', [ReportController::class, 'store'])->name('workspace.registry.reports.store');
+    Route::get('workspaces/{workspace}/registries/{registry}/reports/{report}', [ReportController::class, 'show'])->name('workspace.registry.reports.show');
 
 });
 

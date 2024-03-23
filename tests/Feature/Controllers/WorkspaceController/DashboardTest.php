@@ -17,6 +17,27 @@ it('requires authentication', function () {
 
 });
 
+it('requires authorization', function () {
+
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $roles = ['user', 'manager'];
+
+    foreach ($roles as $role) {
+        $user = User::factory()->create();
+        $user->assignRole($role);
+
+        session(['project_id' => $user->project_id]);
+
+        $workspace = Workspace::factory()->create(['project_id' => $user->project_id]);
+
+        actingAs($user)->
+        get(route('workspaces.dashboard', $workspace->id))
+            ->assertForbidden();
+    }
+
+});
+
 it('returns a correct component', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);

@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Http\Request;
 
 class Report extends Model
 {
@@ -35,23 +37,16 @@ class Report extends Model
         return $this->belongsTo(User::class, 'created_by_user_id');
     }
 
-    public function scopeValid($query)
+    public function scopeApplyFilters(Builder $query, Request $request): Builder
     {
-        return $query->where('expiry_date', '>', now());
-    }
+        $search = $request->input('search');
 
-    public function scopeValidWorkspaceRegistry($query, $workspaceId = null, $registryId = null)
-    {
-        // Always apply the validity filter based on expiry_date
-        $query->where('expiry_date', '>', now());
-
-        // Conditionally add workspace and registry filters if IDs are provided
-        if (! is_null($workspaceId)) {
-            $query->where('workspace_id', $workspaceId);
+        if ($search) {
+            $query->where('registries.name', 'like', '%'.$request->get('search').'%');
         }
 
-        if (! is_null($registryId)) {
-            $query->where('registry_id', $registryId);
+        if ($request->has(['field', 'direction'])) {
+            $query->orderBy($request->get('field'), $request->get('direction'));
         }
 
         return $query;

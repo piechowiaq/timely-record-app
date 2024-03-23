@@ -14,7 +14,6 @@ class WorkspaceController extends Controller
     public function __construct(RegistryService $registryService)
     {
         $this->registryService = $registryService;
-        $this->authorizeResource(Workspace::class, 'workspace');
     }
 
     /**

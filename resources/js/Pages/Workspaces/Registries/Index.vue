@@ -20,6 +20,7 @@ const canCreateReport = usePage().props.permissions.canCreateReport;
 
 watch(index.value, debounce(() => {
     router.get(route('workspaces.registries.index', props.workspace.id), index.value, {
+        preserveScroll: true,
         preserveState: true,
         replace: true
     });
@@ -137,7 +138,7 @@ const timeLeftUntilExpiryDate = (expiry_date) => {
                 <span
                     class="text-cyan-600 hover:text-cyan-700">
                  <Link
-                     :href="route('workspaces.registries.show', { project: projectId, workspace: workspace, registry: registry.id})">
+                     :href="route('workspaces.registries.show',[workspace.id, registry.id])">
                 {{ registry.name }}
               </Link>
                 </span>
