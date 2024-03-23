@@ -94,13 +94,14 @@ class WorkspaceController extends Controller
 
         $registries = Registry::where('project_id', $project->id)
             ->orWhereNull('project_id')
+            ->with('reports')
             ->with('workspaces')
             ->applyFilters($request)
             ->paginate(10)
             ->withQueryString();
 
         return inertia('Workspaces/IndexRegistries', [
-            'workspace' => WorkspaceResource::make($workspace),
+            'workspace' => WorkspaceResource::make($workspace->loadMissing('registries')),
             'registries' => RegistryResource::collection($registries),
             'registriesIds' => $registriesIds,
             'filters' => $request->all(['search', 'field', 'direction']),

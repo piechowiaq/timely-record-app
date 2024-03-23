@@ -2,7 +2,6 @@
 
 use App\Models\Registry;
 use App\Models\User;
-use Database\Seeders\DatabaseSeeder;
 use Database\Seeders\RolesAndPermissionsSeeder;
 
 use function Pest\Laravel\actingAs;
@@ -18,12 +17,13 @@ it('requires authentication', function () {
 
 it('requires authorization', function () {
 
-    $this->seed(DatabaseSeeder::class);
+    $this->seed(RolesAndPermissionsSeeder::class);
 
     $roles = ['user', 'manager'];
 
     foreach ($roles as $role) {
-        $user = User::role($role)->first();
+        $user = User::factory()->create();
+        $user->assignRole($role);
 
         $registry = Registry::factory()->create(['project_id' => $user->project_id]);
 

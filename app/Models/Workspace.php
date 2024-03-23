@@ -69,33 +69,4 @@ class Workspace extends Model
     {
         static::addGlobalScope(new ProjectScope);
     }
-
-    /**
-     * Get the registry metrics for the workspace.
-     */
-    public function registryMetrics(): float|int
-    {
-        $registries = $this->registries()->with(['reports' => function ($query) {
-            $query->validWorkspaceRegistry($this->id);
-        }])->get();
-
-        $registriesWithValidReport = $registries->filter(function ($registry) {
-            return $registry->reports->isNotEmpty();
-        });
-
-        $registryMetrics = $registries->count() > 0 ? ($registriesWithValidReport->count() / $registries->count()) * 100 : 0;
-
-        return round($registryMetrics);
-    }
-
-    public function registriesWithValidReports(): Builder|BelongsToMany|\LaravelIdea\Helper\App\Models\_IH_Registry_QB
-    {
-        $workspaceId = $this->id;
-
-        return $this->registries()
-            ->whereHas('reports', function ($query) use ($workspaceId) {
-                $query->where('expiry_date', '>', now())
-                    ->where('workspace_id', $workspaceId);
-            });
-    }
 }

@@ -3,10 +3,8 @@
 namespace App\Services;
 
 use App\Models\Registry;
-use App\Models\Workspace;
 use App\Repositories\Contracts\RegistryRepositoryInterface;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Collection;
 
 class RegistryService
 {
@@ -17,47 +15,39 @@ class RegistryService
         $this->registryRepository = $registryRepository;
     }
 
-    public function getWorkspaceRegistriesQuery(Workspace $workspace): Builder
+    public function getRegistriesWithLatestReport(int $workspaceId): array|Collection|\LaravelIdea\Helper\App\Models\_IH_Registry_C
     {
-        return $this->registryRepository->getWorkspaceRegistriesQuery($workspace);
+        return Registry::with(['reports' => function ($query) use ($workspaceId) {
+            $query->where('workspace_id', $workspaceId)
+                ->latest('expiry_date');
+        }])->whereHas('workspaces', function ($query) use ($workspaceId) {
+            $query->where('workspace_id', $workspaceId);
+        })->get();
     }
 
-    public function applyFilters($query, Request $request): Builder
+    public function getExpiringRegistries(Collection $registries): Collection
     {
-        if ($request->has('search')) {
-            $query->where('registries.name', 'like', '%'.$request->get('search').'%');
-        }
-
-        if ($request->has(['field', 'direction'])) {
-            $query->orderBy($request->get('field'), $request->get('direction'));
-        }
-
-        return $query;
+        return $registries->filter(function ($registry) {
+            return ! is_null($registry->reports->first()) && $registry->reports->first()->expiry_date > now() && $registry->reports->first()->expiry_date <= now()->addMonth();
+        });
     }
 
-    public function createRegistry(array $registryData): Registry
+    public function getUpToDateRegistries(Collection $registries): Collection
     {
-        return Registry::create([
-            'name' => $registryData['name'],
-            'description' => $registryData['description'],
-            'validity_period' => $registryData['validity_period'],
-            'project_id' => $registryData['project_id'],
-        ]);
+        return $registries->filter(function ($registry) {
+            return ! is_null($registry->reports->first()) && $registry->reports->first()->expiry_date > now();
+        });
     }
 
-    public function updateRegistry(Registry $registry, array $registryData): Registry
+    public function getNonCompliantRegistries(Collection $registries): Collection|\Illuminate\Support\Collection
     {
-        $registry->update([
-            'name' => $registryData['name'],
-            'description' => $registryData['description'],
-            'validity_period' => $registryData['validity_period'],
-        ]);
-
-        return $registry;
+        return $registries->filter(function ($registry) {
+            return is_null($registry->reports->first()) || $registry->reports->first()->expiry_date < now();
+        });
     }
 
-    public function deleteRegistry(Registry $registry): void
+    public function getRegistryMetrics(Collection $registries): float|int
     {
-        $registry->delete();
+        return $registries->count() > 0 ? ($this->getUpToDateRegistries($registries)->count() / $registries->count()) * 100 : 0;
     }
 }

@@ -18,7 +18,7 @@ class WorkspaceResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'location' => $this->location,
-            'registryMetrics' => $this->registryMetrics(),
+            'registryMetrics' => $this->when(isset($this->registryMetrics), $this->registryMetrics),
             'registriesIds' => $this->whenLoaded('registries', function () {
                 return $this->registries->pluck('id');
             }),

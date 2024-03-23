@@ -17,7 +17,7 @@ const projectId = usePage().props.projectId;
 const registriesStore = useRegistriesStore();
 
 if (registriesStore.initialized === false) {
-    registriesStore.updateForm(props.workspace.registriesIds);
+    registriesStore.updateForm({registriesIds: props.workspace.registriesIds});
 }
 
 

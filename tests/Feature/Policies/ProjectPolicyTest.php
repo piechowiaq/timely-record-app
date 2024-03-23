@@ -29,9 +29,9 @@ it('forbid user with role user that has only one workspace to view their project
 
     actingAs($user);
 
-    $response = get(route('projects.dashboard', ['project' => $user->project]));
+    $response = get(route('projects.dashboard'));
 
-    $response->assertRedirect(route('workspaces.dashboard', ['project' => $user->project, 'workspace' => $user->workspaces->first()->id]));
+    $response->assertRedirect(route('workspaces.dashboard', $user->workspaces->first()->id));
 
 });
 

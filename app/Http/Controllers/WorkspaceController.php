@@ -3,14 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\RegistryResource;
-use App\Models\Registry;
+use App\Http\Resources\WorkspaceResource;
 use App\Models\Workspace;
+use App\Services\RegistryService;
 use Inertia\Inertia;
 
 class WorkspaceController extends Controller
 {
-    public function __construct()
+    protected RegistryService $registryService;
+
+    public function __construct(RegistryService $registryService)
     {
+        $this->registryService = $registryService;
         $this->authorizeResource(Workspace::class, 'workspace');
     }
 
@@ -21,28 +25,15 @@ class WorkspaceController extends Controller
     {
         $this->authorize('view', $workspace);
 
-        $workspaceId = $workspace->id;
+        $registries = $this->registryService->getRegistriesWithLatestReport($workspace->id);
 
-        $registries = Registry::with(['reports' => function ($query) use ($workspaceId) {
-            $query->where('workspace_id', $workspaceId)
-                ->latest('expiry_date');
-        }])->whereHas('workspaces', function ($query) use ($workspaceId) {
-            $query->where('workspace_id', $workspaceId);
-        })->get();
+        $expiringRegistries = $this->registryService->getExpiringRegistries($registries);
 
-        $expiringRegistries = $registries->filter(function ($registry) {
-            return ! is_null($registry->reports->first()) && $registry->reports->first()->expiry_date > now() && $registry->reports->first()->expiry_date <= now()->addMonth();
-        });
+        $upToDateRegistries = $this->registryService->getUpToDateRegistries($registries);
 
-        $upToDateRegistries = $registries->filter(function ($registry) {
-            return ! is_null($registry->reports->first()) && $registry->reports->first()->expiry_date > now();
-        });
+        $nonCompliantRegistries = $this->registryService->getNonCompliantRegistries($registries);
 
-        $nonCompliantRegistries = $registries->filter(function ($registry) {
-            return is_null($registry->reports->first()) || $registry->reports->first()->expiry_date < now();
-        });
-
-        $registryMetrics = $registries->count() > 0 ? ($upToDateRegistries->count() / $registries->count()) * 100 : 0;
+        $registryMetrics = $this->registryService->getRegistryMetrics($registries);
 
         return Inertia::render('Workspaces/Dashboard', [
             'workspaceId' => $workspace->id,
@@ -51,7 +42,7 @@ class WorkspaceController extends Controller
             'upToDateRegistriesCount' => $upToDateRegistries->count(),
             'registriesCount' => $registries->count(),
             'registryMetrics' => $registryMetrics,
-            'workspace' => $workspace,
+            'workspace' => WorkspaceResource::make($workspace),
         ]);
     }
 }
