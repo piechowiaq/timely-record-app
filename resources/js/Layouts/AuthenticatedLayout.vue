@@ -194,7 +194,7 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
 
                         <div class="mt-3 space-y-1">
                             <ResponsiveNavLink :href="route('profile.edit')"> Profile</ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('projects.dashboard', projectId)"> Project Settings
+                            <ResponsiveNavLink :href="route('projects.dashboard')"> Project Settings
                             </ResponsiveNavLink>
                             <ResponsiveNavLink :href="route('logout')" method="post" as="button">
                                 Log Out

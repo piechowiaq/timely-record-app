@@ -2,54 +2,37 @@
 
 namespace App\Http\Controllers\Workspace;
 
+use App\Http\Resources\RegistryResource;
 use App\Models\Project;
 use App\Models\Registry;
 use App\Models\Workspace;
+use App\Services\RegistryService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Inertia\Response;
 
-class WorkspaceRegistryController
+class RegistryController
 {
-    public function index(Request $request, Project $project, Workspace $workspace): \Inertia\Response
+    protected RegistryService $registryService;
+
+    public function __construct(RegistryService $registryService)
     {
-        $query = DB::table('registries')
-            ->join('registry_workspace', 'registries.id', '=', 'registry_workspace.registry_id')
-            ->leftJoin(DB::raw('(
-        SELECT registry_id, workspace_id, MAX(expiry_date) as max_expiry_date
-        FROM reports
-        GROUP BY registry_id, workspace_id
-    ) as max_reports'), function ($join) {
-                $join->on('registry_workspace.registry_id', '=', 'max_reports.registry_id')
-                    ->on('registry_workspace.workspace_id', '=', 'max_reports.workspace_id');
-            })
-            ->where('registry_workspace.workspace_id', '=', $workspace->id)
+        $this->registryService = $registryService;
+    }
 
-            ->select(
-                'registry_workspace.registry_id',
-                'registries.name',
-                'max_reports.max_expiry_date as expiry_date',
-                'registry_workspace.workspace_id'
-            )
-            ->groupBy(
-                'registry_workspace.registry_id',
-                'registries.name',
-                'registry_workspace.workspace_id',
-                'max_reports.max_expiry_date'
-            );
+    public function index(Request $request, Workspace $workspace): Response
+    {
+        $registriesQuery = $this->registryService->getRegistriesWithLatestReportQuery($workspace->id);
 
-        if ($request->has('search')) {
-            $query->where('registries.name', 'like', '%'.$request->get('search').'%');
-        }
+        $registries = $registriesQuery->with('reports')
+            ->applyFilters($request)
+            ->paginate(10)
+            ->withQueryString();
 
-        if ($request->has(['field', 'direction'])) {
-            $query->orderBy($request->get('field'), $request->get('direction'));
-        }
-
-        return Inertia::render('Workspaces/Registries/Index', [
-            'paginatedRegistries' => $query->paginate(10)
-                ->withQueryString(),
+        return inertia('Workspaces/Registries/Index', [
+            'registries' => RegistryResource::collection($registries),
             'filters' => $request->all(['search', 'field', 'direction']),
             'workspace' => $workspace,
         ]);

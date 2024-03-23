@@ -76,7 +76,7 @@ const logout = () => {
                     Welcome to your Timely Record application!
                 </div>
                 <div class="mt-6 text-gray-500 text-justify">
-                    "Timely Record - Zapis na czas" to innowacyjna aplikacja przeznaczona do zarządzania i monitorowania
+                    "Timely Record - Zapis na czas" to aplikacja przeznaczona do zarządzania i monitorowania
                     dokumentacji w obiektach hotelowych, aby zapewnić, że wszystkie ważne dokumenty i rekordy są
                     aktualizowane i
                     nie przeterminowane. Aplikacja koncentruje się na automatyzacji przepływu pracy i upewnieniu się, że

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Registry;
 use App\Repositories\Contracts\RegistryRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
+use LaravelIdea\Helper\App\Models\_IH_Registry_C;
 
 class RegistryService
 {
@@ -15,7 +16,7 @@ class RegistryService
         $this->registryRepository = $registryRepository;
     }
 
-    public function getRegistriesWithLatestReport(int $workspaceId): array|Collection|\LaravelIdea\Helper\App\Models\_IH_Registry_C
+    public function getRegistriesWithLatestReport(int $workspaceId): array|Collection|_IH_Registry_C
     {
         return Registry::with(['reports' => function ($query) use ($workspaceId) {
             $query->where('workspace_id', $workspaceId)
@@ -23,6 +24,16 @@ class RegistryService
         }])->whereHas('workspaces', function ($query) use ($workspaceId) {
             $query->where('workspace_id', $workspaceId);
         })->get();
+    }
+
+    public function getRegistriesWithLatestReportQuery(int $workspaceId): Registry|\Illuminate\Database\Eloquent\Builder|\LaravelIdea\Helper\App\Models\_IH_Registry_QB
+    {
+        return Registry::whereHas('workspaces', function ($query) use ($workspaceId) {
+            $query->where('workspace_id', $workspaceId);
+        })->with(['reports' => function ($query) use ($workspaceId) {
+            $query->where('workspace_id', $workspaceId)
+                ->latest('expiry_date');
+        }]);
     }
 
     public function getExpiringRegistries(Collection $registries): Collection

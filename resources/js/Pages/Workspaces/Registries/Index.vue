@@ -6,20 +6,11 @@ import {ref, watch} from "vue";
 import Pagination from "@/Components/Pagination.vue";
 import {debounce} from "lodash";
 
-const props = defineProps({
-    workspace: {
-        type: Object,
-    },
-    paginatedRegistries: {
-        type: Object,
-    },
-    filters: {
-        type: Object
-    },
-})
+const props = defineProps(['workspace', 'registries', 'filters']);
 
 
-const projectId = usePage().props.auth.user.project_id;
+const projectId = usePage().props.projectId;
+
 
 const index = ref({
     search: props.filters.search,
@@ -28,7 +19,7 @@ const index = ref({
 const canCreateReport = usePage().props.permissions.canCreateReport;
 
 watch(index.value, debounce(() => {
-    router.get(route('workspace.registries.index', {project: projectId, workspace: props.workspace.id}), index.value, {
+    router.get(route('workspaces.registries.index', props.workspace.id), index.value, {
         preserveState: true,
         replace: true
     });
@@ -110,7 +101,7 @@ const timeLeftUntilExpiryDate = (expiry_date) => {
                     </div>
 
 
-                    <Link v-if="paginatedRegistries.data.length > 0 && canCreateReport"
+                    <Link v-if="registries.data.length > 0 && canCreateReport"
                           :href="route('workspace.registry.reports.create', {project: projectId, workspace: workspace.id})"
                           class="text-cyan-600 hover:text-cyan-700 text-sm">
                         Upload Report
@@ -138,15 +129,15 @@ const timeLeftUntilExpiryDate = (expiry_date) => {
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="registry of paginatedRegistries.data" :key="registry.id"
-                            :class="{'bg-white dark:bg-gray-800': true, 'border-b dark:border-gray-700': index !== paginatedRegistries.data.length - 1}">
+                        <tr v-for="registry of registries.data" :key="registry.id"
+                            :class="{'bg-white dark:bg-gray-800': true, 'border-b dark:border-gray-700': index !== registries.data.length - 1}">
 
                             <th scope="row"
                                 class="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                 <span
                     class="text-cyan-600 hover:text-cyan-700">
                  <Link
-                     :href="route('workspace.registries.show', { project: projectId, workspace: workspace, registry: registry.registry_id})">
+                     :href="route('workspaces.registries.show', { project: projectId, workspace: workspace, registry: registry.id})">
                 {{ registry.name }}
               </Link>
                 </span>
@@ -172,7 +163,7 @@ const timeLeftUntilExpiryDate = (expiry_date) => {
                                 <i v-else class="fa-regular fa-circle-xmark text-red-600"></i>
                             </td>
                         </tr>
-                        <tr v-if="paginatedRegistries.data.length === 0">
+                        <tr v-if="registries.data.length === 0">
                             <td class="p-2 border-t text-red-600" colspan="4">No registries assign to this workspace.
                             </td>
                         </tr>
@@ -181,7 +172,7 @@ const timeLeftUntilExpiryDate = (expiry_date) => {
                     </table>
                 </div>
 
-                <Pagination :links="paginatedRegistries.links" class="flex items-center justify-end py-2"></Pagination>
+                <Pagination :links="registries.meta.links" class="flex items-center justify-end py-2"></Pagination>
             </div>
         </div>
 

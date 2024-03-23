@@ -18,15 +18,11 @@ class RegistryResource extends JsonResource
             'validity_period' => $this->validity_period,
             'project_id' => $this->project_id,
             'description' => $this->description,
-            $this->whenLoaded('workspaces', function () {
-                return [
-                    'workspacesIds' => $this->workspaces->pluck('id')->toArray(),
-                ];
+            'workspacesIds' => $this->whenLoaded('workspaces', function () {
+                return $this->workspaces->pluck('id')->toArray();
             }),
-            $this->whenLoaded('reports', function () {
-                return [
-                    'expiry_date' => $this->reports->first()->expiry_date ?? null,
-                ];
+            'expiry_date' => $this->whenLoaded('reports', function () {
+                return $this->reports->first()?->expiry_date;
             }),
 
         ];

@@ -5,7 +5,7 @@ use App\Http\Controllers\Project\RegistryController;
 use App\Http\Controllers\Project\UserController;
 use App\Http\Controllers\Project\WorkspaceController;
 use App\Http\Controllers\ProjectController as ProjectDashboardController;
-use App\Http\Controllers\Workspace\WorkspaceRegistryController;
+use App\Http\Controllers\Workspace\RegistryController as WorkspaceRegistryController;
 use App\Http\Controllers\Workspace\WorkspaceRegistryReportController;
 use App\Http\Controllers\WorkspaceController as WorkspaceDashboardController;
 use App\Http\Resources\WorkspaceResource;
@@ -65,8 +65,8 @@ Route::middleware('auth', 'verified', 'web')->group(function () {
 
     Route::get('workspaces/{workspace:id}/dashboard', [WorkspaceDashboardController::class, 'dashboard'])->name('workspaces.dashboard');
 
-    Route::get('/projects/{project}/workspaces/{workspace}/registries', [WorkspaceRegistryController::class, 'index'])->name('workspace.registries.index');
-    Route::get('workspaces/{workspace}/registries/{registry}', [WorkspaceRegistryController::class, 'show'])->name('workspace.registries.show');
+    Route::get('workspaces/{workspace}/registries', [WorkspaceRegistryController::class, 'index'])->name('workspaces.registries.index');
+    Route::get('workspaces/{workspace}/registries/{registry}', [WorkspaceRegistryController::class, 'show'])->name('workspaces.registries.show');
     Route::get('/projects/{project}/workspaces/{workspace}/registries/reports/create', [WorkspaceRegistryReportController::class, 'create'])->name('workspace.registry.reports.create');
     Route::get('/projects/{project}/workspaces/{workspace}/registries/{registry}/reports/{report}/edit', [WorkspaceRegistryReportController::class, 'edit'])->name('workspace.registry.reports.edit');
     Route::patch('/projects/{project}/workspaces/{workspace}/registries/{registry}/reports/{report}', [WorkspaceRegistryReportController::class, 'update'])->name('workspace.registry.reports.update');

@@ -45,7 +45,7 @@ const projectId = usePage().props.auth.user.project_id;
 const canCreateReport = usePage().props.permissions.canCreateReport;
 
 watch(index, debounce(function () {
-    router.get(route('workspace.registries.show', {
+    router.get(route('workspaces.registries.show', {
         project: projectId,
         workspace: props.workspace,
         registry: props.registry
@@ -119,7 +119,7 @@ const toDateString = (dateString) => {
 
         <template #header>
             <h2 class="text-white dark:text-gray-700 leading-tight">
-                <Link :href="route('workspace.registries.index',  { project: projectId, workspace: workspace})">
+                <Link :href="route('workspaces.registries.index',  { project: projectId, workspace: workspace})">
                     Registries &lt
                 </Link>
                 {{ registry.name }}

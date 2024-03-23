@@ -42,17 +42,17 @@ const destroy = (report) => {
 
         <template #header>
             <h2 class="text-white dark:text-gray-700 leading-tight">
-                <Link :href="route('workspace.registries.index',  { project: projectId, workspace: workspace})">
+                <Link :href="route('workspaces.registries.index',  { project: projectId, workspace: workspace})">
                     Registries &lt
                 </Link>
                 <Link
-                    :href="route('workspace.registries.show',  { project: projectId, workspace: workspace, registry: registry})">
+                    :href="route('workspaces.registries.show',  { project: projectId, workspace: workspace, registry: registry})">
                     {{ registry.name }} &lt
                 </Link>
                 Edit Report
             </h2>
         </template>
-     
+
         <div class="px-2 pb-2">
             <div class="space-y-2">
                 <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow">

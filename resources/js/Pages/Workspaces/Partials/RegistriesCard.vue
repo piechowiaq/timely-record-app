@@ -61,7 +61,7 @@ const projectId = usePage().props.projectId;
                 <ul v-if="nonCompliantRegistries && nonCompliantRegistries.length" class="text-cyan-600">
                     <li v-for="registry in nonCompliantRegistries" :key="registry.name" class="py-1 truncate">
                         <Link
-                            :href="route('workspace.registries.show', { workspace: workspaceId, registry: registry.id})">
+                            :href="route('workspaces.registries.show', { workspace: workspaceId, registry: registry.id})">
                             {{ registry.name }}
                         </Link>
 
@@ -74,7 +74,7 @@ const projectId = usePage().props.projectId;
                 <ul v-if="expiringRegistries && expiringRegistries.length" class="text-cyan-600 ">
                     <li v-for="registry in expiringRegistries" :key="registry.name" class="py-1 truncate">
                         <Link
-                            :href="route('workspace.registries.show', { workspace: workspaceId, registry: registry.id})">
+                            :href="route('workspaces.registries.show', { workspace: workspaceId, registry: registry.id})">
                             {{ registry.name }}
                         </Link>
                     </li>
