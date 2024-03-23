@@ -25,21 +25,13 @@ class ReportFactory extends Factory
     public function definition(): array
     {
         $recycledRegistries = $this->recycle->get(Registry::class, collect());
-        $registry = $recycledRegistries->isNotEmpty()
-            ? $recycledRegistries->random()
-            : Registry::factory()->create();
-        //        $registry = Registry::query()->inRandomOrder()->first() ?? Registry::factory()->create();
+
         $recycledProjects = $this->recycle->get(Project::class, collect());
-        $project = $recycledProjects->isNotEmpty()
-            ? $recycledProjects->random()
-            : Project::factory()->create();
-        // Define report date
-        // Define report date within the last 2 years
+
         $reportDate = $this->faker->dateTimeBetween('-2 years', 'now')->format('Y-m-d');
 
-        // Calculate expiry date based on report date and registry's validity period
         $expiryDate = (new \DateTime($reportDate))
-            ->modify('+'.$registry->validity_period.' months')
+            ->modify('+'.$this->faker->randomElement([1, 3, 6, 12, 24]).' months')
             ->format('Y-m-d');
 
         return [
@@ -47,8 +39,12 @@ class ReportFactory extends Factory
             'expiry_date' => $expiryDate,
             'report_path' => $this->faker->url,
             'workspace_id' => Workspace::factory(),
-            'registry_id' => $registry->id,
-            'project_id' => $project->id,
+            'registry_id' => $recycledRegistries->isNotEmpty()
+                ? $recycledRegistries->random()
+                : Registry::factory()->create(),
+            'project_id' => $recycledProjects->isNotEmpty()
+                ? $recycledProjects->random()
+                : Project::factory()->create(),
             'created_by_user_id' => User::factory(),
             'updated_by_user_id' => User::factory(),
         ];

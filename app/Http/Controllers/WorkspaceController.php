@@ -6,7 +6,6 @@ use App\Http\Resources\RegistryResource;
 use App\Http\Resources\WorkspaceResource;
 use App\Models\Workspace;
 use App\Services\RegistryService;
-use Inertia\Inertia;
 
 class WorkspaceController extends Controller
 {
@@ -26,16 +25,12 @@ class WorkspaceController extends Controller
         $this->authorize('view', $workspace);
 
         $registries = $this->registryService->getRegistriesWithLatestReport($workspace->id);
-
         $expiringRegistries = $this->registryService->getExpiringRegistries($registries);
-
         $upToDateRegistries = $this->registryService->getUpToDateRegistries($registries);
-
         $nonCompliantRegistries = $this->registryService->getNonCompliantRegistries($registries);
-
         $registryMetrics = $this->registryService->getRegistryMetrics($registries);
 
-        return Inertia::render('Workspaces/Dashboard', [
+        return inertia('Workspaces/Dashboard', [
             'workspaceId' => $workspace->id,
             'nonCompliantRegistries' => RegistryResource::collection($nonCompliantRegistries->loadMissing('reports')->take(3)),
             'expiringRegistries' => RegistryResource::collection($expiringRegistries->loadMissing('reports')->take(3)),
