@@ -103,7 +103,7 @@ const timeLeftUntilExpiryDate = (expiry_date) => {
 
 
                     <Link v-if="registries.data.length > 0 && canCreateReport"
-                          :href="route('workspace.registry.reports.create', {project: projectId, workspace: workspace.id})"
+                          :href="route('workspaces.registries.reports.create-any',  workspace.id)"
                           class="text-cyan-600 hover:text-cyan-700 text-sm">
                         Upload Report
                     </Link>

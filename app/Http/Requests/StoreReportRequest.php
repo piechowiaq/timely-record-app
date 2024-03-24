@@ -24,11 +24,7 @@ class StoreReportRequest extends FormRequest
     {
         return [
             'report_date' => ['required', 'date', 'before_or_equal:today'],
-            'workspace_id' => ['required', 'exists:workspaces,id'],
-            'registry_id' => ['required', 'exists:registries,id'],
-            //            'report_path' => ['string'],
-            //
-            //                ['file', 'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,jpeg,jpg', 'max:2048'],
+            'report_path' => ['required', 'file', 'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,jpeg,jpg', 'max:2048'],
         ];
     }
 }

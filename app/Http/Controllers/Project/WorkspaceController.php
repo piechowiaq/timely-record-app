@@ -98,7 +98,8 @@ class WorkspaceController extends Controller
             ->withQueryString();
 
         return inertia('Workspaces/IndexRegistries', [
-            'workspace' => WorkspaceResource::make($workspace->loadMissing('registries')),
+            'workspace' => WorkspaceResource::make($workspace),
+            'workspaceRegistriesIds' => $workspace->registries->pluck('id')->toArray(),
             'registries' => RegistryResource::collection($registries),
             'registriesIds' => $registriesIds,
             'filters' => $request->all(['search', 'field', 'direction']),

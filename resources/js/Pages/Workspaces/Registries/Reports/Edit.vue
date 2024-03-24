@@ -1,7 +1,6 @@
 <script setup>
 
-import {reactive} from 'vue'
-import {Head, Link, router, useForm, usePage, useRemember} from "@inertiajs/vue3";
+import {Head, Link, router, useForm, usePage} from "@inertiajs/vue3";
 import TextInput from "@/Components/TextInput.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
@@ -14,19 +13,17 @@ const props = defineProps({
     report: Object,
     workspace: Object,
     registry: Object,
-    project: Object,
 })
 
-const projectId = usePage().props.auth.user.project_id;
+const projectId = usePage().props.projectId;
 
-const form = useForm(useRemember(reactive({
+const form = useForm({
         report_date: props.report.report_date,
-    }))
+    }
 )
 
 const destroy = (report) => {
     router.delete(route('workspace.registry.reports.destroy', {
-        project: props.project.id,
         workspace: props.workspace.id,
         registry: props.registry.id,
         report: props.report.id
@@ -42,11 +39,11 @@ const destroy = (report) => {
 
         <template #header>
             <h2 class="text-white dark:text-gray-700 leading-tight">
-                <Link :href="route('workspaces.registries.index',  { project: projectId, workspace: workspace})">
+                <Link :href="route('workspaces.registries.index',  workspace.id)">
                     Registries &lt
                 </Link>
                 <Link
-                    :href="route('workspaces.registries.show',  { project: projectId, workspace: workspace, registry: registry})">
+                    :href="route('workspaces.registries.show',  [workspace.id, registry.id])">
                     {{ registry.name }} &lt
                 </Link>
                 Edit Report
@@ -65,7 +62,7 @@ const destroy = (report) => {
                             </p>
                         </header>
                         <form
-                            @submit.prevent="form.patch(route('workspace.registry.reports.update', { project: projectId, workspace: workspace.id,  registry: registry.id, report: report.id }))"
+                            @submit.prevent="form.patch(route('workspace.registry.reports.update', [workspace.id, registry.id,report.id]))"
                             class="mt-6 space-y-6">
 
                             <div>
@@ -77,7 +74,6 @@ const destroy = (report) => {
                                     class="mt-1 block w-full"
                                     v-model="form.report_date"
                                     required
-                                    autofocus
                                     autocomplete="report_date"
                                 />
 

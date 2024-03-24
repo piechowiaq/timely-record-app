@@ -10,14 +10,14 @@ import {computed, ref, watch} from "vue";
 import {debounce} from "lodash";
 
 
-const props = defineProps(['workspace', 'registries', 'filters', 'registriesIds']);
+const props = defineProps(['workspace', 'registries', 'filters', 'registriesIds', 'workspaceRegistriesIds']);
 
 const projectId = usePage().props.projectId;
 
 const registriesStore = useRegistriesStore();
 
 if (registriesStore.initialized === false) {
-    registriesStore.updateForm({registriesIds: props.workspace.registriesIds});
+    registriesStore.updateForm({registriesIds: props.workspaceRegistriesIds});
 }
 
 

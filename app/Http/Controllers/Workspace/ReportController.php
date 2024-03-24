@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Workspace;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreReportRequest;
+use App\Http\Resources\RegistryResource;
+use App\Http\Resources\ReportResource;
+use App\Http\Resources\WorkspaceResource;
 use App\Models\Project;
 use App\Models\Registry;
 use App\Models\Report;
@@ -23,41 +26,55 @@ class ReportController extends Controller
         $this->authorizeResource(Report::class, 'report');
     }
 
-    public function create(Project $project, Workspace $workspace, Request $request): Response
+    public function createAny(Workspace $workspace): Response
     {
+        $this->authorize('createAny', [Report::class, $workspace]);
 
-        $registryId = $request->input('registry', null);
-        $registry = $registryId ? Registry::find($registryId) : null;
-
-        return Inertia::render('Workspaces/Registries/Reports/Create', [
-            'workspace' => $workspace,
-            'registries' => $workspace->registries()->get(),
-            'registry' => $registry,
+        return inertia('Workspaces/Registries/Reports/CreateAny', [
+            'workspace' => WorkspaceResource::make($workspace),
+            'registries' => RegistryResource::collection($workspace->registries),
         ]);
     }
 
-    public function store(StoreReportRequest $request, Project $project, Workspace $workspace)
+    public function create(Workspace $workspace, Registry $registry): Response
     {
-        $registry = Registry::find($request->registry_id);
-        //        $file = $request->file('report_path');
-        //        $fileName = preg_replace('/[^A-Za-z0-9\-_\.]/', '_', now()->format('YmdHis').'_'.$project->id.'_'.$workspace->id.'_'.$registry->name.'.'.$request->file('report_path')->extension());
-        //
-        //        $file->storeAs($project->id.'/'.$workspace->id.'/'.$registry->id, $fileName, 'reports');
+        $this->authorize('createAny', [Report::class, $workspace]);
 
-        $report_date = new Carbon($request->report_date);
-        $expiryDate = $report_date->addMonths($registry->validity_period)->toDateString();
+        return inertia('Workspaces/Registries/Reports/Create', [
+            'workspace' => WorkspaceResource::make($workspace),
+            'registry' => RegistryResource::make($registry),
 
-        $report = new Report();
-        $report->report_date = $request->report_date;
-        $report->expiry_date = $expiryDate;
-        $report->report_path = 'hello';
-        $report->workspace_id = $request->workspace_id;
-        $report->registry_id = $request->registry_id;
-        $report->project_id = $project->id;
-        $report->created_by_user_id = Auth::id();
-        $report->save();
+        ]);
+    }
 
-        return Redirect::route('workspaces.registries.show', ['project' => $project, 'workspace' => $workspace, 'registry' => $registry])->with('success', 'Report uploaded.');
+    public function store(Workspace $workspace, Registry $registry, StoreReportRequest $request)
+    {
+        $project = Project::find(session('project_id'));
+
+        $reportDate = new Carbon($request->report_date);
+        $expiryDate = (clone $reportDate)->addMonths($registry->validity_period);
+
+        $reportDateFormatted = $reportDate->format('Y-m-d');
+        $expiryDateFormatted = $expiryDate->format('Y-m-d');
+
+        $file = $request->file('report_path');
+        $date = Carbon::now()->format('m-d-Y_H-i-s');
+
+        $fileName = preg_replace('/[^A-Za-z0-9\-_.]/', '_', $date.'_'.$project->id.'_'.$workspace->id.'_'.$registry->name.'.'.$file->extension());
+        $file->storeAs($project->id.'/'.$workspace->id.'/'.$registry->id, $fileName, 'reports');
+
+        Report::create([
+            'report_date' => $reportDateFormatted,
+            'expiry_date' => $expiryDateFormatted,
+            'report_path' => $fileName,
+            'created_by_user_id' => Auth::id(),
+            'project_id' => $project->id,
+            'workspace_id' => $workspace->id,
+            'registry_id' => $registry->id,
+
+        ]);
+
+        return to_route('workspaces.registries.show', [$workspace->id, $registry->id])->with('success', 'Report uploaded.');
     }
 
     /**
@@ -72,15 +89,16 @@ class ReportController extends Controller
 
     public function edit(Project $project, Workspace $workspace, Registry $registry, Report $report)
     {
+        $this->authorize('view', $report);
+
         return Inertia::render('Workspaces/Registries/Reports/Edit', [
-            'report' => $report,
-            'workspace' => $workspace,
-            'registry' => $registry,
-            'project' => $project,
+            'report' => ReportResource::make($report),
+            'workspace' => WorkspaceResource::make($workspace),
+            'registry' => RegistryResource::make($registry),
         ]);
     }
 
-    public function update(Request $request, Project $project, Workspace $workspace, Registry $registry, Report $report)
+    public function update(Request $request, Workspace $workspace, Registry $registry, Report $report)
     {
 
         $report_date = new Carbon($request->report_date);
@@ -91,7 +109,7 @@ class ReportController extends Controller
         $report->updated_by_user_id = Auth::id();
         $report->save();
 
-        return Redirect::route('workspace.registry.reports.edit', ['project' => $project, 'workspace' => $workspace, 'registry' => $registry, 'report' => $report])->with('success', 'Report updated');
+        return to_route('workspaces.registries.reports.edit', [$workspace->id, $registry->id, $report->id])->with('success', 'Report updated');
     }
 
     /**

@@ -124,7 +124,7 @@ const getSortIconClass = (field) => {
                     <div class="flex items-center justify-between mb-2">
                         <h1 class="font-bold text-lg text-gray-900 dark:text-gray-100">{{ registry.name }}</h1>
                         <Link v-if="canCreateReport"
-                              :href="route('workspace.registry.reports.create', [workspace.id, registry.id] )"
+                              :href="route('workspaces.registries.reports.create', [workspace.id, registry.id] )"
                               class="text-cyan-600 hover:text-cyan-700 text-sm">
                             Submit Report
                         </Link>
@@ -171,7 +171,7 @@ const getSortIconClass = (field) => {
 
 
                                 <Link
-                                    :href="route('workspace.registry.reports.edit', [workspace.id, registry.id, currentReport.id])"
+                                    :href="route('workspaces.registries.reports.edit', [workspace.id, registry.id, currentReport.id])"
                                     class="hover:text-cyan-700 text-sm  font-medium text-cyan-600 ">
                                     {{ currentReport.report_date }}
                                 </Link>
@@ -258,7 +258,7 @@ const getSortIconClass = (field) => {
                         <tr v-else v-for="report of otherReports" :key="report.id">
                             <td class="p-2 w-2/3 truncate ">
                                 <Link
-                                    :href="route('workspace.registry.reports.edit', [workspace.id, registry.id, report.id])"
+                                    :href="route('workspaces.registries.reports.edit', [workspace.id, registry.id, report.id])"
                                     class="text-sm hover:text-cyan-700 font-medium text-cyan-600 ">
                                     {{ report.report_date }}
                                 </Link>

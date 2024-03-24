@@ -12,11 +12,7 @@ use function Pest\Laravel\get;
 
 it('requires authentication', function () {
 
-    $workspace = Workspace::factory()->create();
-    $registry = Registry::factory()->create();
-    $workspace->registries()->attach($registry);
-
-    get(route('workspaces.registries.reports.create', [$workspace->id, $registry->id]))
+    get(route('workspaces.registries.reports.create-any', Workspace::factory()->create()))
         ->assertRedirect(route('login'));
 });
 
@@ -32,11 +28,9 @@ it('requires authorization', function () {
         session(['project_id' => $user->project_id]);
 
         $workspace = Workspace::factory()->create(['project_id' => $user->project_id]);
-        $registry = Registry::factory()->create();
-        $workspace->registries()->attach($registry);
 
         actingAs($user)->
-        get(route('workspaces.registries.reports.create', [$workspace->id, $registry->id]))
+        get(route('workspaces.registries.reports.create-any', $workspace->id))
             ->assertForbidden();
     }
 
@@ -50,12 +44,10 @@ it('returns a correct component', function () {
     $user->assignRole('admin');
 
     $workspace = $user->workspaces->first();
-    $registry = Registry::factory()->create();
-    $workspace->registries()->attach($registry);
 
     actingAs($user)->
-    get(route('workspaces.registries.reports.create', [$workspace->id, $registry->id]))
-        ->assertComponent('Workspaces/Registries/Reports/Create');
+    get(route('workspaces.registries.reports.create-any', $workspace->id))
+        ->assertComponent('Workspaces/Registries/Reports/CreateAny');
 
 });
 
@@ -67,11 +59,9 @@ it('passes workspace to the view', function () {
     $user->assignRole('admin');
 
     $workspace = $user->workspaces->first();
-    $registry = Registry::factory()->create();
-    $workspace->registries()->attach($registry);
 
     actingAs($user)->
-    get(route('workspaces.registries.reports.create', [$workspace->id, $registry->id]))
+    get(route('workspaces.registries.reports.create-any', $workspace->id))
         ->assertHasResource('workspace', WorkspaceResource::make($workspace));
 
 });
@@ -84,11 +74,11 @@ it('passes registries to the view', function () {
     $user->assignRole('admin');
 
     $workspace = $user->workspaces->first();
-    $registry = Registry::factory()->create();
-    $workspace->registries()->attach($registry);
+    $registries = Registry::factory()->count(3)->create();
+    $workspace->registries()->attach($registries);
 
     actingAs($user)->
-    get(route('workspaces.registries.reports.create', [$workspace->id, $registry->id]))
-        ->assertHasResource('registry', RegistryResource::make($registry));
+    get(route('workspaces.registries.reports.create-any', $workspace->id))
+        ->assertHasResource('registries', RegistryResource::collection($registries));
 
 });

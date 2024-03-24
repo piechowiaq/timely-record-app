@@ -12,6 +12,17 @@ class Report extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'report_date',
+        'expiry_date',
+        'report_path',
+        'created_by_user_id',
+        'updated_by_user_id',
+        'project_id',
+        'workspace_id',
+        'registry_id',
+    ];
+
     public function workspace(): BelongsTo
     {
         return $this->belongsTo(Workspace::class);

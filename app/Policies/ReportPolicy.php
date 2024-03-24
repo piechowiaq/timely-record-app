@@ -20,7 +20,7 @@ class ReportPolicy
      */
     public function view(User $user, Report $report): bool
     {
-        return $user->hasPermissionTo('view report');
+        return $user->hasPermissionTo('view report') && $user->workspaces->contains($report->workspace_id);
     }
 
     /**
@@ -61,5 +61,10 @@ class ReportPolicy
     public function forceDelete(User $user, Report $report): bool
     {
         //
+    }
+
+    public function createAny(User $user, $workspace): bool
+    {
+        return $user->hasPermissionTo('create report') && $user->workspaces->contains($workspace->id);
     }
 }

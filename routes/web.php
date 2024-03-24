@@ -68,11 +68,12 @@ Route::middleware('auth', 'verified', 'web')->group(function () {
     Route::get('workspaces/{workspace}/registries', [WorkspaceRegistryController::class, 'index'])->name('workspaces.registries.index');
     Route::get('workspaces/{workspace}/registries/{registry}', [WorkspaceRegistryController::class, 'show'])->name('workspaces.registries.show');
 
-    Route::get('/projects/{project}/workspaces/{workspace}/registries/reports/create', [ReportController::class, 'create'])->name('workspace.registry.reports.create');
-    Route::get('workspaces/{workspace}/registries/{registry}/reports/{report}/edit', [ReportController::class, 'edit'])->name('workspace.registry.reports.edit');
-    Route::patch('/projects/{project}/workspaces/{workspace}/registries/{registry}/reports/{report}', [ReportController::class, 'update'])->name('workspace.registry.reports.update');
+    Route::get('workspaces/{workspace}/registries/reports/create-any', [ReportController::class, 'createAny'])->name('workspaces.registries.reports.create-any');
+    Route::get('workspaces/{workspace}/registries/{registry}/reports/create', [ReportController::class, 'create'])->name('workspaces.registries.reports.create');
+    Route::get('workspaces/{workspace}/registries/{registry}/reports/{report}/edit', [ReportController::class, 'edit'])->name('workspaces.registries.reports.edit');
+    Route::put('workspaces/{workspace}/registries/{registry}/reports/{report}', [ReportController::class, 'update'])->name('workspaces.registries.reports.update');
     Route::delete('/projects/{project}/workspaces/{workspace}/registries/{registry}/reports/{report}', [ReportController::class, 'destroy'])->name('workspace.registry.reports.destroy');
-    Route::post('/projects/{project}/workspaces/{workspace}/registries/reports', [ReportController::class, 'store'])->name('workspace.registry.reports.store');
+    Route::post('workspaces/{workspace}/registries/{registry}/reports', [ReportController::class, 'store'])->name('workspaces.registries.reports.store');
     Route::get('workspaces/{workspace}/registries/{registry}/reports/{report}', [ReportController::class, 'show'])->name('workspace.registry.reports.show');
 
 });
