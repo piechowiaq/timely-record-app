@@ -24,7 +24,7 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('test', function () {
+Route::get('/test', function () {
     $workspaces = Workspace::query()
         ->paginate(5)
         ->withQueryString();
@@ -55,26 +55,26 @@ Route::middleware(['auth', 'verified', 'web', 'role.redirect'])->group(function 
 
 Route::middleware('auth', 'verified', 'web')->group(function () {
 
-    Route::resource('users', UserController::class);
+    Route::resource('/users', UserController::class);
 
-    Route::resource('registries', RegistryController::class);
+    Route::resource('/registries', RegistryController::class);
 
-    Route::resource('workspaces', WorkspaceController::class);
-    Route::get('workspaces/{workspace}/index-registries', [WorkspaceController::class, 'indexRegistries'])->name('workspaces.index-registries');
-    Route::put('workspaces/{workspace}/sync-registries', [WorkspaceController::class, 'syncRegistries'])->name('workspaces.sync-registries');
+    Route::resource('/workspaces', WorkspaceController::class);
+    Route::get('/workspaces/{workspace}/index-registries', [WorkspaceController::class, 'indexRegistries'])->name('workspaces.index-registries');
+    Route::put('/workspaces/{workspace}/sync-registries', [WorkspaceController::class, 'syncRegistries'])->name('workspaces.sync-registries');
 
-    Route::get('workspaces/{workspace:id}/dashboard', [WorkspaceDashboardController::class, 'dashboard'])->name('workspaces.dashboard');
+    Route::get('/workspaces/{workspace:id}/dashboard', [WorkspaceDashboardController::class, 'dashboard'])->name('workspaces.dashboard');
 
-    Route::get('workspaces/{workspace}/registries', [WorkspaceRegistryController::class, 'index'])->name('workspaces.registries.index');
-    Route::get('workspaces/{workspace}/registries/{registry}', [WorkspaceRegistryController::class, 'show'])->name('workspaces.registries.show');
+    Route::get('/workspaces/{workspace}/registries', [WorkspaceRegistryController::class, 'index'])->name('workspaces.registries.index');
+    Route::get('/workspaces/{workspace}/registries/{registry}', [WorkspaceRegistryController::class, 'show'])->name('workspaces.registries.show');
 
-    Route::get('workspaces/{workspace}/registries/reports/create-any', [ReportController::class, 'createAny'])->name('workspaces.registries.reports.create-any');
-    Route::get('workspaces/{workspace}/registries/{registry}/reports/create', [ReportController::class, 'create'])->name('workspaces.registries.reports.create');
-    Route::get('workspaces/{workspace}/registries/{registry}/reports/{report}/edit', [ReportController::class, 'edit'])->name('workspaces.registries.reports.edit');
-    Route::put('workspaces/{workspace}/registries/{registry}/reports/{report}', [ReportController::class, 'update'])->name('workspaces.registries.reports.update');
-    Route::delete('/projects/{project}/workspaces/{workspace}/registries/{registry}/reports/{report}', [ReportController::class, 'destroy'])->name('workspace.registry.reports.destroy');
-    Route::post('workspaces/{workspace}/registries/{registry}/reports', [ReportController::class, 'store'])->name('workspaces.registries.reports.store');
-    Route::get('workspaces/{workspace}/registries/{registry}/reports/{report}', [ReportController::class, 'show'])->name('workspace.registry.reports.show');
+    Route::get('/workspaces/{workspace}/registries/reports/create-any', [ReportController::class, 'createAny'])->name('workspaces.registries.reports.create-any');
+    Route::get('/workspaces/{workspace}/registries/{registry}/reports/create', [ReportController::class, 'create'])->name('workspaces.registries.reports.create');
+    Route::get('/workspaces/{workspace}/registries/{registry}/reports/{report}/edit', [ReportController::class, 'edit'])->name('workspaces.registries.reports.edit');
+    Route::put('/workspaces/{workspace}/registries/{registry}/reports/{report}', [ReportController::class, 'update'])->name('workspaces.registries.reports.update');
+    Route::delete('/workspaces/{workspace}/registries/{registry}/reports/{report}', [ReportController::class, 'destroy'])->name('workspaces.registries.reports.destroy');
+    Route::post('/workspaces/{workspace}/registries/{registry}/reports', [ReportController::class, 'store'])->name('workspaces.registries.reports.store');
+    Route::get('/workspaces/{workspace}/registries/{registry}/reports/{report}', [ReportController::class, 'show'])->name('workspace.registry.reports.show');
 
 });
 

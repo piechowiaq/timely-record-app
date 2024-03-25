@@ -14,7 +14,6 @@ use App\Models\Workspace;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -80,11 +79,11 @@ class ReportController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Project $project, Workspace $workspace, Registry $registry, Report $report)
+    public function show(Workspace $workspace, Registry $registry, Report $report)
     {
+        $project = Project::find(session('project_id'));
 
         return Storage::disk('reports')->response($project->id.'/'.$workspace->id.'/'.$registry->id.'/'.$report->report_path);
-
     }
 
     public function edit(Project $project, Workspace $workspace, Registry $registry, Report $report)
@@ -121,6 +120,6 @@ class ReportController extends Controller
 
         $report->delete();
 
-        return Redirect::route('workspaces.registries.show', ['project' => $project, 'workspace' => $workspace, 'registry' => $registry])->with('success', 'Report deleted.');
+        return to_route('workspaces.registries.show', [$workspace->id, $registry->id])->with('success', 'Report deleted.');
     }
 }

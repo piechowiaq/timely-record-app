@@ -99,7 +99,7 @@ it('stores a registry', function () {
         'report_date' => $reportDateFormatted,
         'expiry_date' => $expiryDateFormatted,
         'report_path' => $fileName,
-        'updated_by_user_id' => $user->id,
+        'created_by_user_id' => $user->id,
         'project_id' => $user->project_id,
         'workspace_id' => $workspace->id,
         'registry_id' => $registry->id,

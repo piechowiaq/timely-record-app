@@ -83,7 +83,7 @@ it('updates a registry', function () {
     ]);
 });
 
-it('redirects to the registry index page', function () {
+it('redirects to the reports edit page', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
 
