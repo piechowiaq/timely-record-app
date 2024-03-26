@@ -211,7 +211,7 @@ const getSortIconClass = (field) => {
 
                                 <a v-if="currentReport.expiry_date"
                                    class="group flex justify-center items-center bg-yellow-500 hover:bg-yellow-600"
-                                   :href="route('workspaces.registries.reports.store', [workspace.id, registry.id, currentReport.id])"
+                                   :href="route('workspaces.registries.reports.show', [workspace.id, registry.id, currentReport.id])"
                                    target="_blank"
                                 >
                                     <i class="fa-solid fa-download p-2 text-black"></i>
@@ -299,7 +299,7 @@ const getSortIconClass = (field) => {
 
                                 <a v-if="report.expiry_date"
                                    class="group flex justify-center items-center bg-yellow-200 hover:bg-yellow-400"
-                                   :href="route('workspaces.registries.reports.show', { workspace: workspace.id, registry: registry.id, report: currentReport.id})"
+                                   :href="route('workspaces.registries.reports.show', [workspace.id, registry.id, report.id])"
                                    target="_blank"
                                 >
                                     <i class="fa-solid fa-download p-2 text-gray-400"></i>
