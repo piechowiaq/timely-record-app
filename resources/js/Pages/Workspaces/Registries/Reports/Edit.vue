@@ -23,7 +23,7 @@ const form = useForm({
 )
 
 const destroy = (report) => {
-    router.delete(route('workspace.registry.reports.destroy', {
+    router.delete(route('workspaces.registries.reports.destroy', {
         workspace: props.workspace.id,
         registry: props.registry.id,
         report: props.report.id
@@ -62,7 +62,7 @@ const destroy = (report) => {
                             </p>
                         </header>
                         <form
-                            @submit.prevent="form.patch(route('workspace.registry.reports.update', [workspace.id, registry.id,report.id]))"
+                            @submit.prevent="form.put(route('workspaces.registries.reports.update', [workspace.id, registry.id,report.id]))"
                             class="mt-6 space-y-6">
 
                             <div>

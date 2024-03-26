@@ -74,7 +74,7 @@ Route::middleware('auth', 'verified', 'web')->group(function () {
     Route::put('/workspaces/{workspace}/registries/{registry}/reports/{report}', [ReportController::class, 'update'])->name('workspaces.registries.reports.update');
     Route::delete('/workspaces/{workspace}/registries/{registry}/reports/{report}', [ReportController::class, 'destroy'])->name('workspaces.registries.reports.destroy');
     Route::post('/workspaces/{workspace}/registries/{registry}/reports', [ReportController::class, 'store'])->name('workspaces.registries.reports.store');
-    Route::get('/workspaces/{workspace}/registries/{registry}/reports/{report}', [ReportController::class, 'show'])->name('workspace.registry.reports.show');
+    Route::get('/workspaces/{workspace}/registries/{registry}/reports/{report}', [ReportController::class, 'show'])->name('workspaces.registries.reports.show');
 
 });
 

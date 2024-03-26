@@ -54,9 +54,8 @@ watch(() => selected.value, (newValue) => {
 
 const store = () => {
 
-    form.post(route('workspace.registry.reports.store', {
-        project: projectId,
-        workspace: props.workspace.id,
+    form.post(route('workspaces.registries.reports.store', {
+        workspace: props.workspace.id, registry: form.registry_id
     }));
 };
 
