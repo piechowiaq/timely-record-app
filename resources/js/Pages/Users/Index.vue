@@ -6,19 +6,9 @@ import {ref, watch} from "vue";
 import Pagination from "@/Components/Pagination.vue";
 import {debounce} from "lodash";
 
-const props = defineProps({
-    paginatedUsers: {
-        type: Object,
-    },
-    filters: {
-        type: Object,
-    },
-    users: {
-        type: Object,
-    },
-});
+const props = defineProps(['users', 'filters']);
 
-const projectId = usePage().props.auth.user.project_id;
+const projectId = usePage().props.projectId;
 
 const index = ref({
     search: props.filters.search,
@@ -70,7 +60,7 @@ const getSortIconClass = (field) => {
                         </button>
 
                     </div>
-                    <Link :href="route('users.create', projectId)" class="text-cyan-600 hover:text-cyan-700 text-sm">
+                    <Link :href="route('users.create')" class="text-cyan-600 hover:text-cyan-700 text-sm">
                         Create
                         User
                     </Link>
@@ -101,12 +91,12 @@ const getSortIconClass = (field) => {
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="(user, index) in paginatedUsers.data" :key="user.id"
-                            :class="{'bg-white dark:bg-gray-800': true, 'border-b dark:border-gray-700': index !== paginatedUsers.data.length - 1}">
+                        <tr v-for="(user, index) in users.data" :key="user.id"
+                            :class="{'bg-white dark:bg-gray-800': true, 'border-b dark:border-gray-700': index !== users.data.length - 1}">
 
                             <th scope="row"
                                 class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                <Link :href="route('users.edit', [ projectId, user.id])"
+                                <Link :href="route('users.edit', user.id)"
                                       class="text-cyan-600 hover:text-cyan-700">
                                     {{ user.first_name }} {{ user.last_name }}
                                 </Link>
@@ -131,7 +121,7 @@ const getSortIconClass = (field) => {
                     </table>
                 </div>
 
-                <Pagination :links="paginatedUsers.meta.links"
+                <Pagination :links="users.meta.links"
                             class="flex items-center justify-end py-2"></Pagination>
             </div>
         </div>

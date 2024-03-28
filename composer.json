@@ -19,9 +19,11 @@
         "laravel/vapor-core": "^2.36",
         "league/flysystem-aws-s3-v3": "3.0",
         "spatie/laravel-permission": "^6.0",
+        "spatie/laravel-ray": "^1.35",
         "tightenco/ziggy": "^1.0"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.10",
         "laravel/breeze": "^1.25",
         "laravel/pint": "^1.0",
         "laravel/sail": "^1.18",

@@ -1,102 +1,97 @@
 <script setup>
 
-import {useForm} from "@inertiajs/vue3";
-import {useTestStore} from '@/Stores/TestStore.js';
-import Pagination from "@/Components/Pagination.vue";
-import {computed, onMounted, watchEffect} from "vue";
 
-const props = defineProps({
-  paginatedRegistries: Object,
-  allRegistriesIds: Array,
-  workspaceRegistriesIds: Array
-});
+import {router} from "@inertiajs/vue3";
+import {
+    computed,
+    onBeforeMount,
+    onBeforeUnmount,
+    onBeforeUpdate,
+    onErrorCaptured,
+    onMounted,
+    onRenderTracked,
+    onRenderTriggered,
+    onUpdated,
+    reactive
+} from "vue";
+import {useUserStore} from "@/Stores/UserStore.js";
 
-const store = useTestStore();
+const props = defineProps(['workspaces']);
 
-// // Use watchEffect to initialize selected registries as soon as the component is mounted.
-// watchEffect(() => {
-//   store.initializeWorkspaceRegistries(props.workspaceRegistriesIds);
-// });
-
-// Initialize only once on component mount
-onMounted(() => {
-  if (!store.isInitialized) {
-    store.initializeWorkspaceRegistries(props.workspaceRegistriesIds);
-  }
-});
+const userStore = useUserStore();
 
 
-// Initializes the form with 'registries' field is set to the IDs from 'workspaceRegistriesIds' prop.
-const form = useForm({
-  registries: props.workspaceRegistriesIds,
+onBeforeMount(() => {
+    console.log('onBeforeMount')
 })
 
-// This watchEffect updates the 'registries' field in the form to reflect these changes.
-watchEffect(() => {
-  form.registries = store.selectedRegistriesArray;
+onBeforeUpdate(() => {
+    console.log('onBeforeUpdate')
+    unwatch();
+})
+
+onBeforeUnmount(() => {
+    console.log('onBeforeUnmount')
+})
+
+
+onMounted(() => {
+    console.log('onMounted')
+});
+
+onUpdated(() => {
+
+
+    console.log('onUpdated')
+});
+
+onErrorCaptured(() => {
+    console.log('onErrorCaptured')
+});
+
+onRenderTracked(() => {
+    console.log('onRenderTracked')
+});
+
+onRenderTriggered(() => {
+    console.log('onRenderTriggered')
 });
 
 
-// Computed property to calculate the total count of registries.
-const countOfTotalRegistries = computed(() => props.allRegistriesIds.length);
+const form = reactive({
+    first_name: '',
+    last_name: userStore.getLastName,
+});
 
-// Function to handle changes in 'Select All' checkbox.
-const handleSelectAll = (selectAll) => {
-  store.setSelectAll(selectAll, props.allRegistriesIds);
-};
+const firstName = computed({
+    get: () => form.first_name,// Assuming getFirstName is a method
+    set: (value) => {
+        userStore.setFirstName(value);
+        form.first_name = value; // Assuming you want to update the form as well
+    }
+});
 
-// Function to handle changes in individual registry selection.
-const handleCheckboxChange = (registryId) => {
-  store.toggleRegistry(registryId);
-  store.updateSelectAllState(countOfTotalRegistries.value);
-};
+const lastName = computed({
+    get: () => userStore.getLastName, // Assuming getLastName is a method
+    set: (value) => {
+        userStore.setLastName(value);
+        form.last_name = value; // Assuming you want to update the form as well
+    }
+});
 
-// Submit form data
-function submitForm() {
+function submit() {
+    router.post(route('users.store'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            form.reset();
 
-  console.log(form.registries);
-  form.post(route('test'));
+        },
+    });
 }
-
 </script>
 
 <template>
-
-  <div>
-    {{ countOfTotalRegistries }}
-
-    <br>
-    {{ workspaceRegistriesIds }}
-  </div>
-
-  <div>
-
-    {{ store.selectAll }}<br>
-    {{ store.selectedRegistries }}<br>
-
-
-    <form @submit.prevent="submitForm" class="p-8">
-
-      <div>
-        <input type="checkbox" v-model="store.selectAll" @change="handleSelectAll(store.selectAll)">
-        Select All
-      </div>
-      <div v-for="registry in paginatedRegistries.data" :key="registry.id">
-        <input
-            type="checkbox"
-            :value="registry.id"
-            :checked="store.selectedRegistries.has(registry.id)"
-            @change="() => handleCheckboxChange(registry.id)"
-        >
-        {{ registry.name }}
-      </div>
-
-      <button type="submit">Submit Selected Registries</button>
-    </form>
-
-    <Pagination :links="paginatedRegistries.links"
-                class="flex items-center justify-end py-2"></Pagination>
-  </div>
+    Hello
 
 
 </template>

@@ -41,8 +41,8 @@ class UpdateUserRequest extends FormRequest
             'workspacesIds' => [
                 'required',
                 'array',
-                Rule::exists('workspaces', 'id')->where(function ($query) use ($project) {
-                    $query->where('project_id', $project->id);
+                Rule::exists('workspaces', 'id')->where(function ($query) {
+                    $query->where('project_id', $this->session()->get('project_id'));
                 }),
             ],
             'workspacesIds.*' => ['required', 'exists:workspaces,id'],

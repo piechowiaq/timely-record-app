@@ -14,9 +14,10 @@ it('allows a user with role user that has more then one workspace to view their 
     $user = User::factory()->withWorkspaces(2)->create();
 
     $user->assignRole('user');
+    session(['project_id' => $user->project_id]);
 
     actingAs($user)
-        ->get(route('projects.dashboard', $user->project))
+        ->get(route('projects.dashboard'))
         ->assertOk();
 });
 
@@ -28,9 +29,9 @@ it('forbid user with role user that has only one workspace to view their project
 
     actingAs($user);
 
-    $response = get(route('projects.dashboard', ['project' => $user->project]));
+    $response = get(route('projects.dashboard'));
 
-    $response->assertRedirect(route('workspaces.dashboard', ['project' => $user->project, 'workspace' => $user->workspaces->first()->id]));
+    $response->assertRedirect(route('workspaces.dashboard', $user->workspaces->first()->id));
 
 });
 

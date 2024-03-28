@@ -13,6 +13,8 @@ const canManageProject = usePage().props.auth.canManageProject;
 
 const projectId = usePage().props.auth.user.project_id;
 
+const project = usePage().props.projectId;
+
 
 const getWorkspaceBorderColor = (workspace) => {
     if (workspace.upToDateRegistriesMetrics === 100) return 'border-green-500';
@@ -32,7 +34,6 @@ const getWorkspaceBorderColor = (workspace) => {
         </template>
 
         <div class="px-2 pb-2">
-
             <div v-if="!workspaces.length">
                 <section
                     class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow flex-grow">
@@ -55,7 +56,7 @@ const getWorkspaceBorderColor = (workspace) => {
                 <section v-for="workspace in workspaces" :key="workspace.id"
                          class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow flex-grow justify-between flex">
                     <header>
-                        <Link :href="route('workspaces.dashboard', { project: projectId, workspace: workspace.id} )">
+                        <Link :href="route('workspaces.dashboard', workspace.id )">
                             <h2 class="text-lg font-medium hover:text-cyan-700 text-gray-900 dark:text-gray-100">
                                 {{ workspace.name }}
                             </h2>
@@ -66,7 +67,7 @@ const getWorkspaceBorderColor = (workspace) => {
                         <div :class="`border-2 p-2 flex flex-col ${getWorkspaceBorderColor(workspace)}`">
                             <header class="text-gray-600 text-sm">Registries</header>
                             <p class="font-medium text-2xl text-gray-500 mt-auto">{{
-                                    workspace.upToDateRegistriesMetrics
+                                    workspace.registryMetrics
                                 }}%</p>
 
 

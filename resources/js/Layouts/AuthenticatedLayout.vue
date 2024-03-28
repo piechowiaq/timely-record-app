@@ -11,11 +11,7 @@ import FlashMessages from "@/Components/FlashMessages.vue";
 import {useRegistriesStore} from "@/Stores/RegistriesStore.js";
 
 const registriesStore = useRegistriesStore();
-const props = defineProps({
-    workspace: {
-        type: Object
-    },
-})
+const props = defineProps(['workspace']);
 
 const showingNavigationDropdown = ref(false);
 
@@ -198,7 +194,7 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
 
                         <div class="mt-3 space-y-1">
                             <ResponsiveNavLink :href="route('profile.edit')"> Profile</ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('projects.dashboard', projectId)"> Project Settings
+                            <ResponsiveNavLink :href="route('projects.dashboard')"> Project Settings
                             </ResponsiveNavLink>
                             <ResponsiveNavLink :href="route('logout')" method="post" as="button">
                                 Log Out
@@ -240,6 +236,7 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
                         <div class="container mx-auto px-4 py-2 sm:flex sm:h-10 justify-between  items-center ">
                             <slot name="header"/>
                             <FlashMessages/>
+
                         </div>
                     </header>
 

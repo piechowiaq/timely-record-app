@@ -8,7 +8,7 @@ defineProps({
     }
 });
 
-const projectId = usePage().props.auth.user.project_id;
+const projectId = usePage().props.projectId;
 
 </script>
 

@@ -2,23 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\WorkspaceResource;
 use App\Models\Project;
-use App\Services\ProjectService;
+use App\Services\RegistryService;
+use Auth;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
 use Inertia\Response;
 
 class ProjectController extends Controller
 {
-    protected ProjectService $projectService;
+    protected RegistryService $registryService;
 
-    /**
-     * Create the controller instance.
-     */
-    public function __construct(ProjectService $projectService)
+    public function __construct(RegistryService $registryService)
     {
-        $this->projectService = $projectService;
+        $this->registryService = $registryService;
     }
 
     /**
@@ -26,14 +23,20 @@ class ProjectController extends Controller
      *
      * @throws AuthorizationException
      */
-    public function __invoke(Project $project): Response
+    public function __invoke(): Response
     {
+        $project = Project::find(session('project_id'));
+
         $this->authorize('view', $project);
 
-        $workspaces = $this->projectService->getUserWorkspacesWithUpToDateMetrics($project, Auth::user());
+        $workspaces = Auth::user()->workspaces->each(function ($workspace) {
+            $workspace->registryMetrics = $this->registryService->getRegistryMetrics(
+                $this->registryService->getRegistriesWithLatestReport($workspace->id)
+            );
+        });
 
-        return Inertia::render('Projects/Dashboard', [
-            'workspaces' => $workspaces,
+        return inertia('Projects/Dashboard', [
+            'workspaces' => WorkspaceResource::collection($workspaces),
         ]);
     }
 }

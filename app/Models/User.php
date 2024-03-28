@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\ProjectScope;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -49,6 +50,11 @@ class User extends Authenticatable implements MustVerifyEmail
         'password' => 'hashed',
     ];
 
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new ProjectScope);
+    }
+
     /**
      * Get the project that the user belongs to.
      */
@@ -92,5 +98,30 @@ class User extends Authenticatable implements MustVerifyEmail
         }
 
         return $query;
+    }
+
+    /**
+     * Scope a query to include users who are part of the given workspaces.
+     */
+    public function scopeInWorkspaces(Builder $query, array $workspaceIds): void
+    {
+        $query->whereHas('workspaces', function ($query) use ($workspaceIds) {
+            $query->whereIn('workspaces.id', $workspaceIds);
+        });
+    }
+
+    /**
+     * Scope a query to apply role filters.
+     */
+    public function scopeWithRolesEligibleToView(Builder $query, string $userRole): void
+    {
+        $query->whereHas('roles', function ($query) use ($userRole) {
+            if ($userRole === 'project-admin') {
+                $query->whereNotIn('roles.name', ['project-admin', 'super-admin']);
+            } else {
+                $query->whereNotIn('roles.name', ['admin', 'project-admin', 'super-admin']);
+            }
+        });
+
     }
 }

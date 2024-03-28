@@ -32,6 +32,7 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+
         $user = auth()->user();
 
         $canManageProject = false;
@@ -67,6 +68,8 @@ class HandleInertiaRequests extends Middleware
                 'canViewProject' => $canViewProject,
                 'canCreateReport' => $canCreateReport,
             ],
+            'projectId' => session('project_id'),
+
         ];
     }
 }

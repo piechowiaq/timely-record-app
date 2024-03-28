@@ -27,7 +27,7 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'project_id' => Project::factory(),
             'email_verified_at' => now(),
-            'password' => Hash::make('password'),
+            'password' => Hash::make('a'),
             'remember_token' => Str::random(10),
         ];
     }
@@ -55,6 +55,18 @@ class UserFactory extends Factory
             ]);
 
             $user->workspaces()->attach($workspaces);
+        });
+    }
+
+    /**
+     * Assign roles to the user after creation.
+     */
+    public function withRoles(): static
+    {
+        return $this->afterCreating(function (User $user) {
+
+            $roles = ['manager', 'user', 'admin'];
+            $user->assignRole($roles[array_rand($roles)]);
         });
     }
 }

@@ -6,7 +6,7 @@ export const useWorkspacesStore = defineStore('workspaces', {
         selectAll: false,
         isInitialized: false, // New flag
         selectedWorkspacesIds: new Set(), // Initial
-
+        emailo: 'haha'
     }),
     actions: {
         initializeWorkspaces(workspacesIds, allWorkspacesIdsCount) {
@@ -53,10 +53,12 @@ export const useWorkspacesStore = defineStore('workspaces', {
 
 
     getters: {
-
-
+        email() {
+            return this.emailo;
+        },
         selectedWorkspacesIdsArray: (state) => {
             return Array.from(state.selectedWorkspacesIds);
-        }
+        },
+
     }
 });

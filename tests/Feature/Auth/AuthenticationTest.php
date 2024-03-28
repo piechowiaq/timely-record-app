@@ -18,7 +18,7 @@ test('users can authenticate using the login screen', function () {
 
     $this->post('/login', [
         'email' => $user->email,
-        'password' => 'password',
+        'password' => PASSWORD,
     ]);
 
     $this->assertAuthenticated();
@@ -35,7 +35,7 @@ it('redirects authenticated user with role of project-admin with no workspace to
 
     $response = post('/login', [
         'email' => $user->email,
-        'password' => 'password',
+        'password' => PASSWORD,
     ]);
 
     // Attempt to access the projects.dashboard route
@@ -52,7 +52,7 @@ it('redirects authenticated user with workspace to projects.dashboard route', fu
 
     post('/login', [
         'email' => $user->email,
-        'password' => 'password',
+        'password' => PASSWORD,
     ])->assertRedirect(route('projects.dashboard', ['project' => $user->project_id]));
 
 });

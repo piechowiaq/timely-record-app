@@ -4,11 +4,10 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Project;
-use App\Models\Registry;
-use App\Models\Report;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
@@ -22,33 +21,36 @@ class DatabaseSeeder extends Seeder
             RolesAndPermissionsSeeder::class,
         ]);
 
-        $project = Project::factory()->create();
-        $users = User::factory(3)->recycle($project)->create();
+        $projects = Project::factory(3)->create();
+        $users = User::factory(25)->recycle($projects)->create();
+        $workspaces = Workspace::factory(15)->recycle($projects)->create();
 
-        $user = User::factory()->recycle($project)->create([
-            'first_name' => 'Bartosz',
-            'last_name' => 'Piechowiak',
-            'email' => 'test@timelyrecord.com',
-            'password' => bcrypt('12345678'),
-        ]);
+        $roles = Role::whereNotIn('name', ['project-admin', 'super-admin'])->get();
 
-        $workspaces = Workspace::factory(2)->recycle($project)->create();
+        foreach ($projects as $project) {
 
-        $user->workspaces()->attach($workspaces);
+            $projectUsers = $users->where('project_id', $project->id);
 
-        $registries = Registry::all(); // Get all registries
+            $projectAdmin = $projectUsers->first()->assignRole('project-admin');
 
-        foreach ($workspaces as $workspace) {
-            Report::factory(25)->recycle($workspace)->recycle($registries)->recycle($users)->create();
+            $projectUsers->reject(function ($user) use ($projectAdmin) {
+                return $user->id === $projectAdmin->id;
+            })->each(function ($user) use ($roles) {
 
-            // Decide the number of registries to attach (randomly)
-            $numberOfRegistriesToAttach = rand(1, $registries->count());
+                $user->assignRole($roles->random());
+            });
+        }
 
-            // Get random registries
-            $registriesToAttach = $registries->random($numberOfRegistriesToAttach)->pluck('id');
+        foreach ($users as $user) {
 
-            // Attach the registries to the workspace
-            $workspace->registries()->attach($registriesToAttach);
+            $sameProjectWorkspaces = $workspaces->where('project_id', $user->project_id);
+
+            if ($sameProjectWorkspaces->isNotEmpty()) {
+
+                $workspacesToAttach = $sameProjectWorkspaces->random(min(2, $sameProjectWorkspaces->count()))->pluck('id');
+
+                $user->workspaces()->attach($workspacesToAttach);
+            }
         }
     }
 }

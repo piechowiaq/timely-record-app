@@ -1,52 +1,36 @@
 <script setup>
 import {Link, usePage} from "@inertiajs/vue3";
 
-defineProps({
-    workspace: {
-        type: Object,
-    },
-    mostOutdatedRegistries: {
-        type: Array,
-    },
-    expiringSoonRegistries: {
-        type: Array,
-    },
-    recentlyUpdatedRegistries: {
-        type: Array,
-    },
-    countOfUpToDateRegistries: {
-        type: Number
-    },
-    countOfExpiredRegistries: {
-        type: Number
-    },
-    percentageOfUpToDate: {
-        type: Number
-    },
-    hasRegistries: {
-        type: Boolean
-    }
-});
+defineProps([
+    'workspaceId',
+    'nonCompliantRegistries',
+    'expiringRegistries',
+    'registriesCount',
+    'hasRegistries',
+    'registryMetrics',
+    'upToDateRegistriesCount',
+    'nonCompliantRegistriesCount'
+]);
 
-const projectId = usePage().props.auth.user.project_id;
+const projectId = usePage().props.projectId;
 
 </script>
 
 <template>
 
     <section
-        :class="{'border-green-600': percentageOfUpToDate === 100, 'border-cyan-600': percentageOfUpToDate !== 100}"
+        :class="{'border-green-600': registryMetrics === 100, 'border-cyan-600': registryMetrics !== 100}"
         class="border flex-grow p-4 bg-white text-gray-600">
         <article class="font-bold">
             <header class="justify-between items-center flex border-b pb-2 block whitespace-nowrap ">
                 <h2 class="truncate">Registries</h2>
-                <template v-if="percentageOfUpToDate === 100">
+                <template v-if="registryMetrics === 100">
                     <span class="bg-green-500 px-2 mb-2 rounded text-white text-xs font-medium">EXCELLENT</span>
                 </template>
-                <template v-else-if="percentageOfUpToDate > 90">
+                <template v-else-if="registryMetrics > 90">
                     <span class="bg-green-300 px-2 mb-2 rounded text-white text-xs font-medium">GOOD</span>
                 </template>
-                <template v-else-if="percentageOfUpToDate > 80">
+                <template v-else-if="registryMetrics > 80">
                     <span class="bg-yellow-300 px-2 mb-2 rounded text-white text-xs font-medium">AVERAGE</span>
                 </template>
                 <template v-else>
@@ -56,12 +40,14 @@ const projectId = usePage().props.auth.user.project_id;
             </header>
 
             <div class="flex justify-between py-2">
-                <p class="text-5xl">{{ percentageOfUpToDate }}% <span class="text-xs truncate">COMPLETED</span></p>
+                <p class="text-5xl">{{ registryMetrics }}% <span class="text-xs truncate">COMPLETED</span></p>
                 <div>
                     <p class="text-sm"><span class="text-green-600 truncate">{{
-                            countOfUpToDateRegistries
-                        }} valid</span></p>
-                    <p class="text-sm"><span class="text-red-600 truncate">{{ countOfExpiredRegistries }} expired</span>
+                            upToDateRegistriesCount
+                        }} up-to-date</span></p>
+                    <p class="text-sm"><span class="text-red-600 truncate">{{
+                            nonCompliantRegistriesCount
+                        }} non-compliant</span>
                     </p>
                 </div>
             </div>
@@ -72,10 +58,10 @@ const projectId = usePage().props.auth.user.project_id;
         <div v-else>
             <aside class=" text-xs py-2">
                 <h3 class="py-2 font-bold">Most Outdated:</h3>
-                <ul v-if="mostOutdatedRegistries && mostOutdatedRegistries.length" class="text-cyan-600">
-                    <li v-for="registry in mostOutdatedRegistries" :key="registry.name" class="py-1 truncate">
+                <ul v-if="nonCompliantRegistries && nonCompliantRegistries.length" class="text-cyan-600">
+                    <li v-for="registry in nonCompliantRegistries" :key="registry.name" class="py-1 truncate">
                         <Link
-                            :href="route('workspace.registries.show', { project: projectId, workspace: workspace, registry: registry.registry_id})">
+                            :href="route('workspaces.registries.show', [workspaceId,registry.id])">
                             {{ registry.name }}
                         </Link>
 
@@ -85,10 +71,10 @@ const projectId = usePage().props.auth.user.project_id;
             </aside>
             <aside class=" text-xs py-2">
                 <h3 class="py-2 font-bold">Expiring Soon:</h3>
-                <ul v-if="expiringSoonRegistries && expiringSoonRegistries.length" class="text-cyan-600 ">
-                    <li v-for="registry in expiringSoonRegistries" :key="registry.name" class="py-1 truncate">
+                <ul v-if="expiringRegistries && expiringRegistries.length" class="text-cyan-600 ">
+                    <li v-for="registry in expiringRegistries" :key="registry.name" class="py-1 truncate">
                         <Link
-                            :href="route('workspace.registries.show', { project: projectId, workspace: workspace, registry: registry.registry_id})">
+                            :href="route('workspaces.registries.show', [workspaceId, registry.id])">
                             {{ registry.name }}
                         </Link>
                     </li>

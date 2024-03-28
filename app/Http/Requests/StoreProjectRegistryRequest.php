@@ -26,7 +26,6 @@ class StoreProjectRegistryRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
             'validity_period' => ['required', 'integer', 'min:1'],
-            'projectId' => ['required', 'exists:projects,id'],
         ];
     }
 }

@@ -14,6 +14,14 @@ class Registry extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name',
+        'description',
+        'validity_period',
+        'project_id',
+
+    ];
+
     public function workspaces(): BelongsToMany
     {
         return $this->belongsToMany(Workspace::class);
@@ -43,12 +51,4 @@ class Registry extends Model
 
         return $query;
     }
-
-    protected $fillable = [
-        'name',
-        'description',
-        'validity_period',
-        'project_id',
-
-    ];
 }

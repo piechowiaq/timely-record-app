@@ -12,7 +12,7 @@ class WorkspacePolicy
      */
     public function viewAny(User $user): bool
     {
-        //
+        return $user->hasPermissionTo('view workspace');
     }
 
     /**
@@ -28,7 +28,7 @@ class WorkspacePolicy
      */
     public function create(User $user): bool
     {
-        //
+        return $user->hasPermissionTo('create workspace');
     }
 
     /**
@@ -36,7 +36,7 @@ class WorkspacePolicy
      */
     public function update(User $user, Workspace $workspace): bool
     {
-        //
+        return $user->hasPermissionTo('update workspace') && $user->workspaces->contains($workspace->id);
     }
 
     /**
@@ -44,7 +44,7 @@ class WorkspacePolicy
      */
     public function delete(User $user, Workspace $workspace): bool
     {
-        //
+        return $user->hasPermissionTo('delete workspace') && $user->workspaces->contains($workspace->id);
     }
 
     /**
