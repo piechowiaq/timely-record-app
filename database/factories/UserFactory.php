@@ -45,7 +45,7 @@ class UserFactory extends Factory
     /**
      * Configure the factory to add workspaces to the user after creating it.
      *
-     * @param  int  $count The number of workspaces to create and attach.
+     * @param  int  $count  The number of workspaces to create and attach.
      */
     public function withWorkspaces(int $count = 1): Factory
     {
