@@ -12,4 +12,13 @@ environments:
       - 'composer install --no-dev'
       - 'php artisan event:cache'
       - 'npm ci && npm run build && rd /s /q "node_modules"'
-
+  staging:
+    memory: 1024
+    cli-memory: 512
+    storage: timelyrecord
+    database: timely_record
+    runtime: 'php-8.3:al2'
+    build:
+      - 'composer install --no-dev'
+      - 'php artisan event:cache'
+      - 'npm ci && npm run build && rd /s /q "node_modules"'
