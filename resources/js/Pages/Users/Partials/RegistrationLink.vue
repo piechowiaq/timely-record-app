@@ -5,19 +5,16 @@ import {defineProps} from "vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 
 
-const props = defineProps({
-    user: {
-        type: Object,
-    },
-});
+const props = defineProps(['user']);
 
 
 const form = useForm({});
 
-const projectId = usePage().props.auth.user.project_id;
+const projectId = usePage().props.projectId;
+
 
 const sendRegistrationLink = () => {
-    form.post(route('registration.send', props.user.data));
+    form.post(route('registration.send', props.user));
 };
 
 </script>
