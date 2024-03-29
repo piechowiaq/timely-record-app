@@ -8,25 +8,29 @@ import TextInput from '@/Components/TextInput.vue';
 import {useForm, usePage} from '@inertiajs/vue3';
 import {nextTick, ref} from 'vue';
 
-const confirmingRegistryDeletion = ref(false);
+const confirmingReportDeletion = ref(false);
 const passwordInput = ref(null);
 
-const props = defineProps(['registry']);
+const props = defineProps(['report', 'registry', 'workspace']);
 
 const form = useForm({
     password: '',
 });
 
-const projectId = usePage().props.auth.user.project_id;
+const projectId = usePage().props.projectId;
 
-const confirmRegistryDeletion = () => {
-    confirmingRegistryDeletion.value = true;
+const confirmReportDeletion = () => {
+    confirmingReportDeletion.value = true;
 
     nextTick(() => passwordInput.value.focus());
 };
 
-const deleteRegistry = () => {
-    form.delete(route('registries.destroy', props.registry.id), {
+const deleteReport = () => {
+    form.delete(route('workspaces.registries.reports.destroy', {
+        workspace: props.workspace.id,
+        registry: props.registry.id,
+        report: props.report.id
+    }), {
         preserveScroll: true,
         onSuccess: () => closeModal(),
         onError: () => passwordInput.value.focus(),
@@ -34,8 +38,9 @@ const deleteRegistry = () => {
     });
 };
 
+
 const closeModal = () => {
-    confirmingRegistryDeletion.value = false;
+    confirmingReportDeletion.value = false;
 
     form.reset();
 };
@@ -45,12 +50,12 @@ const closeModal = () => {
     <section>
 
 
-        <DangerButton @click="confirmRegistryDeletion">Delete Registry</DangerButton>
+        <DangerButton @click="confirmReportDeletion">Delete Report</DangerButton>
 
-        <Modal :show="confirmingRegistryDeletion" @close="closeModal">
+        <Modal :show="confirmingReportDeletion" @close="closeModal">
             <div class="p-6">
                 <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                    Are you sure you want to delete this Registry?
+                    Are you sure you want to delete this Report?
                 </h2>
 
                 <div class="mt-6">
@@ -63,7 +68,7 @@ const closeModal = () => {
                         type="password"
                         class="mt-1 block w-3/4"
                         placeholder="Password"
-                        @keyup.enter="deleteRegistry"
+                        @keyup.enter="deleteReport"
                     />
 
                     <InputError :message="form.errors.password" class="mt-2"/>
@@ -76,9 +81,9 @@ const closeModal = () => {
                         class="ml-3"
                         :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing"
-                        @click="deleteRegistry"
+                        @click="deleteReport"
                     >
-                        Delete Registry
+                        Delete Report
                     </DangerButton>
                 </div>
             </div>

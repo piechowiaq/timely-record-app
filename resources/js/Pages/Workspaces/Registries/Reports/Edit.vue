@@ -6,7 +6,7 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
-import DangerButton from "@/Components/DangerButton.vue";
+import DeleteReportForm from "@/Pages/Workspaces/Registries/Reports/Partials/DeleteReportForm.vue";
 
 
 const props = defineProps({
@@ -95,9 +95,9 @@ const destroy = (report) => {
                                     </Transition>
 
                                 </div>
-                                <DangerButton type="button" @click.once="destroy(report)" tabindex="-1" value="Delete">
-                                    Delete Report
-                                </DangerButton>
+
+                                <DeleteReportForm :report="report" :workspace="workspace" :registry="registry"
+                                                  class="max-w-xl"/>
                             </div>
 
 

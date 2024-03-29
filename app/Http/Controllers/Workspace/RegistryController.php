@@ -27,7 +27,7 @@ class RegistryController extends Controller
 
         $registriesQuery = $this->registryService->getRegistriesWithLatestReportQuery($workspace->id);
 
-        $registries = $registriesQuery->with('reports')
+        $registries = $registriesQuery
             ->applyFilters($request)
             ->paginate(10)
             ->withQueryString();

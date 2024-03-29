@@ -179,6 +179,7 @@ const getSortIconClass = (field) => {
                                         Created: {{ toDateString(currentReport.created_at) }} -
                                         {{
                                         currentReport?.created_by_user?.first_name
+
                                     }} {{ currentReport?.created_by_user?.last_name }}
                                     <span
                                         v-if="new Date(currentReport.updated_at) > new Date(currentReport.created_at)">

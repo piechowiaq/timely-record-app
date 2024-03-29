@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Registry;
-use App\Models\Report;
 use App\Repositories\Contracts\RegistryRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -21,14 +20,13 @@ class RegistryService
 
     public function getRegistriesWithLatestReportQuery(int $workspaceId): Registry|Builder|_IH_Registry_QB
     {
-        return Registry::whereHas('workspaces', function ($query) use ($workspaceId) {
+        return Registry::with(['reports' => function ($query) use ($workspaceId) {
+
+            $query->where('workspace_id', $workspaceId)
+                ->latest('expiry_date')->take(1);
+        }])->whereHas('workspaces', function ($query) use ($workspaceId) {
             $query->where('workspace_id', $workspaceId);
-        })->addSelect(['expiry_date' => Report::select('expiry_date')
-            ->whereColumn('registry_id', 'registries.id')
-            ->where('workspace_id', $workspaceId)
-            ->latest('expiry_date')
-            ->take(1),
-        ]);
+        });
     }
 
     public function getRegistriesWithLatestReport(int $workspaceId): array|Collection|_IH_Registry_C
@@ -64,6 +62,6 @@ class RegistryService
 
     public function getRegistryMetrics(Collection $registries): float|int
     {
-        return $registries->count() > 0 ? ($this->getUpToDateRegistries($registries)->count() / $registries->count()) * 100 : 0;
+        return $registries->count() > 0 ? floor(($this->getUpToDateRegistries($registries)->count() / $registries->count()) * 100) : 0;
     }
 }
