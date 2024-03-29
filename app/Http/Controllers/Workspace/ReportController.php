@@ -15,7 +15,6 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Inertia\Inertia;
 use Inertia\Response;
 
 class ReportController extends Controller
@@ -53,9 +52,6 @@ class ReportController extends Controller
         $reportDate = new Carbon($request->report_date);
         $expiryDate = (clone $reportDate)->addMonths($registry->validity_period);
 
-        $reportDateFormatted = $reportDate->format('Y-m-d');
-        $expiryDateFormatted = $expiryDate->format('Y-m-d');
-
         $file = $request->file('report_path');
         $date = Carbon::now()->format('m-d-Y_H-i-s');
 
@@ -63,8 +59,8 @@ class ReportController extends Controller
         $file->storeAs($project->id.'/'.$workspace->id.'/'.$registry->id, $fileName, 'reports');
 
         Report::create([
-            'report_date' => $reportDateFormatted,
-            'expiry_date' => $expiryDateFormatted,
+            'report_date' => $reportDate,
+            'expiry_date' => $expiryDate,
             'report_path' => $fileName,
             'created_by_user_id' => Auth::id(),
             'project_id' => $project->id,
@@ -90,7 +86,7 @@ class ReportController extends Controller
     {
         $this->authorize('view', $report);
 
-        return Inertia::render('Workspaces/Registries/Reports/Edit', [
+        return inertia('Workspaces/Registries/Reports/Edit', [
             'report' => ReportResource::make($report),
             'workspace' => WorkspaceResource::make($workspace),
             'registry' => RegistryResource::make($registry),
@@ -101,7 +97,7 @@ class ReportController extends Controller
     {
 
         $report_date = new Carbon($request->report_date);
-        $expiryDate = $report_date->addMonths($registry->validity_period)->toDateString();
+        $expiryDate = $report_date->addMonths($registry->validity_period);
 
         $report->report_date = $request->report_date;
         $report->expiry_date = $expiryDate;

@@ -132,7 +132,7 @@ const timeLeftUntilExpiryDate = (expiry_date) => {
                         <tbody>
                         <tr v-for="registry of registries.data" :key="registry.id"
                             :class="{'bg-white dark:bg-gray-800': true, 'border-b dark:border-gray-700': index !== registries.data.length - 1}">
-
+                         
                             <th scope="row"
                                 class="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                 <span

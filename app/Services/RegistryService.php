@@ -21,9 +21,8 @@ class RegistryService
     public function getRegistriesWithLatestReportQuery(int $workspaceId): Registry|Builder|_IH_Registry_QB
     {
         return Registry::with(['reports' => function ($query) use ($workspaceId) {
-
             $query->where('workspace_id', $workspaceId)
-                ->latest('expiry_date')->take(1);
+                ->latest('expiry_date');
         }])->whereHas('workspaces', function ($query) use ($workspaceId) {
             $query->where('workspace_id', $workspaceId);
         });

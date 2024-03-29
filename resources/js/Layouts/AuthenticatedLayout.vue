@@ -15,7 +15,7 @@ const props = defineProps(['workspace']);
 
 const showingNavigationDropdown = ref(false);
 
-const projectId = usePage().props.auth.user.project_id;
+const projectId = usePage().props.projectId;
 
 const navigation = useNavigationStore();
 
@@ -48,7 +48,7 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
                         <div class="flex">
                             <!-- Logo -->
                             <div class="shrink-0 flex items-center justify-center w-56 -ml-4">
-                                <Link :href="route('projects.dashboard', projectId)">
+                                <Link :href="route('projects.dashboard')">
                                     <div class="flex justify-start items-center">
                                         <ApplicationLogo class="w-10 h-10"/>
                                         <p class="ml-2 font-bold whitespace-nowrap tracking-widest text-gray-600"><span
@@ -61,7 +61,7 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
                             <div v-if="showWorkspaceNavigation"
                                  class="hidden space-x-8 items-center sm:-my-px sm:ml-10 sm:flex">
                                 <Link
-                                    :href="route('workspaces.dashboard', { project: projectId, workspace: workspace.id })"
+                                    :href="route('workspaces.dashboard', workspace.id)"
                                     class="text-cyan-600 hover:text-cyan-700 text-sm">
                                     {{ workspace.name }}
                                 </Link>
@@ -108,7 +108,7 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
                                     <template #content>
                                         <DropdownLink :href="route('profile.edit')"> Profile</DropdownLink>
                                         <DropdownLink v-if="canViewProject"
-                                                      :href="route('projects.dashboard', projectId)"> Project
+                                                      :href="route('projects.dashboard')"> Project
                                             Settings
                                         </DropdownLink>
                                         <DropdownLink :href="route('logout')" method="post" as="button">
@@ -161,7 +161,7 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
                         <ul>
                             <li v-for="option in navigation.workspaceOptions" :key="option.route">
                                 <ResponsiveNavLink :disabled="userHasNoWorkspace" as="button"
-                                                   :href="route(option.route, { project: projectId, workspace: workspace.id})"
+                                                   :href="route(option.route,workspace.id)"
                                                    :active="route().current(option.route)"
                                 >
                                     {{ option.name }}
@@ -173,7 +173,7 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
                         <ul>
                             <li v-for="option in navigation.projectOptions" :key="option.route">
                                 <ResponsiveNavLink :disabled="userHasNoWorkspace" as="button"
-                                                   :href="route(option.route, { project: projectId})"
+                                                   :href="route(option.route)"
                                                    :active="route().current(option.route)"
 
                                 >
@@ -210,7 +210,7 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
                     <ul>
                         <li v-for="option in navigation.workspaceOptions" :key="option.route" class="pb-2">
                             <NavLink :disabled="userHasNoWorkspace" as="button"
-                                     :href="route(option.route, { project: projectId, workspace: workspace})"
+                                     :href="route(option.route, workspace.id)"
                                      :active="route().current(option.route)"
                                      :iconName="option.iconName">
                                 {{ option.name }}
@@ -222,7 +222,7 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
                     <ul>
                         <li v-for="option in navigation.projectOptions" :key="option.route" class="pb-2">
                             <NavLink :disabled="userHasNoWorkspace" as="button"
-                                     :href="route(option.route, { project: projectId})"
+                                     :href="route(option.route)"
                                      :active="route().current(option.route)"
                                      :iconName="option.iconName">
                                 {{ option.name }}

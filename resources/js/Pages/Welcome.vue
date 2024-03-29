@@ -11,14 +11,10 @@ defineProps({
     },
 });
 
-const page = usePage();
-const user = page.props.auth.user;
-const projectId = user ? user.project_id : null;
+const projectId = usePage().props.projectId;
 
 const logout = () => {
     axios.post('/logout').then(() => {
-        // After logout, force reload to the homepage or navigate as needed
-        // Note: Adjust as needed if you have specific requirements after logout
         window.location.href = '/';
     }).catch(error => {
         console.error('Logout failed:', error);
@@ -37,7 +33,7 @@ const logout = () => {
         <div v-if="canLogin" class="sm:fixed sm:top-0 sm:right-0 p-6 text-right">
             <Link
                 v-if="projectId"
-                :href="route('projects.dashboard', { project: projectId })"
+                :href="route('projects.dashboard')"
                 class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-gray-500"
             >Dashboard
             </Link
