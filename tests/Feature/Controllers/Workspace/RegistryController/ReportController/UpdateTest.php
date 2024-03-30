@@ -61,12 +61,9 @@ it('updates a registry', function () {
     $reportDate = Carbon::yesterday();
     $expiryDate = (clone $reportDate)->addMonths($registry->validity_period);
 
-    $reportDateFormatted = $reportDate->format('Y-m-d');
-    $expiryDateFormatted = $expiryDate->format('Y-m-d');
-
     $reportData = [
-        'report_date' => $reportDateFormatted,
-        'expiry_date' => $expiryDateFormatted,
+        'report_date' => $reportDate,
+        'expiry_date' => $expiryDate,
 
     ];
 
@@ -74,8 +71,8 @@ it('updates a registry', function () {
         ->put(route('workspaces.registries.reports.update', [$workspace->id, $registry->id, $report->id]), $reportData);
 
     $this->assertDatabaseHas(Report::class, [
-        'report_date' => $reportDateFormatted,
-        'expiry_date' => $expiryDateFormatted,
+        'report_date' => $reportDate,
+        'expiry_date' => $expiryDate,
         'updated_by_user_id' => $user->id,
         'project_id' => $user->project_id,
         'workspace_id' => $workspace->id,

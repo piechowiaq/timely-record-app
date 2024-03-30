@@ -8,9 +8,8 @@ import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import {Link, usePage} from '@inertiajs/vue3';
 import {useNavigationStore} from "@/Stores/NavigationStore.js";
 import FlashMessages from "@/Components/FlashMessages.vue";
-import {useRegistriesStore} from "@/Stores/RegistriesStore.js";
 
-const registriesStore = useRegistriesStore();
+
 const props = defineProps(['workspace']);
 
 const showingNavigationDropdown = ref(false);
@@ -18,31 +17,32 @@ const showingNavigationDropdown = ref(false);
 const projectId = usePage().props.projectId;
 
 const navigation = useNavigationStore();
-
-onMounted(() => {
-    navigation.updateCanManageProject(usePage().props.permissions.canManageProject);
-})
-
-const canViewProject = usePage().props.permissions.canViewProject;
-
 const user = usePage().props.auth.user;
 
-const userHasNoWorkspace = !user.workspaces || !user.workspaces.length
+const superAdmin = user.project_id === null;
 
+const canViewProject = usePage().props.permissions.canViewProject || superAdmin;
+
+onMounted(() => {
+    navigation.updateCanManageProject(canViewProject);
+})
+
+
+const userHasNoWorkspace = Boolean(!user.workspaces.length) && Boolean(!superAdmin);
 const page = usePage().props.route;
 
 const showWorkspaceNavigation = Boolean(props.workspace);
 const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit') || !Boolean(props.workspace)
 
-
 </script>
 
 <template>
     <div>
+
         <div class="min-h-screen flex-col flex bg-gray-100 dark:bg-gray-900">
             <nav class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
-                <!-- Primary Navigation Menu -->
 
+                <!-- Primary Navigation Menu -->
                 <div class=" px-4 ">
                     <div class="flex justify-between h-16">
                         <div class="flex">
@@ -66,12 +66,20 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
                                     {{ workspace.name }}
                                 </Link>
                             </div>
+                            <div v-else-if="superAdmin"
+                                 class="hidden space-x-8 items-center sm:-my-px sm:ml-10 sm:flex">
+
+                                <p class="text-red-400 uppercase text-xs font-semibold">Admin Panel</p>
+
+                            </div>
                             <div v-else
                                  class="hidden space-x-8 items-center sm:-my-px sm:ml-10 sm:flex">
 
                                 <p class="text-amber-400 uppercase text-xs font-semibold">Project Settings</p>
 
+
                             </div>
+
 
                         </div>
 
@@ -107,7 +115,7 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
 
                                     <template #content>
                                         <DropdownLink :href="route('profile.edit')"> Profile</DropdownLink>
-                                        <DropdownLink v-if="canViewProject"
+                                        <DropdownLink v-if="canViewProject || superAdmin"
                                                       :href="route('projects.dashboard')"> Project
                                             Settings
                                         </DropdownLink>
@@ -169,6 +177,8 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
                             </li>
                         </ul>
                     </div>
+
+
                     <div v-else-if="showProjectNavigation" class="pt-2 pb-3 space-y-1">
                         <ul>
                             <li v-for="option in navigation.projectOptions" :key="option.route">

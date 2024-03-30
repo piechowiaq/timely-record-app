@@ -25,7 +25,7 @@ const getWorkspaceBorderColor = (workspace) => {
         <template #header>
             <h2 class="text-white dark:text-gray-700 leading-tight">Project Dashboard</h2>
         </template>
-
+      
         <div class="px-2 pb-2">
             <div v-if="!workspaces.length">
                 <section

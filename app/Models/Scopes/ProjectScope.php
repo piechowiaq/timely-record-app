@@ -11,10 +11,10 @@ class ProjectScope implements Scope
     /**
      * Apply the scope to a given Eloquent query builder.
      */
-    public function apply(Builder $builder, Model $model): void
+    public function apply(Builder $builder, Model $model)
     {
-        if (auth()->hasUser()) {
-            $builder->where('project_id', auth()->user()->project_id);
+        if (session()->has('project_id')) {
+            $builder->where('project_id', session()->get('project_id'));
         }
     }
 }

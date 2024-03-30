@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\WorkspaceResource;
 use App\Models\Project;
+use App\Models\Workspace;
 use App\Services\RegistryService;
 use Auth;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -29,11 +30,19 @@ class ProjectController extends Controller
 
         $this->authorize('view', $project);
 
-        $workspaces = Auth::user()->workspaces->each(function ($workspace) {
-            $workspace->registryMetrics = $this->registryService->getRegistryMetrics(
-                $this->registryService->getRegistriesWithLatestReport($workspace->id)
-            );
-        });
+        if (Auth::user()->isSuperAdmin()) {
+            $workspaces = Workspace::all()->each(function ($workspace) {
+                $workspace->registryMetrics = $this->registryService->getRegistryMetrics(
+                    $this->registryService->getRegistriesWithLatestReport($workspace->id)
+                );
+            });
+        } else {
+            $workspaces = Auth::user()->workspaces->each(function ($workspace) {
+                $workspace->registryMetrics = $this->registryService->getRegistryMetrics(
+                    $this->registryService->getRegistriesWithLatestReport($workspace->id)
+                );
+            });
+        }
 
         return inertia('Projects/Dashboard', [
             'workspaces' => WorkspaceResource::collection($workspaces),

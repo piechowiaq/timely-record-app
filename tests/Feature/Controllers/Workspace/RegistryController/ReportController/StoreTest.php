@@ -79,16 +79,13 @@ it('stores a registry', function () {
     $reportDate = Carbon::yesterday();
     $expiryDate = (clone $reportDate)->addMonths($registry->validity_period);
 
-    $reportDateFormatted = $reportDate->format('Y-m-d');
-    $expiryDateFormatted = $expiryDate->format('Y-m-d');
-
     $file = UploadedFile::fake()->create('document.pdf', 1024, 'application/pdf');
     $date = Carbon::now()->format('m-d-Y_H-i-s');
     $fileName = preg_replace('/[^A-Za-z0-9\-_.]/', '_', $date.'_'.$user->project_id.'_'.$workspace->id.'_'.$registry->name.'.'.$file->extension());
 
     $reportData = [
-        'report_date' => $reportDateFormatted,
-        'expiry_date' => $expiryDateFormatted,
+        'report_date' => $reportDate,
+        'expiry_date' => $expiryDate,
         'report_path' => $file,
     ];
 
@@ -96,8 +93,8 @@ it('stores a registry', function () {
         ->post(route('workspaces.registries.reports.store', [$workspace->id, $registry->id]), $reportData);
 
     $this->assertDatabaseHas(Report::class, [
-        'report_date' => $reportDateFormatted,
-        'expiry_date' => $expiryDateFormatted,
+        'report_date' => $reportDate,
+        'expiry_date' => $expiryDate,
         'report_path' => $fileName,
         'created_by_user_id' => $user->id,
         'project_id' => $user->project_id,

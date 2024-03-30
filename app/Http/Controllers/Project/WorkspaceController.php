@@ -31,10 +31,17 @@ class WorkspaceController extends Controller
 
         $this->authorize('manage', $project);
 
-        $workspaces = Auth::user()->workspaces()
-            ->applyFilters($request)
-            ->paginate(10)
-            ->withQueryString();
+        if (Auth::user()->isSuperAdmin()) {
+            $workspaces = Workspace::query()
+                ->applyFilters($request)
+                ->paginate(10)
+                ->withQueryString();
+        } else {
+            $workspaces = Auth::user()->workspaces()
+                ->applyFilters($request)
+                ->paginate(10)
+                ->withQueryString();
+        }
 
         return inertia('Workspaces/Index', [
             'workspaces' => WorkspaceResource::collection($workspaces),

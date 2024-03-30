@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Inertia\Response;
@@ -36,13 +37,20 @@ class UserController extends Controller
 
         $authUserWorkspacesIds = auth()->user()->workspaces->pluck('id')->toArray();
 
-        $users = User::inWorkspaces($authUserWorkspacesIds)
-            ->with('roles')
-            ->with('workspaces')
-            ->withRolesEligibleToView(auth()->user()->getRoleNames()->first())
-            ->applyFilters($request)
-            ->paginate(10)
-            ->withQueryString();
+        if (Auth::user()->isSuperAdmin()) {
+            $users = User::with('roles', 'workspaces')
+                ->applyFilters(request())
+                ->paginate(10)
+                ->withQueryString();
+        } else {
+            $users = User::inWorkspaces($authUserWorkspacesIds)
+                ->with('roles')
+                ->with('workspaces')
+                ->withRolesEligibleToView(auth()->user()->getRoleNames()->first())
+                ->applyFilters($request)
+                ->paginate(10)
+                ->withQueryString();
+        }
 
         return inertia('Users/Index', [
             'users' => UserResource::collection($users),

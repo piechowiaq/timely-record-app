@@ -19,7 +19,16 @@ class RouteServiceProvider extends ServiceProvider
      */
     public static function home()
     {
-        return '/dashboard';
+
+        if (auth()->check() && auth()->user()->project_id) {
+
+            return route('projects.dashboard', ['project' => auth()->user()->project_id]);
+        } elseif (auth()->check() && auth()->user()->project_id === null) {
+
+            return route('projects.dashboard');
+        }
+
+        return '/';
     }
 
     /**
