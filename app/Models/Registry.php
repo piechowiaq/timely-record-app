@@ -49,6 +49,10 @@ class Registry extends Model
             $query->orderBy($request->get('field'), $request->get('direction'));
         }
 
+        if ($request->has('projectId')) {
+            $query->where('project_id', $request->get('projectId'));
+        }
+
         return $query;
     }
 }

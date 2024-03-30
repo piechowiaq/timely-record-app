@@ -57,6 +57,7 @@ class Workspace extends Model
     public function scopeApplyFilters(Builder $query, Request $request): Builder
     {
         $search = $request->input('search');
+        $sortByProject = $request->input('projectId');
 
         if ($search) {
             $query->where('workspaces.name', 'like', '%'.$request->get('search').'%');
@@ -64,6 +65,10 @@ class Workspace extends Model
 
         if ($request->has(['field', 'direction'])) {
             $query->orderBy($request->get('field'), $request->get('direction'));
+        }
+
+        if ($request->input('projectId')) {
+            $query->where('project_id', $sortByProject);
         }
 
         return $query;

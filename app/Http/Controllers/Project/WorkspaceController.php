@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Project;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreWorkspaceRequest;
 use App\Http\Requests\UpdateWorkspaceRequest;
+use App\Http\Resources\ProjectResource;
 use App\Http\Resources\RegistryResource;
 use App\Http\Resources\WorkspaceResource;
 use App\Models\Project;
@@ -36,16 +37,19 @@ class WorkspaceController extends Controller
                 ->applyFilters($request)
                 ->paginate(10)
                 ->withQueryString();
+            $projects = Project::all();
         } else {
             $workspaces = Auth::user()->workspaces()
                 ->applyFilters($request)
                 ->paginate(10)
                 ->withQueryString();
+            $projects = Project::where('id', Auth::user()->project_id)->get();
         }
 
         return inertia('Workspaces/Index', [
             'workspaces' => WorkspaceResource::collection($workspaces),
-            'filters' => $request->all(['search', 'field', 'direction']),
+            'filters' => $request->all(['search', 'field', 'direction', 'projectId']),
+            'projects' => ProjectResource::collection($projects),
         ]);
     }
 

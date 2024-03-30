@@ -11,6 +11,7 @@ use App\Http\Resources\UserResource;
 use App\Http\Resources\WorkspaceResource;
 use App\Models\Project;
 use App\Models\Role;
+use App\Models\Scopes\ProjectScope;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Http\RedirectResponse;
@@ -158,5 +159,31 @@ class UserController extends Controller
         $user->hasRole('project-admin') || $user->hasRole('super-admin') ? $user->delete() : $user->forceDelete();
 
         return to_route('users.index')->with('success', 'User deleted.');
+    }
+
+    public function impersonate(User $user)
+    {
+
+        if (! is_null(auth()->user()->project_id)) {
+            return;
+        }
+
+        $originalId = auth()->user()->id;
+        session()->put('impersonate', $originalId);
+        auth()->loginUsingId($user->id);
+
+        return to_route('projects.dashboard');
+    }
+
+    public function leave()
+    {
+        if (! session()->has('impersonate')) {
+            abort(403);
+        }
+
+        auth()->login(User::withoutGlobalScope(ProjectScope::class)->find(session('impersonate')));
+        session()->forget('impersonate');
+
+        return to_route('projects.dashboard');
     }
 }

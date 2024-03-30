@@ -21,10 +21,11 @@ const user = usePage().props.auth.user;
 
 const superAdmin = user.project_id === null;
 
+const canManageProject = usePage().props.permissions.canManageProject || superAdmin;
 const canViewProject = usePage().props.permissions.canViewProject || superAdmin;
 
 onMounted(() => {
-    navigation.updateCanManageProject(canViewProject);
+    navigation.updateCanManageProject(canManageProject);
 })
 
 
@@ -38,6 +39,25 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
 
 <template>
     <div>
+        <div v-if="!superAdmin" class="relative bg-red-400">
+            <div class="max-w-screen-xl mx-auto py-2 px-3 sm:px-6 lg:px-8">
+                <div class="pr-16 sm:text-center sm:px-16">
+                    <p class="font-medium text-white">
+                            <span class="md:hidden">
+                                You are impersonating {{ user.first_name }} {{ user.last_name }}
+                            </span>
+                        <span class="hidden md:inline">
+                                You are impersonating {{ user.first_name }} {{ user.last_name }}
+                            </span>
+                        <span class="block sm:ml-2 sm:inline-block">
+                                <Link :href="route('users.leave-impersonation')" class="text-white font-bold underline">
+                                    Leave Impersonation &rarr;
+                                </Link>
+                            </span>
+                    </p>
+                </div>
+            </div>
+        </div>
 
         <div class="min-h-screen flex-col flex bg-gray-100 dark:bg-gray-900">
             <nav class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">

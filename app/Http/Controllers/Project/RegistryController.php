@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Project;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProjectRegistryRequest;
 use App\Http\Requests\UpdateProjectRegistryRequest;
+use App\Http\Resources\ProjectResource;
 use App\Http\Resources\RegistryResource;
 use App\Models\Project;
 use App\Models\Registry;
 use App\Repositories\Contracts\RegistryRepositoryInterface;
 use App\Services\RegistryService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Response;
 
@@ -35,15 +37,27 @@ class RegistryController extends Controller
 
         $this->authorize('manage', $project);
 
-        $registries = Registry::where('project_id', $project->id)
-            ->orWhereNull('project_id')
-            ->applyFilters($request)
-            ->paginate(10)
-            ->withQueryString();
+        if (Auth::user()->isSuperAdmin()) {
+            $registries = Registry::applyFilters($request)
+                ->paginate(10)
+                ->withQueryString();
+
+            $projects = Project::all();
+
+        } else {
+            $registries = Registry::where('project_id', $project->id)
+                ->orWhereNull('project_id')
+                ->applyFilters($request)
+                ->paginate(10)
+                ->withQueryString();
+
+            $projects = Project::where('id', Auth::user()->project_id)->get();
+        }
 
         return inertia('Registries/Index', [
             'registries' => RegistryResource::collection($registries),
             'filters' => $request->all(['search', 'field', 'direction']),
+            'projects' => ProjectResource::collection($projects),
         ]);
     }
 
@@ -62,14 +76,24 @@ class RegistryController extends Controller
      */
     public function store(StoreProjectRegistryRequest $request)
     {
-        $project = Project::find(session('project_id'));
+        if (session('project_id') === null) {
+            Registry::create([
+                'name' => $request->name,
+                'description' => $request->description,
+                'validity_period' => $request->validity_period,
+                'project_id' => null,
+            ]);
+        } else {
+            $project = Project::find(session('project_id'));
 
-        Registry::create([
-            'name' => $request->name,
-            'description' => $request->description,
-            'validity_period' => $request->validity_period,
-            'project_id' => $project->id,
-        ]);
+            Registry::create([
+                'name' => $request->name,
+                'description' => $request->description,
+                'validity_period' => $request->validity_period,
+                'project_id' => $project->id,
+            ]);
+
+        }
 
         return redirect()->route('registries.index')
             ->with('success', 'Custom registry created.');

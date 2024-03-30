@@ -35,6 +35,14 @@ watch(index.value, debounce(() => {
     });
 }, 300));
 
+
+const impersonate = (userId) => {
+    router.get(route('users.impersonate', userId), {
+        preserveScroll: true,
+    })
+}
+
+
 const sort = (field) => {
     index.value.field = field;
     index.value.direction = index.value.direction === 'asc' ? 'desc' : 'asc';
@@ -66,7 +74,7 @@ watch(() => selected.value, (newValue) => {
 
         index.value.projectId = null;
     }
-}, {immediate: true});
+});
 
 let query = ref('')
 
@@ -185,20 +193,20 @@ let filteredProjects = computed(() =>
                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
-                            <th scope="col" class="px-6 py-3" @click="sort('last_name')">
+                            <th scope="col" class="px-6 py-2" @click="sort('last_name')">
                                 Name
                                 <i :class="getSortIconClass('last_name')"></i>
                             </th>
 
-                            <th scope="col" class="px-6 py-3" @click="sort('role')">
+                            <th scope="col" class="px-6 py-2" @click="sort('role')">
                                 Role
                                 <i :class="getSortIconClass('role')"></i>
                             </th>
-                            <th scope="col" class="px-6 py-3" @click="sort('email')">
+                            <th scope="col" class="px-6 py-2" @click="sort('email')">
                                 Email
                                 <i :class="getSortIconClass('email')"></i>
                             </th>
-                            <th scope="col" class="px-6 py-3 text-center" @click="sort('email_verified_at')">
+                            <th scope="col" class="px-6 py-2 text-center" @click="sort('email_verified_at')">
                                 Registered
                                 <i :class="getSortIconClass('email_verified_at')"
                                 ></i>
@@ -210,20 +218,25 @@ let filteredProjects = computed(() =>
                             :class="{'bg-white dark:bg-gray-800': true, 'border-b dark:border-gray-700': index !== users.data.length - 1}">
 
                             <th scope="row"
-                                class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                <Link :href="route('users.edit', user.id)"
-                                      class="text-cyan-600 hover:text-cyan-700">
-                                    {{ user.first_name }} {{ user.last_name }}
-                                </Link>
+                                class="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                <div class="flex justify-between text-center">
+                                    <Link :href="route('users.edit', user.id)"
+                                          class="text-cyan-600 hover:text-cyan-700">
+                                        {{ user.first_name }} {{ user.last_name }}
+                                    </Link>
+                                    <a v-if="superAdmin" href="#" @click="impersonate(user.id)"
+                                       class="text-xs text-amber-600 ml-6">Impersonate</a>
+                                </div>
+
                             </th>
 
-                            <td class="px-6 py-4">
+                            <td class="px-6 py-2">
                                 {{ user.role }}
                             </td>
-                            <td class="px-6 py-4">
+                            <td class="px-6 py-2">
                                 {{ user.email }}
                             </td>
-                            <td class="px-6 py-4 text-center">
+                            <td class="px-6 py-2 text-center">
                                 <i v-if="user.email_verified"
                                    class="fa-regular fa-circle-check text-green-600"></i>
                                 <i v-else class="fa-regular fa-circle-xmark text-red-600"></i>

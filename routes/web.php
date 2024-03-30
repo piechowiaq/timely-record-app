@@ -56,6 +56,8 @@ Route::middleware(['auth', 'verified', 'web', 'role.redirect'])->group(function 
 Route::middleware('auth', 'verified', 'web')->group(function () {
 
     Route::resource('/users', UserController::class);
+    Route::get('/impersonate/{user}', [UserController::class, 'impersonate'])->name('users.impersonate');
+    Route::get('/leave-impersonation', [UserController::class, 'leave'])->name('users.leave-impersonation');
 
     Route::resource('/registries', RegistryController::class);
 

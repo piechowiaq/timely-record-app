@@ -2,13 +2,24 @@
 
 import {Head, Link, router, usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import {ref, watch} from "vue";
+import {computed, ref, watch} from "vue";
 import Pagination from "@/Components/Pagination.vue";
 import {debounce} from "lodash";
+import {
+    Combobox,
+    ComboboxButton,
+    ComboboxInput,
+    ComboboxOption,
+    ComboboxOptions,
+    TransitionRoot
+} from "@headlessui/vue";
+import InputLabel from "@/Components/InputLabel.vue";
 
-const props = defineProps(['workspaces', 'filters']);
+const props = defineProps(['workspaces', 'filters', 'projects']);
 
 const projectId = usePage().props.projectId;
+
+const superAdmin = usePage().props.projectId === null
 
 const index = ref({
     search: props.filters.search,
@@ -38,6 +49,37 @@ const getSortIconClass = (field) => {
 };
 
 
+const augmentedProjects = computed(() => [
+    {id: '', name: 'All Projects'},
+    ...props.projects
+]);
+
+const selected = ref({id: '', name: 'All Projects'});
+
+watch(() => selected.value, (newValue) => {
+
+    if (newValue) {
+        index.value.projectId = newValue.id;
+    } else {
+
+        index.value.projectId = null;
+    }
+});
+
+let query = ref('')
+
+let filteredProjects = computed(() =>
+    query.value === ''
+        ? augmentedProjects.value
+        : augmentedProjects.value.filter((project) =>
+            project.name
+                .toLowerCase()
+                .replace(/\s+/g, '')
+                .includes(query.value.toLowerCase().replace(/\s+/g, ''))
+        )
+);
+
+
 </script>
 
 <template>
@@ -59,7 +101,77 @@ const getSortIconClass = (field) => {
                         </button>
 
                     </div>
-                    <Link :href="route('workspaces.create', projectId)"
+                    <div v-if="superAdmin" class="z-10">
+                        <Combobox v-model="selected">
+                            <div class="mb-2 flex items-center">
+                                <InputLabel for="projects" value="Project"
+                                            class="text-sm px-4 border-gray-200 "/>
+                                <div class="relative">
+                                    <div>
+                                        <ComboboxInput
+                                            id="projects"
+                                            class="text-sm h-8 px-6 py-3 border-gray-200 "
+
+                                            :displayValue="(project) => project.name"
+                                            @change="query = $event.target.value"
+                                        />
+                                        <ComboboxButton
+                                            class="absolute inset-y-0 right-0 flex items-center pr-3"
+                                        >
+                                            <i class="fa-solid fa-chevron-down"></i>
+                                        </ComboboxButton>
+                                    </div>
+                                    <TransitionRoot
+                                        leave="transition ease-in duration-100"
+                                        leaveFrom="opacity-100"
+                                        leaveTo="opacity-0"
+                                        @after-leave="query = ''"
+                                    >
+                                        <ComboboxOptions
+                                            class="absolute mt-1 max-h-60 w-full overflow-auto bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
+                                            <div
+                                                v-if="filteredProjects.length === 0 && query !== ''"
+                                                class="relative cursor-default select-none px-4 py-2 text-gray-700"
+                                            >
+                                                Nothing found.
+                                            </div>
+
+
+                                            <ComboboxOption
+                                                v-for="project in filteredProjects"
+                                                as="template"
+                                                :key="project.id"
+                                                :value="project"
+                                                v-slot="{ selected, active }"
+                                            >
+                                                <li
+                                                    class="relative cursor-default select-none py-2 pl-10 pr-4"
+                                                    :class="{'bg-cyan-600 text-white': active, 'text-gray-500': !active }"
+                                                >
+                                                    <span
+                                                        class="block truncate"
+                                                        :class="{ 'font-medium': selected, 'font-normal': !selected }"
+                                                    >
+                                                      {{ project.name }}
+                                                    </span>
+                                                    <span
+                                                        v-if="selected"
+                                                        class="absolute inset-y-0 left-0 flex items-center pl-3"
+                                                        :class="{ 'text-white': active, 'text-cyan-600': !active }"
+                                                    >
+                                                <i class="fa-solid fa-check"></i>
+                                                </span>
+                                                </li>
+                                            </ComboboxOption>
+                                        </ComboboxOptions>
+                                    </TransitionRoot>
+                                </div>
+                            </div>
+
+
+                        </Combobox>
+                    </div>
+                    <Link v-else :href="route('workspaces.create', projectId)"
                           class="text-cyan-600 hover:text-cyan-700 text-sm">
                         Create
                         Workspaces
