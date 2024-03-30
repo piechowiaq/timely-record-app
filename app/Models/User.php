@@ -76,6 +76,7 @@ class User extends Authenticatable implements MustVerifyEmail
         $search = $request->input('search');
         $sortField = $request->input('field');
         $sortDirection = $request->input('direction') ?? 'asc';
+        $sortByProject = $request->input('projectId');
 
         if ($search) {
             $query->where(function ($query) use ($search) {
@@ -85,6 +86,7 @@ class User extends Authenticatable implements MustVerifyEmail
                     ->orWhereHas('roles', function ($query) use ($search) {
                         $query->where('name', 'like', "%$search%");
                     });
+
             });
         }
 
@@ -95,6 +97,10 @@ class User extends Authenticatable implements MustVerifyEmail
                 ->select('users.*');
         } elseif ($sortField) {
             $query->orderBy($sortField, $sortDirection);
+        }
+
+        if ($sortByProject) {
+            $query->where('project_id', $sortByProject);
         }
 
         return $query;

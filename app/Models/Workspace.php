@@ -25,6 +25,11 @@ class Workspace extends Model
         'project_id',
     ];
 
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new ProjectScope);
+    }
+
     /**
      * Get the project that owns the workspace.
      */
@@ -63,10 +68,5 @@ class Workspace extends Model
 
         return $query;
 
-    }
-
-    protected static function booted(): void
-    {
-        static::addGlobalScope(new ProjectScope);
     }
 }

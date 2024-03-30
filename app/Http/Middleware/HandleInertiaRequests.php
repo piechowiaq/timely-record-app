@@ -39,9 +39,9 @@ class HandleInertiaRequests extends Middleware
         $canViewProject = false;
         $canCreateReport = false;
 
-        if ($user && $user->project_id) {
-            // Assuming you use route model binding or retrieve it somehow
-            $project = Project::find($user->project_id);
+        if (session()->has('project_id')) {
+
+            $project = Project::find(session('project_id'));
             $canManageProject = $project ? $user->can('manage', $project) : false;
             $canViewProject = $project ? $user->can('view', $project) : false;
             $canCreateReport = $project ? $user->can('create', Report::class) : false;

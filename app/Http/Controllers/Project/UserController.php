@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Project;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Http\Resources\ProjectResource;
 use App\Http\Resources\RoleResource;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\WorkspaceResource;
@@ -39,9 +40,11 @@ class UserController extends Controller
 
         if (Auth::user()->isSuperAdmin()) {
             $users = User::with('roles', 'workspaces')
-                ->applyFilters(request())
+                ->applyFilters($request)
                 ->paginate(10)
                 ->withQueryString();
+
+            $projects = Project::all();
         } else {
             $users = User::inWorkspaces($authUserWorkspacesIds)
                 ->with('roles')
@@ -50,11 +53,14 @@ class UserController extends Controller
                 ->applyFilters($request)
                 ->paginate(10)
                 ->withQueryString();
+
+            $projects = Project::where('id', Auth::user()->project_id)->get();
         }
 
         return inertia('Users/Index', [
             'users' => UserResource::collection($users),
-            'filters' => $request->all(['search', 'field', 'direction']),
+            'filters' => $request->all(['search', 'field', 'direction', 'projectId']),
+            'projects' => ProjectResource::collection($projects),
         ]);
     }
 
