@@ -29,9 +29,9 @@ Route::get('/test', function () {
         ->paginate(5)
         ->withQueryString();
 
-    return inertia('Test', [
+    return inertia('Admin/Dashboard', [
 
-        'user' => WorkspaceResource::collection($workspaces),
+        'workspaces' => WorkspaceResource::collection($workspaces),
 
     ]);
 })->name('test');

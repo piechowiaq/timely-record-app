@@ -2,18 +2,11 @@
 import {Head, Link, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
-defineProps({
-    workspaces: {
-        type: Object,
-    },
-
-});
+defineProps(['workspaces']);
 
 const canManageProject = usePage().props.auth.canManageProject;
 
-const projectId = usePage().props.auth.user.project_id;
-
-const project = usePage().props.projectId;
+const projectId = usePage().props.projectId;
 
 
 const getWorkspaceBorderColor = (workspace) => {
