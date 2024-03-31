@@ -2,11 +2,13 @@
 import {Head, Link, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
-defineProps(['workspaces']);
+defineProps(['workspaces', 'projectsCount', 'workspacesCount', 'usersCount', 'genericRegistriesCount', 'customRegistriesCount']);
 
 const canManageProject = usePage().props.auth.canManageProject;
 
 const projectId = usePage().props.projectId;
+
+const isSuperAdmin = usePage().props.auth.user.roles.map(role => role.name).includes('super-admin');
 
 
 const getWorkspaceBorderColor = (workspace) => {
@@ -23,9 +25,80 @@ const getWorkspaceBorderColor = (workspace) => {
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-white dark:text-gray-700 leading-tight">Project Dashboard</h2>
+            <h2 v-if="isSuperAdmin" class="text-white dark:text-gray-700 leading-tight">Admin Dashboard</h2>
+            <h2 v-else class="text-white dark:text-gray-700 leading-tight">Project Dashboard</h2>
         </template>
-      
+
+
+        <!-- component -->
+        <div class="flex items-center text-gray-800 m-2">
+            <div class="w-full">
+                <div class="grid gap-2" :class="{'grid-cols-9': !isSuperAdmin, 'grid-cols-12': isSuperAdmin}">
+                    <div v-if="isSuperAdmin" class="col-span-12 sm:col-span-6 md:col-span-3">
+                        <div class="flex flex-row bg-white shadow-sm p-4">
+                            <div
+                                class="flex items-center justify-center flex-shrink-0 h-12 w-12 bg-gray-300 text-white">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                     class="w-6 h-6 stroke-white fill-gray-50 stroke-1">
+                                    <path
+                                        d="M12 22c-1.02 0-1.38-.158-2.101-.473C7.239 20.365 3 17.63 3 11.991v-1.574c0-3.198 0-4.797.378-5.334C3.755 4.545 5.258 4.03 8.265 3l.573-.196C10.405 2.268 11.188 2 12 2"/>
+                                    <path
+                                        d="M12 22c1.02 0 1.38-.158 2.101-.473c2.66-1.162 6.9-3.898 6.9-9.536v-1.574c0-3.198 0-4.797-.378-5.334c-.378-.538-1.881-1.053-4.888-2.082l-.573-.196C13.595 2.268 12.812 2 12 2"
+                                        opacity=".5"/>
+                                </svg>
+                            </div>
+                            <div class="flex flex-col flex-grow ml-4">
+                                <div class="text-sm text-gray-500">Projects</div>
+                                <div class="font-bold text-lg">{{ projectsCount }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-span-12 sm:col-span-6 md:col-span-3">
+                        <div class="flex flex-row bg-white shadow-sm p-4">
+                            <div
+                                class="flex items-center justify-center flex-shrink-0 h-12 w-12 bg-gray-300 text-white">
+                                <i :class="'fa-solid fa-building-shield'"></i>
+                            </div>
+                            <div class="flex flex-col flex-grow ml-4">
+                                <div class="text-sm text-gray-500">Workspaces</div>
+                                <div class="font-bold text-lg">{{ workspacesCount }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-span-12 sm:col-span-6 md:col-span-3">
+                        <div class="flex flex-row bg-white shadow-sm p-4">
+                            <div
+                                class="flex items-center justify-center flex-shrink-0 h-12 w-12 bg-gray-300 text-white">
+                                <i :class="'fa-solid fa-users'"></i>
+                            </div>
+                            <div class="flex flex-col flex-grow ml-4">
+                                <div class="text-sm text-gray-500">Users</div>
+                                <div class="font-bold text-lg">{{ usersCount }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-span-12 sm:col-span-6 md:col-span-3">
+                        <div class="flex flex-row bg-white shadow-sm p-4">
+                            <div
+                                class="flex items-center justify-center flex-shrink-0 h-12 w-12 bg-gray-300 text-white">
+                                <i :class="'fa-solid fa-box-archive'"></i>
+                            </div>
+                            <div class="flex flex-col flex-grow ml-4">
+                                <div class="text-sm text-gray-500">Registries</div>
+                                <div class="font-bold text-lg flex justify-between">
+                                    <p><span class="text-xs font-light text-gray-600">Generic</span>
+                                        {{ genericRegistriesCount }}</p>
+                                    <p><span class="text-xs font-light text-gray-600">Custom</span>
+                                        {{ customRegistriesCount }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <div class="px-2 pb-2">
             <div v-if="!workspaces.length">
                 <section

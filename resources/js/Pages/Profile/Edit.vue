@@ -3,7 +3,8 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import DeleteUserForm from './Partials/DeleteUserForm.vue';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm.vue';
-import {Head} from '@inertiajs/vue3';
+import {Head, usePage} from '@inertiajs/vue3';
+import UpdateProjectInformationForm from "@/Pages/Profile/Partials/UpdateProjectInformationForm.vue";
 
 defineProps({
     mustVerifyEmail: {
@@ -12,7 +13,13 @@ defineProps({
     status: {
         type: String,
     },
+    canManageProject: {
+        type: Boolean,
+    },
 });
+
+const isSuperAdmin = usePage().props.auth.user.roles.map(role => role.name).includes('super-admin');
+
 </script>
 
 <template>
@@ -25,6 +32,13 @@ defineProps({
 
         <div class="px-2 pb-2">
             <div class="space-y-2">
+                <div v-if="canManageProject && !isSuperAdmin" class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow ">
+                    <UpdateProjectInformationForm
+                        :must-verify-email="mustVerifyEmail"
+                        :status="status"
+                        class="max-w-xl"
+                    />
+                </div>
                 <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow ">
                     <UpdateProfileInformationForm
                         :must-verify-email="mustVerifyEmail"

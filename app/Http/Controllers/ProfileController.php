@@ -21,6 +21,7 @@ class ProfileController extends Controller
         return Inertia::render('Profile/Edit', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
+            'canManageProject' => $request->user()->can('manage', $request->user()->project),
         ]);
     }
 
@@ -36,6 +37,19 @@ class ProfileController extends Controller
         }
 
         $request->user()->save();
+
+        return Redirect::route('profile.edit')->with('success', 'Profile updated successfully.');
+    }
+
+    public function projectUpdate(Request $request): RedirectResponse
+    {
+        $this->authorize('manage', $request->user()->project);
+
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+        ]);
+
+        $request->user()->project->update($request->only('name'));
 
         return Redirect::route('profile.edit')->with('success', 'Profile updated successfully.');
     }

@@ -223,7 +223,7 @@ router.on('start', (event) => {
                                         <div class="text-sm flex flex-col justify-center">
                                             <label :for="`checkbox-${workspace.id}`"
                                                    class="font-medium text-gray-900 dark:text-gray-300 ml-2">
-                                                {{ workspace.name }} {{ workspace.id }}
+                                                {{ workspace.name }}
                                                 <span v-if="workspace.location"
                                                       class="text-xs font-normal text-gray-500 dark:text-gray-300">
                                                 {{ workspace.location }}

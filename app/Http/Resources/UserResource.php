@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 
 class UserResource extends JsonResource
 {
@@ -14,14 +15,24 @@ class UserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
+        $data = [
             'id' => $this->id,
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
             'role' => $this->roles->first()?->name,
             'email' => $this->email,
             'email_verified' => $this->hasVerifiedEmail(),
-            'workspacesIds' => array_intersect($this->workspaces->pluck('id')->toArray(), auth()->user()->workspaces->pluck('id')->toArray()),
         ];
+
+        if (Auth::user()->isSuperAdmin()) {
+            $data['workspacesIds'] = $this->workspaces->pluck('id')->toArray();
+        } else {
+            $data['workspacesIds'] = array_intersect(
+                $this->workspaces->pluck('id')->toArray(),
+                auth()->user()->workspaces->pluck('id')->toArray()
+            );
+        }
+
+        return $data;
     }
 }

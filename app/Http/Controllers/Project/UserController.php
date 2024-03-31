@@ -114,7 +114,13 @@ class UserController extends Controller
     {
         $roles = Role::eligibleToAssign(auth()->user()->getRoleNames()->first())->get();
 
-        $authUserWorkspacesIds = auth()->user()->workspaces->pluck('id')->toArray();
+        if (Auth::user()->isSuperAdmin()) {
+            $authUserWorkspacesIds = $user->project->workspaces->pluck('id')->toArray();
+        } else {
+
+            $authUserWorkspacesIds = auth()->user()->workspaces->pluck('id')->toArray();
+
+        }
 
         $workspaces = Workspace::whereIn('id', $authUserWorkspacesIds)
             ->paginate(5)

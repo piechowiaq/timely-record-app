@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Http\Resources\ProjectResource;
 use App\Models\Project;
 use App\Models\Report;
 use Illuminate\Http\Request;
@@ -39,9 +40,9 @@ class HandleInertiaRequests extends Middleware
         $canViewProject = false;
         $canCreateReport = false;
 
-        if (session()->has('project_id')) {
-
-            $project = Project::find(session('project_id'));
+        if ($user && $user->project_id) {
+            // Assuming you use route model binding or retrieve it somehow
+            $project = Project::find($user->project_id);
             $canManageProject = $project ? $user->can('manage', $project) : false;
             $canViewProject = $project ? $user->can('view', $project) : false;
             $canCreateReport = $project ? $user->can('create', Report::class) : false;
@@ -69,6 +70,8 @@ class HandleInertiaRequests extends Middleware
                 'canCreateReport' => $canCreateReport,
             ],
             'projectId' => session('project_id'),
+            'project' => session('project_id') ? ProjectResource::make(Project::find(session('project_id'))) : null,
+            'impersonate' => (bool) session('impersonate'),
 
         ];
     }

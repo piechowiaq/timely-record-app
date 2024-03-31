@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\WorkspaceResource;
 use App\Models\Project;
+use App\Models\Registry;
+use App\Models\User;
 use App\Models\Workspace;
 use App\Services\RegistryService;
 use Auth;
@@ -36,16 +38,23 @@ class ProjectController extends Controller
                     $this->registryService->getRegistriesWithLatestReport($workspace->id)
                 );
             });
+            $customRegistriesCount = Registry::whereNotNull('project_id')->count();
         } else {
             $workspaces = Auth::user()->workspaces->each(function ($workspace) {
                 $workspace->registryMetrics = $this->registryService->getRegistryMetrics(
                     $this->registryService->getRegistriesWithLatestReport($workspace->id)
                 );
             });
+            $customRegistriesCount = Registry::where('project_id', $project->id)->count();
         }
 
         return inertia('Projects/Dashboard', [
             'workspaces' => WorkspaceResource::collection($workspaces),
+            'projectsCount' => Project::count(),
+            'workspacesCount' => Workspace::count(),
+            'genericRegistriesCount' => Registry::whereNull('project_id')->count(),
+            'customRegistriesCount' => $customRegistriesCount,
+            'usersCount' => User::count(),
         ]);
     }
 }

@@ -15,11 +15,14 @@ const props = defineProps(['workspace']);
 const showingNavigationDropdown = ref(false);
 
 const projectId = usePage().props.projectId;
+const projectName = usePage().props.project?.name ?? 'Project Dashboard';
+
 
 const navigation = useNavigationStore();
 const user = usePage().props.auth.user;
 
 const superAdmin = user.project_id === null;
+const impersonate = usePage().props.impersonate;
 
 const canManageProject = usePage().props.permissions.canManageProject || superAdmin;
 const canViewProject = usePage().props.permissions.canViewProject || superAdmin;
@@ -39,7 +42,7 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
 
 <template>
     <div>
-        <div v-if="!superAdmin" class="relative bg-red-400">
+        <div v-if="impersonate" class="relative bg-red-400">
             <div class="max-w-screen-xl mx-auto py-2 px-3 sm:px-6 lg:px-8">
                 <div class="pr-16 sm:text-center sm:px-16">
                     <p class="font-medium text-white">
@@ -95,7 +98,7 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
                             <div v-else
                                  class="hidden space-x-8 items-center sm:-my-px sm:ml-10 sm:flex">
 
-                                <p class="text-amber-400 uppercase text-xs font-semibold">Project Settings</p>
+                                <p class="text-amber-400 uppercase text-xs font-semibold">{{ projectName }}</p>
 
 
                             </div>
@@ -137,7 +140,7 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
                                         <DropdownLink :href="route('profile.edit')"> Profile</DropdownLink>
                                         <DropdownLink v-if="canViewProject || superAdmin"
                                                       :href="route('projects.dashboard')"> Project
-                                            Settings
+                                            Dashboard
                                         </DropdownLink>
                                         <DropdownLink :href="route('logout')" method="post" as="button">
                                             Log Out
@@ -224,7 +227,7 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
 
                         <div class="mt-3 space-y-1">
                             <ResponsiveNavLink :href="route('profile.edit')"> Profile</ResponsiveNavLink>
-                            <ResponsiveNavLink :href="route('projects.dashboard')"> Project Settings
+                            <ResponsiveNavLink :href="route('projects.dashboard')"> Project Dashboard
                             </ResponsiveNavLink>
                             <ResponsiveNavLink :href="route('logout')" method="post" as="button">
                                 Log Out
