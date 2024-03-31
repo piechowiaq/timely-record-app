@@ -21,6 +21,7 @@ test('new users can register', function () {
     $this->seed(RolesAndPermissionsSeeder::class);
 
     $response = $this->post('/register', [
+        'project_name' => 'Test Project',
         'first_name' => 'Test User',
         'last_name' => 'Test User',
         'email' => 'test@example.com',
@@ -92,6 +93,7 @@ it('generates the correct registration URL in the notification', function () {
     Notification::fake();
 
     post('/register', [
+        'project_name' => 'Test Project',
         'first_name' => 'Test User',
         'last_name' => 'Test User',
         'email' => 'test@example.com',

@@ -6,7 +6,7 @@ import TextInput from "@/Components/TextInput.vue";
 import {Head, router, useForm, usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import {computed} from 'vue';
+import {computed, watch} from 'vue';
 import Pagination from "@/Components/Pagination.vue";
 
 import RegistrationLink from "@/Pages/Users/Partials/RegistrationLink.vue";
@@ -79,6 +79,15 @@ const selectAll = computed({
         userStore.updateForm({workspacesIds: form.workspacesIds});
     }
 });
+const projectAdmin = computed(() => form.role === 'project-admin');
+
+watch(projectAdmin, (newValue) => {
+
+    if (newValue) {
+        selectAll.value = newValue;
+    }
+
+});
 
 function submit() {
     form.put(route('users.update', props.user.id), {
@@ -118,6 +127,8 @@ router.on('start', (event) => {
                                 Please provide required data to edit user.
                             </p>
                         </header>
+
+                        {{ form.role }} {{ selectAll }}
                         <form @submit.prevent="submit"
                               method="post"
                               class="mt-6 space-y-6">
@@ -194,11 +205,12 @@ router.on('start', (event) => {
                                     <div class="flex pt-2 pb-4 justify-between items-center">
 
                                         <div class="flex">
-                                            <input
-                                                type="checkbox"
-                                                id="select-all"
-                                                v-model="selectAll"
-                                                class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
+                                            <input :disabled="projectAdmin"
+                                                   type="checkbox"
+                                                   id="select-all"
+                                                   v-model="selectAll"
+                                                   :class="{'text-gray-200': projectAdmin, 'text-cyan-600': !projectAdmin}"
+                                                   class="font-medium border-gray-300 shadow-sm focus:ring-transparent"
                                             />
                                             <label for="select-all" class="text-sm ml-2">
                                                 Select All
@@ -213,12 +225,13 @@ router.on('start', (event) => {
                                          :key="workspace.id"
                                          :class="{'border-b': index !== workspaces.data.length - 1}"
                                          class="flex items-center py-2">
-                                        <input
-                                            type="checkbox"
-                                            :id="`checkbox-${workspace.id}`"
-                                            v-model="workspacesIds"
-                                            :value="workspace.id"
-                                            class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
+                                        <input :disabled="projectAdmin"
+                                               type="checkbox"
+                                               :id="`checkbox-${workspace.id}`"
+                                               v-model="workspacesIds"
+                                               :value="workspace.id"
+                                               :class="{'text-gray-200': projectAdmin, 'text-cyan-600': !projectAdmin}"
+                                               class="font-medium border-gray-300 shadow-sm focus:ring-transparent"
                                         />
                                         <div class="text-sm flex flex-col justify-center">
                                             <label :for="`checkbox-${workspace.id}`"

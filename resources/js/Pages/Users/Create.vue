@@ -4,7 +4,7 @@ import TextInput from "@/Components/TextInput.vue";
 import {Head, useForm, usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import {computed} from 'vue';
+import {computed, watch} from 'vue';
 import Pagination from "@/Components/Pagination.vue";
 import {useUserStore} from "@/Stores/UserStore.js";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
@@ -71,6 +71,16 @@ const selectAll = computed({
         form.workspacesIds = value ? [...props.workspacesIds] : [];
         userStore.updateForm({workspacesIds: form.workspacesIds});
     }
+});
+
+const projectAdmin = computed(() => form.role === 'project-admin');
+
+watch(projectAdmin, (newValue) => {
+
+    if (newValue) {
+        selectAll.value = newValue;
+    }
+
 });
 
 function submit() {
@@ -179,11 +189,12 @@ function submit() {
                                     <div class="flex pt-2 pb-4 justify-between items-center">
 
                                         <div class="flex">
-                                            <input
-                                                type="checkbox"
-                                                id="select-all"
-                                                v-model="selectAll"
-                                                class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
+                                            <input :disabled="projectAdmin"
+                                                   type="checkbox"
+                                                   id="select-all"
+                                                   v-model="selectAll"
+                                                   :class="{'text-gray-200': projectAdmin, 'text-cyan-600': !projectAdmin}"
+                                                   class="font-medium border-gray-300 shadow-sm focus:ring-transparent"
                                             />
                                             <label for="select-all" class="text-sm ml-2">
                                                 Select All
@@ -200,12 +211,13 @@ function submit() {
                                          :key="workspace.id"
                                          :class="{'border-b': index !== workspaces.data.length - 1}"
                                          class="flex items-center py-2">
-                                        <input
-                                            type="checkbox"
-                                            :id="`checkbox-${workspace.id}`"
-                                            v-model="workspacesIds"
-                                            :value="workspace.id"
-                                            class="font-medium border-gray-300 text-cyan-600 shadow-sm focus:ring-transparent"
+                                        <input :disabled="projectAdmin"
+                                               type="checkbox"
+                                               :id="`checkbox-${workspace.id}`"
+                                               v-model="workspacesIds"
+                                               :value="workspace.id"
+                                               :class="{'text-gray-100': projectAdmin, 'text-cyan-600': !projectAdmin}"
+                                               class="font-medium border-gray-300 shadow-sm focus:ring-transparent"
                                         />
                                         <div class="text-sm flex flex-col justify-center">
                                             <label :for="`checkbox-${workspace.id}`"
