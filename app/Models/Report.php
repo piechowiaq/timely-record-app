@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\ProjectScope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -23,11 +22,6 @@ class Report extends Model
         'workspace_id',
         'registry_id',
     ];
-
-    protected static function booted(): void
-    {
-        static::addGlobalScope(new ProjectScope);
-    }
 
     public function workspace(): BelongsTo
     {

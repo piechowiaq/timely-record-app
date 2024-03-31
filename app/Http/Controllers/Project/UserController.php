@@ -112,12 +112,11 @@ class UserController extends Controller
      */
     public function edit(User $user): Response
     {
-
         $roles = Role::eligibleToAssign(auth()->user()->getRoleNames()->first())->get();
 
-        $workspacesIds = auth()->user()->workspaces->pluck('id')->toArray();
+        $authUserWorkspacesIds = auth()->user()->workspaces->pluck('id')->toArray();
 
-        $workspaces = Workspace::whereIn('id', $workspacesIds)
+        $workspaces = Workspace::whereIn('id', $authUserWorkspacesIds)
             ->paginate(5)
             ->withQueryString();
 
@@ -125,7 +124,7 @@ class UserController extends Controller
             'user' => UserResource::make($user),
             'roles' => RoleResource::collection($roles),
             'workspaces' => WorkspaceResource::collection($workspaces),
-            'workspacesIds' => $workspacesIds,
+            'workspacesIds' => $authUserWorkspacesIds,
         ]);
     }
 

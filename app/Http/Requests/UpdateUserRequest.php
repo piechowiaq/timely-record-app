@@ -24,8 +24,6 @@ class UpdateUserRequest extends FormRequest
      */
     public function rules(): array
     {
-        $project = $this->route('project');
-
         return [
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],

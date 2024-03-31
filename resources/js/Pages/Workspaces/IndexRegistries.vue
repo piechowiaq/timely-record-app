@@ -14,6 +14,8 @@ const props = defineProps(['workspace', 'registries', 'filters', 'registriesIds'
 
 const projectId = usePage().props.projectId;
 
+const page = usePage();
+
 const registriesStore = useRegistriesStore();
 
 if (registriesStore.initialized === false) {
@@ -53,8 +55,8 @@ const index = ref({
 });
 
 watch(index.value, debounce(() => {
-    router.get(route('workspaces.index-registries', {project: projectId, workspace: props.workspace.id}), index.value, {
-        preserveState: true,
+    router.get(route('workspaces.index-registries', props.workspace.id), index.value, {
+        // preserveState: true,
         preserveScroll: true,
         replace: true
     });
@@ -77,6 +79,12 @@ const getSortIconClass = (field) => {
 };
 
 
+router.on('start', (event) => {
+    if (event.detail.visit.url.pathname !== `/workspaces/${props.workspace.id}/index-registries`) {
+        registriesStore.$reset()
+    }
+})
+
 </script>
 
 <template>
@@ -95,9 +103,7 @@ const getSortIconClass = (field) => {
 
             <div class="space-y-2">
 
-
                 <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow">
-
                     <header>
                         <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Workspace Registries</h2>
 

@@ -95,12 +95,10 @@ class WorkspaceController extends Controller
     {
         $this->authorize('update', $workspace);
 
-        $project = Project::find(session('project_id'));
-
-        $registriesIds = Registry::where('project_id', $project->id)
+        $registriesIds = Registry::where('project_id', $workspace->project_id)
             ->orWhereNull('project_id')->pluck('id')->toArray();
 
-        $registries = Registry::where('project_id', $project->id)
+        $registries = Registry::where('project_id', $workspace->project_id)
             ->orWhereNull('project_id')
             ->with('reports')
             ->with('workspaces')

@@ -3,7 +3,7 @@
 import InputError from "@/Components/InputError.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
-import {Head, useForm, usePage} from "@inertiajs/vue3";
+import {Head, router, useForm, usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import {computed} from 'vue';
@@ -85,6 +85,13 @@ function submit() {
         preserveScroll: true,
     })
 }
+
+router.on('start', (event) => {
+    if (event.detail.visit.url.pathname !== `/users/${props.user.id}/edit`) {
+        userStore.$reset()
+    }
+})
+
 </script>
 
 <template>
@@ -216,7 +223,7 @@ function submit() {
                                         <div class="text-sm flex flex-col justify-center">
                                             <label :for="`checkbox-${workspace.id}`"
                                                    class="font-medium text-gray-900 dark:text-gray-300 ml-2">
-                                                {{ workspace.name }}
+                                                {{ workspace.name }} {{ workspace.id }}
                                                 <span v-if="workspace.location"
                                                       class="text-xs font-normal text-gray-500 dark:text-gray-300">
                                                 {{ workspace.location }}

@@ -21,7 +21,7 @@ class UserResource extends JsonResource
             'role' => $this->roles->first()?->name,
             'email' => $this->email,
             'email_verified' => $this->hasVerifiedEmail(),
-            'workspacesIds' => $this->workspaces->pluck('id')->toArray(),
+            'workspacesIds' => array_intersect($this->workspaces->pluck('id')->toArray(), auth()->user()->workspaces->pluck('id')->toArray()),
         ];
     }
 }

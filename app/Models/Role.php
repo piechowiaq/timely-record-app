@@ -9,7 +9,9 @@ class Role extends SpatieRole
 {
     public function scopeEligibleToAssign(Builder $query, string $userRole): void
     {
-        if ($userRole === 'project-admin') {
+        if ($userRole === 'super-admin') {
+            $query->whereNotIn('name', ['super-admin']);
+        } elseif ($userRole === 'project-admin') {
             $query->whereNotIn('name', ['project-admin', 'super-admin']);
         } else {
             $query->whereNotIn('name', ['admin', 'project-admin', 'super-admin']);
