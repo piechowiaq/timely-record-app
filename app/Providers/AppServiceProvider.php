@@ -33,5 +33,14 @@ class AppServiceProvider extends ServiceProvider
                 return true;
             }
         });
+
+        $this->bootAuth();
+    }
+
+    public function bootAuth(): void
+    {
+        Gate::before(function ($user, $ability) {
+            return $user->hasRole('Super Admin') ? true : null;
+        });
     }
 }
