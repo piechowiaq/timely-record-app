@@ -19,7 +19,7 @@ const form = useForm({
 });
 
 function submit() {
-    form.put(route('registries.update', props.registry.id), {
+    form.patch(route('registries.update', props.registry.id), {
         preserveScroll: true,
     })
 }

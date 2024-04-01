@@ -5,7 +5,7 @@ use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 
 use function Pest\Laravel\actingAs;
-use function Pest\Laravel\put;
+use function Pest\Laravel\patch;
 
 beforeEach(function () {
     $this->validData = fn () => [
@@ -17,7 +17,7 @@ beforeEach(function () {
 
 it('requires authentication', function () {
 
-    put(route('registries.update', Registry::factory()->create(
+    patch(route('registries.update', Registry::factory()->create(
     )))
         ->assertRedirect(route('login'));
 
@@ -52,7 +52,7 @@ it('updates a registry', function () {
 
     $registryData = value($this->validData);
 
-    actingAs($user)->put(route('registries.update', $registry->id), $registryData);
+    actingAs($user)->patch(route('registries.update', $registry->id), $registryData);
 
     $this->assertDatabaseHas(Registry::class, [
         ...$registryData,
@@ -72,6 +72,6 @@ it('redirects to the registry edit page', function () {
 
     $registryData = value($this->validData);
 
-    actingAs($user)->put(route('registries.update', $registry->id), $registryData)
+    actingAs($user)->patch(route('registries.update', $registry->id), $registryData)
         ->assertRedirect(route('registries.edit', $registry->id));
 });

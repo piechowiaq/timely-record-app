@@ -140,7 +140,7 @@ let filteredProjects = computed(() =>
                                         @after-leave="query = ''"
                                     >
                                         <ComboboxOptions
-                                            class="absolute mt-1 max-h-60 w-full overflow-auto bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
+                                            class="absolute mt-1 max-h-60 w-full overflow-auto bg-white py-1 text-base shadow-lg ring-1 ring-black/5  sm:text-sm">
                                             <div
                                                 v-if="filteredProjects.length === 0 && query !== ''"
                                                 class="relative cursor-default select-none px-4 py-2 text-gray-700"

@@ -128,7 +128,6 @@ router.on('start', (event) => {
                             </p>
                         </header>
 
-                        {{ form.role }} {{ selectAll }}
                         <form @submit.prevent="submit"
                               method="post"
                               class="mt-6 space-y-6">

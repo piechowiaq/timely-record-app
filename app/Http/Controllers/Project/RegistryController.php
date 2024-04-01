@@ -124,13 +124,10 @@ class RegistryController extends Controller
      */
     public function update(Registry $registry, UpdateProjectRegistryRequest $request)
     {
-        $project = Project::find(session('project_id'));
-
         $registry->update([
             'name' => $request->name,
             'description' => $request->description,
             'validity_period' => $request->validity_period,
-            'project_id' => $project->id,
         ]);
 
         return redirect()->route('registries.edit', $registry->id)

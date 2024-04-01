@@ -32,7 +32,7 @@ const form = useForm({
             </p>
         </header>
 
-        <form @submit.prevent="form.patch(route('workspaces.update', { project: projectId, workspace: workspace.id }))"
+        <form @submit.prevent="form.patch(route('workspaces.update', workspace.id))"
               method="post"
               class="mt-6 space-y-6">
             <div>
