@@ -102,7 +102,7 @@ const getWorkspaceBorderColor = (workspace) => {
         <div class="px-2 p-2 m-2 bg-white">
             <div v-if="!workspaces.data.length">
                 <section
-                    class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow flex-grow">
+                    class="p-4 sm:p-8 bg-gray-50 dark:bg-gray-800 flex-grow">
 
                     <p class="italic text-red-400 text-xs mb-4">
                         No

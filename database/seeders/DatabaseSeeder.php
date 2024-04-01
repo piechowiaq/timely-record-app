@@ -21,6 +21,16 @@ class DatabaseSeeder extends Seeder
             RolesAndPermissionsSeeder::class,
         ]);
 
+        $user = User::factory()->create([
+            'first_name' => 'Bartosz',
+            'last_name' => 'Piechowiak',
+            'email' => 'bartosz.piechowiak.pl@gmail.com',
+            'email_verified_at' => now(),
+            'password' => bcrypt('12345678'),
+            'project_id' => null, ]);
+
+        $user->assignRole('super-admin');
+
         $projects = Project::factory(3)->create();
         $users = User::factory(25)->recycle($projects)->create();
         $workspaces = Workspace::factory(15)->recycle($projects)->create();
