@@ -33,14 +33,19 @@ class ProjectController extends Controller
         $this->authorize('view', $project);
 
         if (Auth::user()->isSuperAdmin()) {
-            $workspaces = Workspace::all()->each(function ($workspace) {
+            $workspaces = Workspace::paginate(6);
+
+            $workspaces->getCollection()->each(function ($workspace) {
                 $workspace->registryMetrics = $this->registryService->getRegistryMetrics(
                     $this->registryService->getRegistriesWithLatestReport($workspace->id)
                 );
             });
+
             $customRegistriesCount = Registry::whereNotNull('project_id')->count();
         } else {
-            $workspaces = Auth::user()->workspaces->each(function ($workspace) {
+            $workspaces = Auth::user()->workspaces()->paginate(6);
+
+            $workspaces->getCollection()->each(function ($workspace) {
                 $workspace->registryMetrics = $this->registryService->getRegistryMetrics(
                     $this->registryService->getRegistriesWithLatestReport($workspace->id)
                 );

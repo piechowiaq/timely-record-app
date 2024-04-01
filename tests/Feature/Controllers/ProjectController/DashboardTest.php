@@ -46,8 +46,13 @@ it('passes auth user workspaces to the view', function () {
     $user = User::role('admin')->first();
     session(['project_id' => $user->project_id]);
 
+    $workspaces = $user->workspaces;
+    $workspaces->each(function ($workspace) {
+        $workspace->registryMetrics = 0;
+    });
+
     actingAs($user)->
     get(route('projects.dashboard'))
-        ->assertHasResource('workspaces', WorkspaceResource::collection($user->workspaces));
+        ->assertHasPaginatedResource('workspaces', WorkspaceResource::collection($workspaces));
 
 });

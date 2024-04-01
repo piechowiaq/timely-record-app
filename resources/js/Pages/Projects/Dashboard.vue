@@ -1,6 +1,7 @@
 <script setup>
 import {Head, Link, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import Pagination from "@/Components/Pagination.vue";
 
 defineProps(['workspaces', 'projectsCount', 'workspacesCount', 'usersCount', 'genericRegistriesCount', 'customRegistriesCount']);
 
@@ -12,9 +13,9 @@ const isSuperAdmin = usePage().props.auth.user.roles.map(role => role.name).incl
 
 
 const getWorkspaceBorderColor = (workspace) => {
-    if (workspace.upToDateRegistriesMetrics === 100) return 'border-green-500';
-    if (workspace.upToDateRegistriesMetrics > 90) return 'border-green-300';
-    if (workspace.upToDateRegistriesMetrics >= 80) return 'border-yellow-300';
+    if (workspace.registryMetrics === 100) return 'border-green-500';
+    if (workspace.registryMetrics > 90) return 'border-green-300';
+    if (workspace.registryMetrics >= 80) return 'border-yellow-300';
     return 'border-red-300';
 };
 
@@ -29,13 +30,12 @@ const getWorkspaceBorderColor = (workspace) => {
             <h2 v-else class="text-white dark:text-gray-700 leading-tight">Project Dashboard</h2>
         </template>
 
-
         <!-- component -->
         <div class="flex items-center text-gray-800 m-2">
             <div class="w-full">
                 <div class="grid gap-2" :class="{'grid-cols-9': !isSuperAdmin, 'grid-cols-12': isSuperAdmin}">
                     <div v-if="isSuperAdmin" class="col-span-12 sm:col-span-6 md:col-span-3">
-                        <div class="flex flex-row bg-white shadow-sm p-4">
+                        <div class="flex flex-row bg-white shadow-sm p-2">
                             <div
                                 class="flex items-center justify-center flex-shrink-0 h-12 w-12 bg-gray-300 text-white">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
@@ -54,7 +54,7 @@ const getWorkspaceBorderColor = (workspace) => {
                         </div>
                     </div>
                     <div class="col-span-12 sm:col-span-6 md:col-span-3">
-                        <div class="flex flex-row bg-white shadow-sm p-4">
+                        <div class="flex flex-row bg-white shadow-sm p-2">
                             <div
                                 class="flex items-center justify-center flex-shrink-0 h-12 w-12 bg-gray-300 text-white">
                                 <i :class="'fa-solid fa-building-shield'"></i>
@@ -66,7 +66,7 @@ const getWorkspaceBorderColor = (workspace) => {
                         </div>
                     </div>
                     <div class="col-span-12 sm:col-span-6 md:col-span-3">
-                        <div class="flex flex-row bg-white shadow-sm p-4">
+                        <div class="flex flex-row bg-white shadow-sm p-2">
                             <div
                                 class="flex items-center justify-center flex-shrink-0 h-12 w-12 bg-gray-300 text-white">
                                 <i :class="'fa-solid fa-users'"></i>
@@ -78,7 +78,7 @@ const getWorkspaceBorderColor = (workspace) => {
                         </div>
                     </div>
                     <div class="col-span-12 sm:col-span-6 md:col-span-3">
-                        <div class="flex flex-row bg-white shadow-sm p-4">
+                        <div class="flex flex-row bg-white shadow-sm p-2">
                             <div
                                 class="flex items-center justify-center flex-shrink-0 h-12 w-12 bg-gray-300 text-white">
                                 <i :class="'fa-solid fa-box-archive'"></i>
@@ -99,8 +99,8 @@ const getWorkspaceBorderColor = (workspace) => {
         </div>
 
 
-        <div class="px-2 pb-2">
-            <div v-if="!workspaces.length">
+        <div class="px-2 p-2 m-2 bg-white">
+            <div v-if="!workspaces.data.length">
                 <section
                     class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow flex-grow">
 
@@ -119,8 +119,8 @@ const getWorkspaceBorderColor = (workspace) => {
                 </section>
             </div>
             <div v-else class="grid md:grid-cols-2 gap-2 grid-cols-1">
-                <section v-for="workspace in workspaces" :key="workspace.id"
-                         class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow flex-grow justify-between flex">
+                <section v-for="workspace in workspaces.data" :key="workspace.id"
+                         class="p-4 sm:p-8 bg-gray-50 dark:bg-gray-800 flex-grow justify-between flex">
                     <header>
                         <Link :href="route('workspaces.dashboard', workspace.id )">
                             <h2 class="text-lg font-medium hover:text-cyan-700 text-gray-900 dark:text-gray-100">
@@ -136,7 +136,6 @@ const getWorkspaceBorderColor = (workspace) => {
                                     workspace.registryMetrics
                                 }}%</p>
 
-
                         </div>
                         <div class="border-2 p-2 bg-gray-50 border-red-50 flex flex-col">
                             <header class="text-gray-200 text-sm">Trainings</header>
@@ -146,10 +145,8 @@ const getWorkspaceBorderColor = (workspace) => {
 
 
                 </section>
-
             </div>
-
-
+            <Pagination :links="workspaces.meta.links" class="flex items-center justify-end py-2 "></Pagination>
         </div>
     </AuthenticatedLayout>
 </template>

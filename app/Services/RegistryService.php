@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\Registry;
 use App\Repositories\Contracts\RegistryRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 use LaravelIdea\Helper\App\Models\_IH_Registry_C;
 use LaravelIdea\Helper\App\Models\_IH_Registry_QB;
 
@@ -52,7 +52,7 @@ class RegistryService
         });
     }
 
-    public function getNonCompliantRegistries(Collection $registries): Collection|\Illuminate\Support\Collection
+    public function getNonCompliantRegistries(Collection $registries): Collection
     {
         return $registries->filter(function ($registry) {
             return is_null($registry->reports->first()) || $registry->reports->first()->expiry_date < now();
