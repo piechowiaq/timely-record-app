@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Models\Scopes\ProjectScope;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Builder;
@@ -61,7 +63,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Get the project that the user belongs to.
      */
-    public function project()
+    public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
@@ -69,7 +71,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * The workspaces that belong to the user.
      */
-    public function workspaces()
+    public function workspaces(): BelongsToMany
     {
         return $this->belongsToMany(Workspace::class);
     }
