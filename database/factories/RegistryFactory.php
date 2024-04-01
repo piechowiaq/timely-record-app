@@ -18,9 +18,9 @@ class RegistryFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->name,
+            'name' => $this->faker->name(),
             'validity_period' => $this->faker->randomElement([1, 3, 6, 12, 24]),
-            'description' => $this->faker->text,
+            'description' => $this->faker->text(),
         ];
     }
 }

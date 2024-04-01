@@ -37,7 +37,7 @@ class ReportFactory extends Factory
         return [
             'report_date' => $reportDate,
             'expiry_date' => $expiryDate,
-            'report_path' => $this->faker->url,
+            'report_path' => $this->faker->url(),
             'workspace_id' => Workspace::factory(),
             'registry_id' => $recycledRegistries->isNotEmpty()
                 ? $recycledRegistries->random()
