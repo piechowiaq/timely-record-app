@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Gate;
@@ -28,19 +27,13 @@ class AppServiceProvider extends ServiceProvider
 
         Model::preventLazyLoading();
 
-        Gate::before(function (User $user, string $ability) {
-            if ($user->hasRole('super-admin')) {
-                return true;
-            }
-        });
-
         $this->bootAuth();
     }
 
     public function bootAuth(): void
     {
         Gate::before(function ($user, $ability) {
-            return $user->hasRole('Super Admin') ? true : null;
+            return $user->hasRole('super-admin') ? true : null;
         });
     }
 }

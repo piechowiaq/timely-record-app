@@ -18,9 +18,9 @@
         "laravel/tinker": "^2.9",
         "laravel/vapor-core": "^2.36",
         "league/flysystem-aws-s3-v3": "3.0",
-        "spatie/laravel-permission": "^6.2",
+        "spatie/laravel-permission": "^6.4",
         "spatie/laravel-ray": "^1.35",
-        "tightenco/ziggy": "^2.0"
+        "tightenco/ziggy": "^2.1"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.10",
