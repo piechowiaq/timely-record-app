@@ -111,7 +111,7 @@ router.on('start', (event) => {
             <h2 class="text-white dark:text-gray-700 leading-tight">Edit User</h2>
         </template>
         <div class="px-2 pb-2">
-            <div class="space-y-2">
+            <div class="dark:bg-gray-700 dark:text-gray-400 space-y-2">
                 <div v-if="!user.email_verified" class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow ">
 
                     <RegistrationLink :user="user" class="max-w-xl"/>

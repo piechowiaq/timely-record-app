@@ -87,10 +87,10 @@ let filteredProjects = computed(() =>
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-white dark:text-gray-700 leading-tight">Workspaces</h2>
+            <h2 class="text-white leading-tight">Workspaces</h2>
         </template>
         <div class="px-2 pb-2 ">
-            <div class="p-6 shadow overflow-x-auto bg-white">
+            <div class="dark:bg-gray-700 dark:text-gray-400 p-6 shadow overflow-x-auto bg-white">
                 <div class="flex items-center justify-between">
                     <div class="mb-2 flex items-center">
                         <input v-model="index.search" type="text" name="search" placeholder="Search…"

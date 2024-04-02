@@ -108,7 +108,7 @@ const getSortIconClass = (field) => {
     <AuthenticatedLayout :workspace="workspace">
 
         <template #header>
-            <h2 class="text-white dark:text-gray-700 leading-tight">
+            <h2 class="text-white leading-tight">
                 <Link :href="route('workspaces.registries.index',  workspace.id )">
                     Registries &lt
                 </Link>
@@ -117,7 +117,7 @@ const getSortIconClass = (field) => {
         </template>
 
 
-        <div class="md:flex md:flex-grow md:overflow-hidden  m-2">
+        <div class="dark:bg-gray-700 dark:text-gray-400  md:flex md:flex-grow md:overflow-hidden  m-2">
             <div class=" md:flex-1 md:overflow-y-auto">
 
                 <div class="p-4 bg-white">

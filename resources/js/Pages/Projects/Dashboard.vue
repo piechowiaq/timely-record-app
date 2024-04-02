@@ -12,11 +12,13 @@ const projectId = usePage().props.projectId;
 const isSuperAdmin = usePage().props.auth.user.roles.map(role => role.name).includes('super-admin');
 
 
-const getWorkspaceBorderColor = (workspace) => {
-    if (workspace.registryMetrics === 100) return 'border-green-500';
-    if (workspace.registryMetrics > 90) return 'border-green-300';
-    if (workspace.registryMetrics >= 80) return 'border-yellow-300';
-    return 'border-red-300';
+const getBadgeColor = (workspace) => {
+    if (workspace.registryMetrics === 100) return 'text-green-500 fa-solid fa-circle-check';
+
+    if (workspace.registryMetrics > 90) return 'text-green-300 fa-regular fa-circle-check ';
+    if (workspace.registryMetrics >= 80) return 'text-yellow-300 fa-regular fa-circle-check';
+    return 'text-red-300 fa-regular fa-circle-xmark';
+
 };
 
 </script>
@@ -33,9 +35,9 @@ const getWorkspaceBorderColor = (workspace) => {
         <!-- component -->
         <div class="flex items-center text-gray-800 m-2">
             <div class="w-full">
-                <div class="grid gap-2" :class="{'grid-cols-9': !isSuperAdmin, 'grid-cols-12': isSuperAdmin}">
-                    <div v-if="isSuperAdmin" class="col-span-12 sm:col-span-6 md:col-span-3">
-                        <div class="flex flex-row bg-white shadow-sm p-2">
+                <div class="grid gap-2 grid-cols-12">
+                    <div v-if="isSuperAdmin" class="col-span-12 md:col-span-4 xl:col-span-3">
+                        <div class="dark:bg-gray-700  dark:text-gray-300 flex flex-row bg-white shadow-sm p-2">
                             <div
                                 class="flex items-center justify-center flex-shrink-0 h-12 w-12 bg-gray-300 text-white">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
@@ -47,44 +49,46 @@ const getWorkspaceBorderColor = (workspace) => {
                                         opacity=".5"/>
                                 </svg>
                             </div>
-                            <div class="flex flex-col flex-grow ml-4">
-                                <div class="text-sm text-gray-500">Projects</div>
+                            <div class="flex  flex-col flex-grow ml-4">
+                                <div class="text-sm dark:text-gray-300 text-gray-500">Projects</div>
                                 <div class="font-bold text-lg">{{ projectsCount }}</div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-span-12 sm:col-span-6 md:col-span-3">
-                        <div class="flex flex-row bg-white shadow-sm p-2">
+                    <div class="col-span-12 "
+                         :class="{'md:col-span-6 xl:col-span-4': !isSuperAdmin, 'md:col-span-4 xl:col-span-3': isSuperAdmin}">
+                        <div class="dark:bg-gray-700  dark:text-gray-300 flex flex-row bg-white shadow-sm p-2">
                             <div
                                 class="flex items-center justify-center flex-shrink-0 h-12 w-12 bg-gray-300 text-white">
                                 <i :class="'fa-solid fa-building-shield'"></i>
                             </div>
                             <div class="flex flex-col flex-grow ml-4">
-                                <div class="text-sm text-gray-500">Workspaces</div>
+                                <div class="text-sm dark:text-gray-300 text-gray-500">Workspaces</div>
                                 <div class="font-bold text-lg">{{ workspacesCount }}</div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-span-12 sm:col-span-6 md:col-span-3">
-                        <div class="flex flex-row bg-white shadow-sm p-2">
+                    <div class="col-span-12"
+                         :class="{'md:col-span-6 xl:col-span-4': !isSuperAdmin, 'md:col-span-4 xl:col-span-3': isSuperAdmin}">
+                        <div class="dark:bg-gray-700  dark:text-gray-300 flex flex-row bg-white shadow-sm p-2">
                             <div
                                 class="flex items-center justify-center flex-shrink-0 h-12 w-12 bg-gray-300 text-white">
                                 <i :class="'fa-solid fa-users'"></i>
                             </div>
                             <div class="flex flex-col flex-grow ml-4">
-                                <div class="text-sm text-gray-500">Users</div>
+                                <div class="text-sm dark:text-gray-300 text-gray-500">Users</div>
                                 <div class="font-bold text-lg">{{ usersCount }}</div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-span-12 sm:col-span-6 md:col-span-3">
-                        <div class="flex flex-row bg-white shadow-sm p-2">
+                    <div class="col-span-12" :class="{'xl:col-span-4': !isSuperAdmin, 'xl:col-span-3': isSuperAdmin}">
+                        <div class="dark:bg-gray-700  dark:text-gray-300 flex flex-row bg-white shadow-sm p-2">
                             <div
                                 class="flex items-center justify-center flex-shrink-0 h-12 w-12 bg-gray-300 text-white">
                                 <i :class="'fa-solid fa-box-archive'"></i>
                             </div>
                             <div class="flex flex-col flex-grow ml-4">
-                                <div class="text-sm text-gray-500">Registries</div>
+                                <div class="text-sm dark:text-gray-300 text-gray-500">Registries</div>
                                 <div class="font-bold text-lg flex justify-between">
                                     <p><span class="text-xs font-light text-gray-600">Generic</span>
                                         {{ genericRegistriesCount }}</p>
@@ -99,55 +103,69 @@ const getWorkspaceBorderColor = (workspace) => {
         </div>
 
 
-        <div class="px-2 p-2 m-2 bg-white">
-            <div v-if="!workspaces.data.length">
-                <section
-                    class="p-4 sm:p-8 bg-gray-50 dark:bg-gray-800 flex-grow">
+        <div v-if="!workspaces.data.length">
+            <section
+                class=" p-2 bg-gray-50 dark:bg-gray-800 flex-grow">
 
-                    <p class="italic text-red-400 text-xs mb-4">
-                        No
-                        workspaces
-                        associated with this project or with your credentials.
-                    </p>
-
-
-                    <Link v-if="canManageProject"
-                          :href="route('workspaces.create', projectId )"
-                          class="text-cyan-600 hover:text-cyan-700 text-sm">
-                        Create Workspace
-                    </Link>
-                </section>
-            </div>
-            <div v-else class="grid md:grid-cols-2 gap-2 grid-cols-1">
-                <section v-for="workspace in workspaces.data" :key="workspace.id"
-                         class="p-4 sm:p-8 bg-gray-50 dark:bg-gray-800 flex-grow justify-between flex">
-                    <header>
-                        <Link :href="route('workspaces.dashboard', workspace.id )">
-                            <h2 class="text-lg font-medium hover:text-cyan-700 text-gray-900 dark:text-gray-100">
-                                {{ workspace.name }}
-                            </h2>
-                        </Link>
-                        <p v-if="workspace.location" class="text-sm mb-4 text-gray-400">{{ workspace.location }}</p>
-                    </header>
-                    <section class="grid grid-cols-2 gap-4 text-center">
-                        <div :class="`border-2 p-2 flex flex-col ${getWorkspaceBorderColor(workspace)}`">
-                            <header class="text-gray-600 text-sm">Registries</header>
-                            <p class="font-medium text-2xl text-gray-500 mt-auto">{{
-                                    workspace.registryMetrics
-                                }}%</p>
-
-                        </div>
-                        <div class="border-2 p-2 bg-gray-50 border-red-50 flex flex-col">
-                            <header class="text-gray-200 text-sm">Trainings</header>
-                            <p class="font-medium text-2xl text-gray-200  mt-auto">0%</p>
-                        </div>
-                    </section>
+                <p class="italic text-red-400 text-xs mb-4">
+                    No
+                    workspaces
+                    associated with this project or with your credentials.
+                </p>
 
 
-                </section>
-            </div>
-            <Pagination :links="workspaces.meta.links" class="flex items-center justify-end py-2 "></Pagination>
+                <Link v-if="canManageProject"
+                      :href="route('workspaces.create', projectId )"
+                      class="text-cyan-600 hover:text-cyan-700 text-sm">
+                    Create Workspace
+                </Link>
+            </section>
         </div>
+        <div v-else class="grid xl:grid-cols-2 gap-2 grid-cols-1 mx-2">
+            <section v-for="workspace in workspaces.data" :key="workspace.id"
+                     class=" border bg-gray-50 dark:bg-gray-800 flex-grow grid grid-cols-12 gap-2 justify-between flex">
+                <header class="p-2 col-span-8 ">
+                    <Link :href="route('workspaces.dashboard', workspace.id )">
+                        <h2 class="text-lg font-medium hover:text-cyan-700  text-gray-900 dark:text-gray-100">
+                            {{ workspace.name }}
+                        </h2>
+                    </Link>
+                    <p v-if="workspace.location" class="text-sm mb-4 text-gray-400">{{ workspace.location }}</p>
+                </header>
+
+                <section
+                    class="dark:bg-gray-700  dark:text-gray-300 p-2 grid grid-rows-2 bg-white col-span-4">
+
+                    <div class=" py-2 justify-between border-b flex border-gray-200"
+                    >
+                        <header class="items-center text-gray-600 flex text-sm">
+                            <i class="hidden sm:block" :class="`${getBadgeColor(workspace)}`"></i>
+                            <span class="ml-2">Registries</span>
+                        </header>
+                        <p class="font-medium  text-sm text-gray-500">{{
+                                workspace.registryMetrics
+                            }}%</p>
+
+                    </div>
+
+                    <div class="py-2 justify-between flex "
+                    >
+                        <header class="items-center text-gray-300 flex text-sm">
+                            <i class="hidden sm:block text-gray-300 fa-regular fa-circle-xmark"></i>
+                            <span class="ml-2">Trainings</span>
+                        </header>
+                        <p class="font-medium  text-sm text-gray-300">0%</p>
+
+                    </div>
+                </section>
+
+
+            </section>
+        </div>
+        <Pagination :links="workspaces.meta.links"
+                    class="flex items-center justify-end m-2 "
+        ></Pagination>
+
     </AuthenticatedLayout>
 </template>
 

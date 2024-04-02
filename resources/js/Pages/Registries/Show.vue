@@ -18,7 +18,7 @@ const projectId = usePage().props.projectId;
         </template>
 
         <div class="px-2 pb-2">
-            <div class="space-y-2">
+            <div class="dark:bg-gray-700 dark:text-gray-400 space-y-2">
                 <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow">
                     <section class="max-w-xl">
                         <header>

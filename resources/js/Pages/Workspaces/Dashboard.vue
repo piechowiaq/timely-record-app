@@ -26,11 +26,11 @@ const projectId = usePage().props.projectId;
 
     <AuthenticatedLayout :workspace="workspace">
         <template #header>
-            <h2 class="text-white dark:text-gray-700 leading-tight">Dashboard</h2>
+            <h2 class="text-white leading-tight">Dashboard</h2>
         </template>
 
 
-        <div class="px-2 pb-2 sm:flex sm:space-x-2">
+        <div class="px-2 pb-2 sm:flex sm:space-x-2 ">
 
             <RegistriesCard :workspaceId="workspaceId"
                             :upToDateRegistriesCount="upToDateRegistriesCount"

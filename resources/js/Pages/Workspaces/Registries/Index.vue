@@ -86,10 +86,10 @@ const timeLeftUntilExpiryDate = (expiry_date) => {
 
     <AuthenticatedLayout :workspace="workspace">
         <template #header>
-            <h2 class="text-white dark:text-gray-700 leading-tight">Registries</h2>
+            <h2 class="text-white leading-tight">Registries</h2>
         </template>
         <div class="px-2 pb-2 ">
-            <div class="p-6 shadow overflow-x-auto bg-white">
+            <div class="dark:bg-gray-700 dark:text-gray-400  p-6 shadow overflow-x-auto bg-white">
                 <div class="flex items-center justify-between">
                     <div class="mb-2 flex items-center">
                         <input v-model="index.search" type="text" name="search" placeholder="Search…"
@@ -132,7 +132,7 @@ const timeLeftUntilExpiryDate = (expiry_date) => {
                         <tbody>
                         <tr v-for="registry of registries.data" :key="registry.id"
                             :class="{'bg-white dark:bg-gray-800': true, 'border-b dark:border-gray-700': index !== registries.data.length - 1}">
-                         
+
                             <th scope="row"
                                 class="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                 <span

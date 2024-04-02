@@ -237,9 +237,10 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
                 </div>
             </nav>
 
-            <div class="flex flex-grow overflow-hidden">
+            <div class="flex flex-grow overflow-auto ">
                 <!-- Side Navigation Menu -->
-                <aside v-if="showWorkspaceNavigation" class="flex-shrink-0 hidden pt-2 sm:block w-56 p-2 bg-white">
+                <aside v-if="showWorkspaceNavigation"
+                       class="dark:bg-gray-800 flex-shrink-0 hidden pt-2 sm:block w-56 p-2 bg-white">
                     <ul>
                         <li v-for="option in navigation.workspaceOptions" :key="option.route" class="pb-2">
                             <NavLink :disabled="userHasNoWorkspace" as="button"
@@ -251,7 +252,8 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
                         </li>
                     </ul>
                 </aside>
-                <aside v-else-if="showProjectNavigation" class="flex-shrink-0 hidden pt-2 sm:block w-56 p-2 bg-white">
+                <aside v-else-if="showProjectNavigation"
+                       class="dark:bg-gray-800 flex-shrink-0 hidden pt-2 sm:block w-56 p-2 bg-white">
                     <ul>
                         <li v-for="option in navigation.projectOptions" :key="option.route" class="pb-2">
                             <NavLink :disabled="userHasNoWorkspace" as="button"
@@ -265,7 +267,7 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
                 </aside>
                 <div class="flex-grow">
                     <!-- Page Heading -->
-                    <header class=" dark:bg-white bg-gray-500 shadow m-2  " v-if="$slots.header">
+                    <header class=" bg-gray-500 shadow m-2  " v-if="$slots.header">
                         <div class="container mx-auto px-4 py-2 sm:flex sm:h-10 justify-between  items-center ">
                             <slot name="header"/>
                             <FlashMessages/>
@@ -274,7 +276,7 @@ const showProjectNavigation = Boolean(props.workspace) && page.endsWith('/edit')
                     </header>
 
                     <!-- Page Content -->
-                    <main>
+                    <main class="">
                         <slot/>
                     </main>
 

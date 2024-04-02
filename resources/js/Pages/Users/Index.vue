@@ -1,7 +1,6 @@
 <script setup>
 
 import {Head, Link, router, usePage} from "@inertiajs/vue3";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import {computed, ref, watch} from "vue";
 import Pagination from "@/Components/Pagination.vue";
 import {debounce} from "lodash";
@@ -14,6 +13,7 @@ import {
     TransitionRoot
 } from "@headlessui/vue";
 import InputLabel from "@/Components/InputLabel.vue";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
 const props = defineProps(['users', 'filters', 'projects']);
 
@@ -97,11 +97,11 @@ let filteredProjects = computed(() =>
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-white dark:text-gray-700 leading-tight">Users</h2>
+            <h2 class="text-white leading-tight">Users</h2>
 
         </template>
         <div class="px-2 pb-2 ">
-            <div class="p-6 shadow overflow-x-auto bg-white">
+            <div class="p-6 shadow overflow-x-auto dark:bg-gray-700 dark:text-gray-400 bg-white">
                 <div class="flex items-center justify-between">
                     <div class="mb-2 flex items-center">
                         <input v-model="index.search" type="text" name="search" placeholder="Search…"

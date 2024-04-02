@@ -92,7 +92,7 @@ router.on('start', (event) => {
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-white dark:text-gray-700 leading-tight">
+            <h2 class="text-white leading-tight">
                 <Link :href="route('workspaces.edit', workspace.id)">Edit Workspace &lt
                 </Link>
                 Sync Workspace Registries
@@ -101,7 +101,7 @@ router.on('start', (event) => {
 
         <div class="px-2 pb-2">
 
-            <div class="space-y-2">
+            <div class="dark:bg-gray-700 dark:text-gray-400 space-y-2">
 
                 <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow">
                     <header>

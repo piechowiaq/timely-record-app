@@ -3,7 +3,7 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import {useForm, Head, usePage} from '@inertiajs/vue3';
+import {Head, useForm, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 const projectId = usePage().props.auth.user.project_id;
@@ -20,11 +20,11 @@ const form = useForm({
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-white dark:text-gray-700 leading-tight">Create Workspace</h2>
+            <h2 class="text-white leading-tight">Create Workspace</h2>
         </template>
 
         <div class="px-2 pb-2">
-            <div class="space-y-2">
+            <div class="dark:bg-gray-700 dark:text-gray-400 space-y-2">
                 <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow">
                     <section class="max-w-xl">
                         <header>
@@ -83,7 +83,6 @@ const form = useForm({
                             </div>
                         </form>
                     </section>
-
 
 
                 </div>
