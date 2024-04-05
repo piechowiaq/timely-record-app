@@ -108,7 +108,7 @@ router.on('start', (event) => {
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-white dark:text-gray-700 leading-tight">Edit User</h2>
+            <h2>Edit User</h2>
         </template>
         <div class="px-2 pb-2">
             <div class="dark:bg-gray-700 dark:text-gray-400 space-y-2">

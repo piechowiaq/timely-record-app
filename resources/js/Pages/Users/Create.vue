@@ -96,7 +96,7 @@ function submit() {
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-white dark:text-gray-700 leading-tight">Create User</h2>
+            <h2>Create User</h2>
         </template>
         <div class="px-2 pb-2">
             <div class="dark:bg-gray-700 dark:text-gray-400 space-y-2">

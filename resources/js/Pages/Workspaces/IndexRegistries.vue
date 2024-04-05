@@ -92,7 +92,7 @@ router.on('start', (event) => {
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-white leading-tight">
+            <h2>
                 <Link :href="route('workspaces.edit', workspace.id)">Edit Workspace &lt
                 </Link>
                 Sync Workspace Registries

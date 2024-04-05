@@ -38,7 +38,7 @@ const destroy = (report) => {
     <AuthenticatedLayout :workspace="workspace">
 
         <template #header>
-            <h2 class=" text-white leading-tight">
+            <h2>
                 <Link :href="route('workspaces.registries.index',  workspace.id)">
                     Registries &lt
                 </Link>

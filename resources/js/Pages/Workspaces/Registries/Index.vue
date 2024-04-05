@@ -86,7 +86,7 @@ const timeLeftUntilExpiryDate = (expiry_date) => {
 
     <AuthenticatedLayout :workspace="workspace">
         <template #header>
-            <h2 class="text-white leading-tight">Registries</h2>
+            <h2>Registries</h2>
         </template>
         <div class="px-2 pb-2 ">
             <div class="dark:bg-gray-700 dark:text-gray-400  p-6 shadow overflow-x-auto bg-white">

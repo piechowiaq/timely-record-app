@@ -22,7 +22,7 @@ const projectId = usePage().props.projectId;
         :class="{'border-green-600': registryMetrics === 100, 'border-cyan-600': registryMetrics !== 100}"
         class="border flex-grow p-4 bg-white text-gray-600 dark:bg-gray-700 dark:text-gray-400">
         <article class="font-bold">
-            <header class="justify-between items-center flex border-b pb-2 block whitespace-nowrap ">
+            <header class="justify-between items-center flex border-b pb-2 whitespace-nowrap ">
                 <h2 class="truncate">Registries</h2>
                 <template v-if="registryMetrics === 100">
                     <span class="bg-green-500 px-2 mb-2 rounded text-white text-xs font-medium">EXCELLENT</span>

@@ -38,7 +38,7 @@ const store = () => {
 
     <AuthenticatedLayout :workspace="workspace">
         <template #header>
-            <h2 class="text-white leading-tight">Create User</h2>
+            <h2>Create User</h2>
         </template>
 
         <div class="px-2 pb-2">

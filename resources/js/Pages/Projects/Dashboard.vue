@@ -28,8 +28,8 @@ const getBadgeColor = (workspace) => {
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 v-if="isSuperAdmin" class="text-white dark:text-gray-700 leading-tight">Admin Dashboard</h2>
-            <h2 v-else class="text-white dark:text-gray-700 leading-tight">Project Dashboard</h2>
+            <h2 v-if="isSuperAdmin">Admin Dashboard</h2>
+            <h2 v-else>Project Dashboard</h2>
         </template>
 
         <!-- component -->

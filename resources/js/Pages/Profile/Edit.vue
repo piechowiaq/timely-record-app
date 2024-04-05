@@ -27,7 +27,7 @@ const isSuperAdmin = usePage().props.auth.user.roles.map(role => role.name).incl
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-white dark:text-gray-700 leading-tight">Profile</h2>
+            <h2>Profile</h2>
         </template>
 
         <div class="px-2 pb-2">

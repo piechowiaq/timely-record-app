@@ -20,7 +20,7 @@ const form = useForm({
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-white leading-tight">Create Workspace</h2>
+            <h2>Create Workspace</h2>
         </template>
 
         <div class="px-2 pb-2">

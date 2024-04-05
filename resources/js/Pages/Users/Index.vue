@@ -97,8 +97,7 @@ let filteredProjects = computed(() =>
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-white leading-tight">Users</h2>
-
+            <h2>Users</h2>
         </template>
         <div class="px-2 pb-2 ">
             <div class="p-6 shadow overflow-x-auto dark:bg-gray-700 dark:text-gray-400 bg-white">

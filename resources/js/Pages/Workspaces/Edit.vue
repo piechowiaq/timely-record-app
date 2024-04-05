@@ -25,7 +25,7 @@ const projectId = usePage().props.auth.user.project_id;
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-white leading-tight">Edit Workspace</h2>
+            <h2>Edit Workspace</h2>
         </template>
 
         <div class="px-2 pb-2">

@@ -26,7 +26,7 @@ const projectId = usePage().props.projectId;
 
     <AuthenticatedLayout :workspace="workspace">
         <template #header>
-            <h2 class="text-white leading-tight">Dashboard</h2>
+            <h2>Dashboard</h2>
         </template>
 
 
