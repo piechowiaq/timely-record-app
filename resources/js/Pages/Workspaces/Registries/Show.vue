@@ -103,7 +103,7 @@ const getSortIconClass = (field) => {
 </script>
 
 <template>
-    <Head title="Project"/>
+    <Head title="Report"/>
 
     <AuthenticatedLayout :workspace="workspace">
 
@@ -115,12 +115,9 @@ const getSortIconClass = (field) => {
                 {{ registry.name }}
             </h2>
         </template>
-
-
-        <div class="dark:bg-gray-700 dark:text-gray-400  md:flex md:flex-grow md:overflow-hidden  m-2">
-            <div class=" md:flex-1 md:overflow-y-auto">
-
-                <div class="p-4 bg-white">
+        <div class="md:flex md:flex-grow md:overflow-hidden m-2">
+            <div class="md:flex-1 md:overflow-y-auto">
+                <div class="p-4 bg-white dark:bg-gray-700 dark:text-gray-400">
                     <div class="flex items-center justify-between mb-2">
                         <h1 class="font-bold text-lg text-gray-900 dark:text-gray-100">{{ registry.name }}</h1>
                         <Link v-if="canCreateReport"
@@ -129,194 +126,152 @@ const getSortIconClass = (field) => {
                             Submit Report
                         </Link>
                     </div>
-
-
                     <div class="font-medium text-gray-900 dark:text-gray-100"> Description:</div>
-
-                    <div class=" text-sm mb-2 text-gray-600 dark:text-gray-400">{{ registry.description }}</div>
+                    <div class="text-sm mb-2 text-gray-600 dark:text-gray-400">{{ registry.description }}</div>
                     <div class="font-medium text-gray-900 dark:text-gray-100"> Valid for: <span
                         class="text-sm text-gray-600 dark:text-gray-400">{{ validFor }}</span></div>
                 </div>
+                <div class="shadow overflow-x-auto p-2 mt-2 bg-white dark:bg-gray-700 dark:text-gray-400">
 
-                <div class="shadow overflow-x-auto p-2 mt-2 bg-white">
-
-                    <table class="w-full text-sm text-gray-500 dark:text-gray-400 ">
+                    <!-- Most current report table -->
+                    <table class="w-full text-sm text-gray-500 dark:text-gray-400">
                         <caption
                             class="font-bold text-xs text-gray-700 uppercase pb-2 dark:bg-gray-700 dark:text-gray-400">
-                            Most
-                            current
-                            report
+                            Most current report
                         </caption>
                         <thead v-if="currentReport"
-                               class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                               class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-600 dark:text-gray-400">
                         <tr>
-                            <th class="text-start flex p-2">
-                                Data Przeglądu
-
-                            </th>
+                            <th class="text-start flex p-2">Data Przeglądu</th>
                             <th class="p-2"></th>
-                            <th class="p-2 flex">
-                                Wygasa dnia | za
-
-                            </th>
+                            <th class="p-2 flex">Wygasa dnia | za</th>
                             <th class="p-2">Pobierz</th>
                         </tr>
                         </thead>
                         <tbody>
+                        <!-- Table content for most current report -->
                         <tr v-if="!currentReport">
-                            <td class="p-2 text-red-600" colspan="4">Awaiting upoload.</td>
+                            <td class="p-2 text-red-600" colspan="4">Awaiting upload.</td>
                         </tr>
                         <tr v-else>
-                            <td class=" p-2 w-2/3 truncate ">
-
-
+                            <td class="p-2 w-2/3 truncate">
                                 <Link
                                     :href="route('workspaces.registries.reports.edit', [workspace.id, registry.id, currentReport.id])"
-                                    class="hover:text-cyan-700 text-sm  font-medium text-cyan-600 ">
+                                    class="hover:text-cyan-700 text-sm font-medium text-cyan-600">
                                     {{ currentReport.report_date }}
                                 </Link>
-                                <span class="text-xs text-gray-400 italic  ml-6">
-                                        Created: {{ toDateString(currentReport.created_at) }} -
-                                        {{
+                                <span class="text-xs text-gray-400 italic ml-6">
+                                Created: {{
+                                        toDateString(currentReport.created_at)
+                                    }} - {{
                                         currentReport?.created_by_user?.first_name
-
                                     }} {{ currentReport?.created_by_user?.last_name }}
-                                    <span
-                                        v-if="new Date(currentReport.updated_at) > new Date(currentReport.created_at)">
-                                    | Updated: {{ toDateString(currentReport.updated_at) }} -
-                                        {{
-                                            currentReport?.updated_by_user?.first_name
-                                        }} {{ currentReport?.updated_by_user?.last_name }}
-                                        </span>
-
-
-                                    </span>
-
+                                <span v-if="new Date(currentReport.updated_at) > new Date(currentReport.created_at)">
+                                    / Updated: {{
+                                        toDateString(currentReport.updated_at)
+                                    }} - {{
+                                        currentReport?.updated_by_user?.first_name
+                                    }} {{ currentReport?.updated_by_user?.last_name }}
+                                </span>
+                            </span>
                             </td>
-                            <td class=" p-2 px-2 w-16">
-
+                            <td class="p-2 px-2 w-16">
                                 <i class="fa-solid fa-bell text-red-500"
                                    v-if="isReportExpired(currentReport.expiry_date)"></i>
                                 <i class="fa-solid fa-bell text-yellow-500"
                                    v-else-if="isReportExpiringInLessThanAMonth(currentReport.expiry_date)"></i>
-
-
                             </td>
                             <td class="p-2 text-sm font-medium truncate">
-                                {{ currentReport.expiry_date }} <span class="ml-2 text-xs italic text-gray-400"> {{
+                                {{ currentReport.expiry_date }} <span class="ml-2 text-xs italic text-gray-400">{{
                                     timeLeftUntilExpiryDate(currentReport.expiry_date)
-                                }} </span>
+                                }}</span>
                             </td>
-                            <td class=" p-2 w-24">
-
-
+                            <td class="p-2 w-24">
                                 <a v-if="currentReport.expiry_date"
                                    class="group flex justify-center items-center bg-yellow-500 hover:bg-yellow-600"
                                    :href="route('workspaces.registries.reports.show', [workspace.id, registry.id, currentReport.id])"
-                                   target="_blank"
-                                >
+                                   target="_blank">
                                     <i class="fa-solid fa-download p-2 text-black"></i>
                                 </a>
-
-
                             </td>
                         </tr>
-
                         </tbody>
                     </table>
 
                 </div>
-                <div class="bg-white shadow overflow-x-auto p-2 mt-2">
+                <div class="bg-white shadow overflow-x-auto p-2 mt-2 dark:bg-gray-700 dark:text-gray-400">
 
-
-                    <table class="w-full bg-gray-100 text-sm text-gray-500 dark:text-gray-400 ">
+                    <!-- Historical reports table -->
+                    <table class="w-full text-sm text-gray-500 dark:text-gray-400">
                         <caption
                             class="font-bold text-xs text-gray-700 uppercase pb-2 dark:bg-gray-700 dark:text-gray-400">
-                            Hisorical
-                            reports
+                            Historical reports
                         </caption>
                         <thead v-if="otherReports.length !== 0"
-                               class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                               class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-600 dark:text-gray-400">
                         <tr>
-                            <th class="text-start flex items-center p-2" @click="sort('report_date')">
-                                Data Przeglądu
-                                <i :class="getSortIconClass('report_date')"></i>
-
-                            </th>
+                            <th class="text-start flex items-center p-2" @click="sort('report_date')">Data Przeglądu <i
+                                :class="getSortIconClass('report_date')"></i></th>
                             <th class="p-2"></th>
-                            <th class="p-2 flex items-center" @click="sort('expiry_date')">
-                                Wygasa dnia | za
-                                <i :class="getSortIconClass('expiry_date')"></i>
-
-                            </th>
+                            <th class="p-2 flex items-center" @click="sort('expiry_date')">Wygasa dnia | za <i
+                                :class="getSortIconClass('expiry_date')"></i></th>
                             <th class="p-2">Pobierz</th>
                         </tr>
                         </thead>
                         <tbody>
+                        <!-- Table content for historical reports -->
                         <tr v-if="otherReports.length === 0">
-                            <td class="p-2 text-red-600" colspan="4">No other reports.</td>
+                            <td class="p-2 text-red-600 dark:bg-gray-600 dark:text-gray-400" colspan="4">No other
+                                reports.
+                            </td>
                         </tr>
-                        <tr v-else v-for="report of otherReports" :key="report.id">
-                            <td class="p-2 w-2/3 truncate ">
+                        <tr v-else v-for="report of otherReports" :key="report.id"
+                            class="dark:bg-gray-700 dark:text-gray-400">
+                            <td class="p-2 w-2/3 truncate dark:bg-gray-700 dark:text-gray-400">
                                 <Link
                                     :href="route('workspaces.registries.reports.edit', [workspace.id, registry.id, report.id])"
-                                    class="text-sm hover:text-cyan-700 font-medium text-cyan-600 ">
+                                    class="text-sm hover:text-cyan-700 font-medium text-cyan-600">
                                     {{ report.report_date }}
                                 </Link>
-                                <span class="text-xs text-gray-400 italic  ml-6">
-                                        Created: {{ toDateString(report.created_at) }} -
-                                        {{ report?.created_by_user?.first_name }} {{
-                                        report?.created_by_user?.last_name
+                                <span class="text-xs text-gray-400 italic ml-6">
+                                Created: {{ toDateString(report.created_at) }} - {{
+                                        report?.created_by_user?.first_name
+                                    }} {{ report?.created_by_user?.last_name }}
+                                <span v-if="new Date(report.updated_at) > new Date(report.created_at)">
+                                    / Updated: {{
+                                        toDateString(report.updated_at)
+                                    }} - {{ report?.updated_by_user?.first_name }} {{
+                                        report?.updated_by_user?.last_name
                                     }}
-                                        <span v-if="new Date(report.updated_at) > new Date(report.created_at)">
-                                        / Updated: {{ toDateString(report.updated_at) }} -
-                                            {{
-                                                report?.updated_by_user?.first_name
-                                            }} {{ report?.updated_by_user?.last_name }}
-                                        </span>
-                                    </span>
-
+                                </span>
+                            </span>
                             </td>
-                            <td class=" p-2 px-2 w-16">
-
-
-                                <i class="fa-solid fa-bell text-red-200"
-                                   v-if="isReportExpired(report.expiry_date)"/>
-
+                            <td class="p-2 px-2 w-16 dark:bg-gray-700 dark:text-gray-400">
+                                <i class="fa-solid fa-bell text-red-200" v-if="isReportExpired(report.expiry_date)"/>
                                 <i v-else-if="isReportExpiringInLessThanAMonth(report.expiry_date)"
-
                                    class="fa-solid fa-bell text-yellow-500"/>
-
                             </td>
-                            <td class="p-2 text-sm truncate ... ">
-                                {{ report.expiry_date }} <span
-                                class="ml-2 text-xs italic text-gray-400"> {{
+                            <td class="p-2 text-sm truncate">
+                                {{ report.expiry_date }} <span class="ml-2 text-xs italic text-gray-400">{{
                                     timeLeftUntilExpiryDate(report.expiry_date)
-                                }} </span>
+                                }}</span>
                             </td>
-
-                            <td class=" p-2 w-24">
-
-
+                            <td class="p-2 w-24">
                                 <a v-if="report.expiry_date"
                                    class="group flex justify-center items-center bg-yellow-200 hover:bg-yellow-400"
                                    :href="route('workspaces.registries.reports.show', [workspace.id, registry.id, report.id])"
-                                   target="_blank"
-                                >
+                                   target="_blank">
                                     <i class="fa-solid fa-download p-2 text-gray-400"></i>
                                 </a>
-
-
                             </td>
                         </tr>
-
                         </tbody>
                     </table>
 
                 </div>
-
             </div>
         </div>
+
 
     </AuthenticatedLayout>
 

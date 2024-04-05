@@ -97,7 +97,7 @@ const isSuperAdmin = usePage().props.auth.user.roles.map(role => role.name).incl
                 <div class="flex items-center justify-between">
                     <div class="mb-2 flex items-center">
                         <input v-model="index.search" type="text" name="search" placeholder="Search…"
-                               class="text-sm h-8 px-6 py-2 border-gray-200 ">
+                               class="text-sm h-8 px-6 py-3 border-gray-200 ">
                         <button type="button"
                                 class="ml-3 text-sm text-gray-500 hover:text-gray-700 focus:text-cyan-600"
                                 @click="resetSearch">Reset
@@ -217,7 +217,7 @@ const isSuperAdmin = usePage().props.auth.user.roles.map(role => role.name).incl
                                 class="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                 <Link v-if="isSuperAdmin && registry.project_id === null"
                                       :href="route('registries.edit', registry.id)"
-                                      class="text-blue-600 hover:text-blue-700">
+                                      class="text-cyan-600 hover:text-blue-700">
                                     {{ registry.name }}
                                 </Link>
                                 <Link v-else-if="registry.project_id === null"
