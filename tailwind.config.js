@@ -17,18 +17,17 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                brand: '#0891b2',
+                darker: '#374151',
+                dark: '#4b5563',
+                softDark: '#9ca3af',
+                warning: '#fbbf24',
+                danger: '#f87171',
+                success: '#4ade80',
+            },
         },
-        colors: {
-            transparent: 'transparent',
-            current: 'currentColor',
-            'brand': '#0891b2',
-            'darker': '#374151',
-            'dark': '#4b5563',
-            'soft-dark': '#9ca3af',
-            'amber': '#fbbf24',
-            'red': '#f87171',
-            'green': '#4ade80',
-        },
+
     },
 
 

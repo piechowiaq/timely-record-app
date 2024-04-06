@@ -143,7 +143,7 @@ const getBadgeColor = (workspace) => {
                             <span class="ml-2">Registries</span>
                         </header>
                         <p class="font-medium  text-sm text-gray-500">{{
-                                workspace.registryMetrics
+                            workspace.registryMetrics
                             }}%</p>
 
                     </div>
