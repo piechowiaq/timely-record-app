@@ -13,6 +13,7 @@ import {
     TransitionRoot,
 } from "@headlessui/vue";
 import InputLabel from "@/Components/InputLabel.vue";
+import Search from "@/Components/Search.vue";
 
 const props = defineProps(["workspaces", "filters", "projects"]);
 
@@ -97,38 +98,27 @@ let filteredProjects = computed(() =>
         </template>
         <div class="px-2 pb-2">
             <div
-                class="dark:bg-gray-800 dark:text-gray-400 p-6 shadow overflow-x-auto bg-white"
+                class="overflow-x-auto bg-white p-6 shadow dark:bg-gray-800 dark:text-gray-400"
             >
                 <div class="flex items-center justify-between">
-                    <div class="mb-2 flex items-center">
-                        <input
-                            v-model="index.search"
-                            type="text"
-                            name="search"
-                            placeholder="Search…"
-                            class="text-sm h-8 px-6 py-2 border-gray-200"
-                        />
-                        <button
-                            type="button"
-                            class="ml-3 text-sm text-gray-500 hover:text-gray-700 focus:text-cyan-600"
-                            @click="resetSearch"
-                        >
-                            Reset
-                        </button>
-                    </div>
+                    <Search
+                        v-model="index.search"
+                        @update:model-value="index.search = $event"
+                        @reset="resetSearch"
+                    />
                     <div v-if="superAdmin" class="z-10">
                         <Combobox v-model="selected">
                             <div class="mb-2 flex items-center">
                                 <InputLabel
                                     for="projects"
                                     value="Project"
-                                    class="text-sm px-4 border-gray-200"
+                                    class="border-gray-200 px-4 text-sm"
                                 />
                                 <div class="relative">
                                     <div>
                                         <ComboboxInput
                                             id="projects"
-                                            class="text-sm h-8 px-6 py-3 border-gray-200"
+                                            class="h-8 border-gray-200 px-6 py-3 text-sm"
                                             :displayValue="
                                                 (project) => project.name
                                             "
@@ -215,17 +205,17 @@ let filteredProjects = computed(() =>
                     <Link
                         v-else
                         :href="route('workspaces.create', projectId)"
-                        class="text-cyan-600 hover:text-cyan-700 text-sm"
+                        class="text-sm text-cyan-600 hover:text-cyan-700"
                     >
                         Create Workspaces
                     </Link>
                 </div>
                 <div class="relative overflow-x-auto">
                     <table
-                        class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
+                        class="w-full text-left text-sm text-gray-500 rtl:text-right dark:text-gray-400"
                     >
                         <thead
-                            class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+                            class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400"
                         >
                             <tr>
                                 <th
@@ -261,7 +251,7 @@ let filteredProjects = computed(() =>
                             >
                                 <th
                                     scope="row"
-                                    class="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                                    class="whitespace-nowrap px-6 py-2 font-medium text-gray-900 dark:text-white"
                                 >
                                     <Link
                                         :href="

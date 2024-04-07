@@ -1,29 +1,28 @@
 <script setup>
-import {onMounted, ref} from 'vue';
+import { onMounted, ref } from "vue";
 
 defineProps({
-  modelValue: {
-    required: true,
-  },
+    modelValue: {
+        required: true,
+    },
 });
 
-defineEmits(['update:modelValue']);
+defineEmits(["update:modelValue"]);
 
 const input = ref(null);
 
 onMounted(() => {
-  if (input.value.hasAttribute('autofocus')) {
-    input.value.focus();
-  }
+    if (input.value.hasAttribute("autofocus")) {
+        input.value.focus();
+    }
 });
 
-defineExpose({focus: () => input.value.focus()});
+defineExpose({ focus: () => input.value.focus() });
 </script>
 
 <template>
     <textarea
-        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-cyan-500 dark:focus:border-cyan-600 focus:ring-cyan-500 dark:focus:ring-cyan-600 shadow-sm"
-
+        class="border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-cyan-600 dark:focus:ring-cyan-600"
         :value="modelValue"
         @input="$emit('update:modelValue', $event.target.value)"
         ref="input"

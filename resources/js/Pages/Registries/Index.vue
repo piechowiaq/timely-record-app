@@ -11,16 +11,17 @@ import {
     ComboboxInput,
     ComboboxOption,
     ComboboxOptions,
-    TransitionRoot
+    TransitionRoot,
 } from "@headlessui/vue";
 import InputLabel from "@/Components/InputLabel.vue";
+import Search from "@/Components/Search.vue";
 
 const props = defineProps(["filters", "registries", "projects"]);
 
 const projectId = usePage().props.projectId;
 
 const index = ref({
-    search: props.filters.search
+    search: props.filters.search,
 });
 
 const superAdmin = usePage().props.projectId === null;
@@ -30,9 +31,9 @@ watch(
     debounce(() => {
         router.get(route("registries.index"), index.value, {
             preserveState: true,
-            replace: true
+            replace: true,
         });
-    }, 300)
+    }, 300),
 );
 
 const sort = (field) => {
@@ -55,7 +56,7 @@ const getSortIconClass = (field) => {
 
 const augmentedProjects = computed(() => [
     { id: "", name: "All Projects" },
-    ...props.projects
+    ...props.projects,
 ]);
 
 const selected = ref({ id: "", name: "All Projects" });
@@ -68,7 +69,7 @@ watch(
         } else {
             index.value.projectId = null;
         }
-    }
+    },
 );
 
 let query = ref("");
@@ -77,11 +78,11 @@ let filteredProjects = computed(() =>
     query.value === ""
         ? augmentedProjects.value
         : augmentedProjects.value.filter((project) =>
-            project.name
-                .toLowerCase()
-                .replace(/\s+/g, "")
-                .includes(query.value.toLowerCase().replace(/\s+/g, ""))
-        )
+              project.name
+                  .toLowerCase()
+                  .replace(/\s+/g, "")
+                  .includes(query.value.toLowerCase().replace(/\s+/g, "")),
+          ),
 );
 
 const isSuperAdmin = usePage()
@@ -98,36 +99,25 @@ const isSuperAdmin = usePage()
         </template>
         <div class="px-2 pb-2">
             <div
-                class="p-6 dark:bg-gray-800 dark:text-gray-400 shadow overflow-x-auto bg-white"
+                class="overflow-x-auto bg-white p-6 shadow dark:bg-gray-800 dark:text-gray-400"
             >
                 <div class="flex items-center justify-between">
-                    <div class="mb-2 flex items-center">
-                        <input
-                            v-model="index.search"
-                            class="py-3 dark:border-gray-400 border-gray-200 text-sm h-8 px-6 dark:bg-gray-800"
-                            name="search"
-                            placeholder="Search…"
-                            type="text"
-                        />
-                        <button
-                            class="ml-3 hover:text-gray-700 focus:text-cyan-600 text-sm text-gray-500"
-                            type="button"
-                            @click="resetSearch"
-                        >
-                            Reset
-                        </button>
-                    </div>
+                    <Search
+                        v-model="index.search"
+                        @update:model-value="index.search = $event"
+                        @reset="resetSearch"
+                    />
                     <div v-if="superAdmin" class="mb-2 flex items-center">
                         <Link
                             :href="route('registries.create')"
-                            class="text-cyan-600 hover:text-cyan-700 pr-4 text-sm border-r-2"
+                            class="border-r-2 pr-4 text-sm text-cyan-600 hover:text-cyan-700"
                         >
                             Create Registry
                         </Link>
                         <Combobox v-model="selected">
-                            <div class="flex items-center z-10">
+                            <div class="z-10 flex items-center">
                                 <InputLabel
-                                    class="text-sm px-4 border-gray-200"
+                                    class="border-gray-200 px-4 text-sm"
                                     for="projects"
                                     value="Project"
                                 />
@@ -138,7 +128,7 @@ const isSuperAdmin = usePage()
                                             :displayValue="
                                                 (project) => project.name
                                             "
-                                            class="text-sm h-8 px-6 py-3 border-gray-200"
+                                            class="h-8 border-gray-200 px-6 py-3 text-sm"
                                             @change="
                                                 query = $event.target.value
                                             "
@@ -223,122 +213,122 @@ const isSuperAdmin = usePage()
                     <Link
                         v-else
                         :href="route('registries.create')"
-                        class="text-cyan-600 hover:text-cyan-700 text-sm"
+                        class="text-sm text-cyan-600 hover:text-cyan-700"
                     >
                         Create Custom Registry
                     </Link>
                 </div>
                 <div class="relative overflow-x-auto">
                     <table
-                        class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
+                        class="w-full text-left text-sm text-gray-500 rtl:text-right dark:text-gray-400"
                     >
                         <thead
-                            class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-900 dark:text-gray-400"
+                            class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-900 dark:text-gray-400"
                         >
-                        <tr>
-                            <th
-                                class="px-6 py-2"
-                                scope="col"
-                                @click="sort('name')"
-                            >
-                                Name
-                                <i :class="getSortIconClass('name')"></i>
-                            </th>
+                            <tr>
+                                <th
+                                    class="px-6 py-2"
+                                    scope="col"
+                                    @click="sort('name')"
+                                >
+                                    Name
+                                    <i :class="getSortIconClass('name')"></i>
+                                </th>
 
-                            <th
-                                class="px-6 py-2"
-                                scope="col"
-                                @click="sort('validity_period')"
-                            >
-                                Valid in months
-                                <i
-                                    :class="
+                                <th
+                                    class="px-6 py-2"
+                                    scope="col"
+                                    @click="sort('validity_period')"
+                                >
+                                    Valid in months
+                                    <i
+                                        :class="
                                             getSortIconClass('validity_period')
                                         "
-                                ></i>
-                            </th>
+                                    ></i>
+                                </th>
 
-                            <th
-                                class="px-6 py-2 text-center"
-                                scope="col"
-                                @click="sort('project_id')"
-                            >
-                                Type
-                                <i
-                                    :class="getSortIconClass('project_id')"
-                                ></i>
-                            </th>
-                        </tr>
+                                <th
+                                    class="px-6 py-2 text-center"
+                                    scope="col"
+                                    @click="sort('project_id')"
+                                >
+                                    Type
+                                    <i
+                                        :class="getSortIconClass('project_id')"
+                                    ></i>
+                                </th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <tr
-                            v-for="(registry, index) in registries.data"
-                            :key="registry.id"
-                            :class="{
+                            <tr
+                                v-for="(registry, index) in registries.data"
+                                :key="registry.id"
+                                :class="{
                                     'bg-white dark:bg-gray-800': true,
                                     'border-b dark:border-gray-700':
                                         index !== registries.data.length - 1,
                                 }"
-                        >
-                            <th
-                                class="px-6 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                                scope="row"
                             >
-                                <Link
-                                    v-if="
+                                <th
+                                    class="whitespace-nowrap px-6 py-2 font-medium text-gray-900 dark:text-white"
+                                    scope="row"
+                                >
+                                    <Link
+                                        v-if="
                                             isSuperAdmin &&
                                             registry.project_id === null
                                         "
-                                    :href="
+                                        :href="
                                             route(
                                                 'registries.edit',
                                                 registry.id,
                                             )
                                         "
-                                    class="text-cyan-600 hover:text-blue-700"
-                                >
-                                    {{ registry.name }}
-                                </Link>
-                                <Link
-                                    v-else-if="registry.project_id === null"
-                                    :href="
+                                        class="text-cyan-600 hover:text-cyan-700"
+                                    >
+                                        {{ registry.name }}
+                                    </Link>
+                                    <Link
+                                        v-else-if="registry.project_id === null"
+                                        :href="
                                             route(
                                                 'registries.show',
                                                 registry.id,
                                             )
                                         "
-                                    class="text-cyan-600 hover:text-cyan-700"
-                                >
-                                    {{ registry.name }}
-                                </Link>
+                                        class="text-cyan-600 hover:text-cyan-700"
+                                    >
+                                        {{ registry.nam }}
+                                    </Link>
 
-                                <Link
-                                    v-else
-                                    :href="
+                                    <Link
+                                        v-else
+                                        :href="
                                             route(
                                                 'registries.edit',
                                                 registry.id,
                                             )
                                         "
-                                    class="text-cyan-600 hover:text-cyan-700"
-                                >
-                                    {{ registry.name }}
-                                </Link>
-                            </th>
+                                        class="text-cyan-600 hover:text-cyan-700"
+                                    >
+                                        {{ registry.name }}
+                                    </Link>
+                                </th>
 
-                            <td class="px-6 py-2">
-                                {{ registry.validity_period }}
-                            </td>
-                            <td
-                                class="px-6 flex justify-center py-2 text-center"
-                            >
-                                <ApplicationLogo
-                                    v-if="registry.project_id === null"
-                                    class="w-4 h-4 fill-white stroke-2"
-                                ></ApplicationLogo>
-                                <p v-else class="italic text-xs">custom</p>
-                            </td>
-                        </tr>
+                                <td class="px-6 py-2">
+                                    {{ registry.validity_period }}
+                                </td>
+                                <td
+                                    class="flex justify-center px-6 py-2 text-center"
+                                >
+                                    <ApplicationLogo
+                                        v-if="registry.project_id === null"
+                                        class="h-4 w-4 fill-white stroke-2"
+                                    ></ApplicationLogo>
+                                    <p v-else class="text-xs italic">custom</p>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

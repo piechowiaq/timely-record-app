@@ -1,7 +1,7 @@
 <script setup>
-import {computed} from 'vue';
+import { computed } from "vue";
 
-const emit = defineEmits(['update:checked']);
+const emit = defineEmits(["update:checked"]);
 
 const props = defineProps({
     checked: {
@@ -19,7 +19,7 @@ const proxyChecked = computed({
     },
 
     set(val) {
-        emit('update:checked', val);
+        emit("update:checked", val);
     },
 });
 </script>
@@ -29,6 +29,6 @@ const proxyChecked = computed({
         type="checkbox"
         :value="value"
         v-model="proxyChecked"
-        class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-cyan-600 shadow-sm focus:ring-cyan-500 dark:focus:ring-cyan-600 dark:focus:ring-offset-gray-800"
+        class="rounded border-gray-300 text-cyan-600 shadow-sm focus:ring-cyan-500 dark:border-gray-700 dark:bg-gray-900 dark:focus:ring-cyan-600 dark:focus:ring-offset-gray-800"
     />
 </template>

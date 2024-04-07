@@ -48,8 +48,8 @@ const showProjectNavigation =
 <template>
     <div>
         <div v-if="impersonate" class="relative bg-red-400">
-            <div class="max-w-screen-xl px-3 sm:px-6 lg:px-8 mx-auto py-2">
-                <div class="pr-16 sm:text-center sm:px-16">
+            <div class="mx-auto max-w-screen-xl px-3 py-2 sm:px-6 lg:px-8">
+                <div class="pr-16 sm:px-16 sm:text-center">
                     <p class="font-medium text-white">
                         <span class="md:hidden">
                             You are impersonating {{ user.first_name }}
@@ -62,7 +62,7 @@ const showProjectNavigation =
                         <span class="block sm:ml-2 sm:inline-block">
                             <Link
                                 :href="route('users.leave-impersonation')"
-                                class="text-white font-bold underline"
+                                class="font-bold underline"
                             >
                                 Leave Impersonation &rarr;
                             </Link>
@@ -72,26 +72,26 @@ const showProjectNavigation =
             </div>
         </div>
 
-        <div class="min-h-screen flex-col dark:bg-gray-900 flex bg-gray-100">
+        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
             <nav
-                class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700"
+                class="border-b border-gray-100 bg-white dark:border-gray-700 dark:bg-gray-800"
             >
                 <!-- Primary Navigation Menu -->
                 <div class="px-4">
-                    <div class="flex justify-between h-16">
+                    <div class="flex h-16 justify-between">
                         <div class="flex">
                             <!-- Logo -->
                             <div
-                                class="shrink-0 flex items-center justify-center w-56 -ml-4"
+                                class="-ml-4 flex w-56 shrink-0 items-center justify-center"
                             >
                                 <Link :href="route('projects.dashboard')">
                                     <div
-                                        class="flex justify-start items-center"
+                                        class="flex items-center justify-start"
                                     >
-                                        <ApplicationLogo class="w-10 h-10" />
+                                        <ApplicationLogo class="h-10 w-10" />
 
                                         <p
-                                            class="ml-2 font-bold whitespace-nowrap tracking-widest text-gray-600"
+                                            class="ml-2 whitespace-nowrap font-bold tracking-widest text-gray-600"
                                         >
                                             <span class="text-cyan-600"
                                                 >TIMELY</span
@@ -105,7 +105,7 @@ const showProjectNavigation =
                             <!-- Navigation Links -->
                             <div
                                 v-if="showWorkspaceNavigation"
-                                class="hidden items-center sm:-my-px sm:ml-10 sm:flex space-x-8"
+                                class="hidden items-center space-x-8 sm:-my-px sm:ml-10 sm:flex"
                             >
                                 <Link
                                     :href="
@@ -114,27 +114,27 @@ const showProjectNavigation =
                                             workspace.id,
                                         )
                                     "
-                                    class="hover:text-cyan-700 text-cyan-600 text-sm"
+                                    class="text-sm text-cyan-600 hover:text-cyan-700"
                                 >
                                     {{ workspace.name }}
                                 </Link>
                             </div>
                             <div
                                 v-else-if="superAdmin"
-                                class="hidden space-x-8 items-center sm:-my-px sm:ml-10 sm:flex"
+                                class="hidden items-center space-x-8 sm:-my-px sm:ml-10 sm:flex"
                             >
                                 <p
-                                    class="text-red-400 uppercase text-xs font-semibold"
+                                    class="text-xs font-semibold uppercase text-red-400"
                                 >
                                     Admin Panel
                                 </p>
                             </div>
                             <div
                                 v-else
-                                class="hidden space-x-8 items-center sm:-my-px sm:ml-10 sm:flex"
+                                class="hidden items-center space-x-8 sm:-my-px sm:ml-10 sm:flex"
                             >
                                 <p
-                                    class="text-amber-400 uppercase text-xs font-semibold"
+                                    class="text-xs font-semibold uppercase text-amber-400"
                                 >
                                     {{ projectName }}
                                 </p>
@@ -145,7 +145,7 @@ const showProjectNavigation =
                             <button @click="toggleDark()">
                                 <svg
                                     v-if="isDark"
-                                    class="w-6 h-6 text-amber-400"
+                                    class="h-6 w-6 text-amber-400"
                                     fill="none"
                                     stroke="currentColor"
                                     stroke-width="1.5"
@@ -160,7 +160,7 @@ const showProjectNavigation =
                                 </svg>
                                 <svg
                                     v-else
-                                    class="w-6 h-6 text-gray-400"
+                                    class="h-6 w-6 text-gray-400"
                                     fill="none"
                                     stroke="currentColor"
                                     stroke-width="1.5"
@@ -177,14 +177,14 @@ const showProjectNavigation =
 
                             <div class="hidden sm:flex sm:items-center">
                                 <!-- Settings Dropdown -->
-                                <div class="ml-3 relative">
+                                <div class="relative ml-3">
                                     <Dropdown align="right" width="48">
                                         <template #trigger>
                                             <span
                                                 class="inline-flex rounded-md"
                                             >
                                                 <button
-                                                    class="whitespace-nowrap inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150"
+                                                    class="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none dark:bg-gray-800 dark:text-gray-400 dark:hover:text-gray-300"
                                                     type="button"
                                                 >
                                                     {{
@@ -197,7 +197,7 @@ const showProjectNavigation =
                                                     }}
 
                                                     <svg
-                                                        class="ml-2 -mr-0.5 h-4 w-4"
+                                                        class="-mr-0.5 ml-2 h-4 w-4"
                                                         fill="currentColor"
                                                         viewBox="0 0 20 20"
                                                         xmlns="http://www.w3.org/2000/svg"
@@ -243,7 +243,7 @@ const showProjectNavigation =
                             <!-- Hamburger -->
                             <div class="-mr-2 flex items-center sm:hidden">
                                 <button
-                                    class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400 transition duration-150 ease-in-out"
+                                    class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none dark:text-gray-500 dark:hover:bg-gray-900 dark:hover:text-gray-400 dark:focus:bg-gray-900 dark:focus:text-gray-400"
                                     @click="
                                         showingNavigationDropdown =
                                             !showingNavigationDropdown
@@ -294,7 +294,7 @@ const showProjectNavigation =
                 >
                     <div
                         v-if="showWorkspaceNavigation"
-                        class="pt-2 pb-3 space-y-1"
+                        class="space-y-1 pb-3 pt-2"
                     >
                         <ul>
                             <li
@@ -315,7 +315,7 @@ const showProjectNavigation =
 
                     <div
                         v-else-if="showProjectNavigation"
-                        class="pt-2 pb-3 space-y-1"
+                        class="space-y-1 pb-3 pt-2"
                     >
                         <ul>
                             <li
@@ -336,15 +336,15 @@ const showProjectNavigation =
 
                     <!-- Responsive Settings Options -->
                     <div
-                        class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600"
+                        class="border-t border-gray-200 pb-1 pt-4 dark:border-gray-600"
                     >
                         <div class="px-4">
                             <div
-                                class="font-medium text-base text-gray-800 dark:text-gray-200"
+                                class="text-base font-medium text-gray-800 dark:text-gray-200"
                             >
                                 {{ $page.props.auth.user.name }}
                             </div>
-                            <div class="font-medium text-sm text-gray-500">
+                            <div class="text-sm font-medium text-gray-500">
                                 {{ $page.props.auth.user.email }}
                             </div>
                         </div>
@@ -374,7 +374,7 @@ const showProjectNavigation =
                 <!-- Side Navigation Menu -->
                 <aside
                     v-if="showWorkspaceNavigation"
-                    class="dark:bg-gray-800 flex-shrink-0 hidden pt-2 sm:block w-56 p-2 bg-white"
+                    class="hidden w-56 flex-shrink-0 bg-white p-2 pt-2 dark:bg-gray-800 sm:block"
                 >
                     <ul>
                         <li
@@ -396,7 +396,7 @@ const showProjectNavigation =
                 </aside>
                 <aside
                     v-else-if="showProjectNavigation"
-                    class="dark:bg-gray-800 flex-shrink-0 hidden pt-2 sm:block w-56 p-2 bg-white"
+                    class="hidden w-56 flex-shrink-0 bg-white p-2 pt-2 dark:bg-gray-800 sm:block"
                 >
                     <ul>
                         <li
@@ -418,12 +418,13 @@ const showProjectNavigation =
                 </aside>
                 <div class="flex-grow">
                     <!-- Page Heading -->
+
                     <header
                         v-if="$slots.header"
-                        class="bg-gray-500 shadow m-2 text-white leading-tight"
+                        class="m-2 bg-gray-500 text-white"
                     >
                         <div
-                            class="justify-between sm:h-10 container items-center px-4 py-2 sm:flex mx-auto"
+                            class="mx-auto items-center justify-between px-4 py-2 sm:flex sm:h-10"
                         >
                             <slot name="header" />
                             <FlashMessages />
@@ -431,7 +432,7 @@ const showProjectNavigation =
                     </header>
 
                     <!-- Page Content -->
-                    <main class="">
+                    <main>
                         <slot />
                     </main>
                 </div>
