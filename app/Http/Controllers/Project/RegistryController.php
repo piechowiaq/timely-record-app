@@ -9,7 +9,6 @@ use App\Http\Resources\ProjectResource;
 use App\Http\Resources\RegistryResource;
 use App\Models\Project;
 use App\Models\Registry;
-use App\Repositories\Contracts\RegistryRepositoryInterface;
 use App\Services\RegistryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,14 +19,9 @@ class RegistryController extends Controller
 {
     private RegistryService $registryService;
 
-    private RegistryRepositoryInterface $registryRepository;
-
-    public function __construct(
-        RegistryService $registryService,
-        RegistryRepositoryInterface $registryRepository
-    ) {
+    public function __construct(RegistryService $registryService)
+    {
         $this->registryService = $registryService;
-        $this->registryRepository = $registryRepository;
         $this->authorizeResource(Registry::class, 'registry');
     }
 

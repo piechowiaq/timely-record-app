@@ -199,7 +199,7 @@ const getBadgeColor = (workspace) => {
                 </header>
 
                 <section
-                    class="col-span-4 grid w-1/4 grid-rows-2 p-2 text-sm text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+                    class="col-span-4 grid grid-rows-2 p-2 text-sm text-gray-600 dark:bg-gray-800 dark:text-gray-400"
                 >
                     <div
                         class="flex justify-between border-b border-gray-200 py-2"

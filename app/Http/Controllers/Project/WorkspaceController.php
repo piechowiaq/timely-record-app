@@ -16,7 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Response;
 
-class WorkspaceController extends Controller
+class giWorkspaceController extends Controller
 {
     public function __construct()
     {
