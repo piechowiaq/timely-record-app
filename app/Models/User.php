@@ -6,6 +6,8 @@ use App\Models\Scopes\ProjectScope;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\Request;
@@ -41,14 +43,17 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
     /**
-     * The attributes that should be cast.
+     * Get the attributes that should be cast.
      *
-     * @var array<string, string>
+     * @return array<string, string>
      */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
 
     protected static function booted(): void
     {
@@ -58,7 +63,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Get the project that the user belongs to.
      */
-    public function project()
+    public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
@@ -66,7 +71,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * The workspaces that belong to the user.
      */
-    public function workspaces()
+    public function workspaces(): BelongsToMany
     {
         return $this->belongsToMany(Workspace::class);
     }

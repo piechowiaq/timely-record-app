@@ -1,6 +1,6 @@
-import {defineStore} from 'pinia';
+import { defineStore } from "pinia";
 
-export const useRegistriesStore = defineStore('registries', {
+export const useRegistriesStore = defineStore("registries", {
     state: () => ({
         form: {
             registriesIds: [],
@@ -9,7 +9,7 @@ export const useRegistriesStore = defineStore('registries', {
     }),
     actions: {
         updateForm(formData) {
-            this.form = {...this.form, ...formData};
+            this.form = { ...this.form, ...formData };
             this.initialized = true;
         },
     },
