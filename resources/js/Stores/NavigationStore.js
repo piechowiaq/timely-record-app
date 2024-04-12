@@ -57,6 +57,11 @@ export const useNavigationStore = defineStore("NavigationStore", {
                         iconName: "fa-box-archive",
                     },
                     {
+                        name: "Trainings",
+                        route: "trainings.index",
+                        iconName: "fa-lines-leaning",
+                    },
+                    {
                         name: "Workspaces",
                         route: "workspaces.index",
                         iconName: "fa-building-shield",

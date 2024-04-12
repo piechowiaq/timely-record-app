@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Project\RegistryController;
+use App\Http\Controllers\Project\TrainingController;
 use App\Http\Controllers\Project\UserController;
 use App\Http\Controllers\Project\WorkspaceController;
 use App\Http\Controllers\ProjectController as ProjectDashboardController;
@@ -61,6 +62,8 @@ Route::middleware('auth', 'verified', 'web')->group(function () {
     Route::get('/leave-impersonation', [UserController::class, 'leave'])->name('users.leave-impersonation');
 
     Route::resource('/registries', RegistryController::class);
+
+    Route::resource('/trainings', TrainingController::class);
 
     Route::resource('/workspaces', WorkspaceController::class);
     Route::get('/workspaces/{workspace}/index-registries', [WorkspaceController::class, 'indexRegistries'])->name('workspaces.index-registries');

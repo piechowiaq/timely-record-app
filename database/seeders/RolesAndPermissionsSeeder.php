@@ -41,6 +41,12 @@ class RolesAndPermissionsSeeder extends Seeder
         Permission::create(['name' => 'update registry']);
         Permission::create(['name' => 'delete registry']);
 
+        // Trainings
+        Permission::create(['name' => 'view training']);
+        Permission::create(['name' => 'create training']);
+        Permission::create(['name' => 'update training']);
+        Permission::create(['name' => 'delete training']);
+
         // Reports
         Permission::create(['name' => 'view report']);
         Permission::create(['name' => 'create report']);
@@ -74,6 +80,11 @@ class RolesAndPermissionsSeeder extends Seeder
                 'create registry',
                 'update registry',
                 'delete registry',
+                // Training permissions
+                'view training',
+                'create training',
+                'update training',
+                'delete training',
                 // Report permissions
                 'view report',
                 'create report',
@@ -101,6 +112,11 @@ class RolesAndPermissionsSeeder extends Seeder
                 'create registry',
                 'update registry',
                 'delete registry',
+                // Training permissions
+                'view training',
+                'create training',
+                'update training',
+                'delete training',
                 // Report permissions
                 'view report',
                 'create report',
@@ -119,6 +135,8 @@ class RolesAndPermissionsSeeder extends Seeder
                 'view workspace',
                 // Registry permissions
                 'view registry',
+                // Training permissions
+                'view training',
                 // Report permissions
                 'view report',
                 'create report',
@@ -137,6 +155,8 @@ class RolesAndPermissionsSeeder extends Seeder
                 'view workspace',
                 // Registry permissions
                 'view registry',
+                // Training permissions
+                'view training',
                 // Report permissions
                 'view report',
 
