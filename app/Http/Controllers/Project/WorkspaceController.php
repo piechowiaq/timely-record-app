@@ -7,9 +7,11 @@ use App\Http\Requests\StoreWorkspaceRequest;
 use App\Http\Requests\UpdateWorkspaceRequest;
 use App\Http\Resources\ProjectResource;
 use App\Http\Resources\RegistryResource;
+use App\Http\Resources\TrainingResource;
 use App\Http\Resources\WorkspaceResource;
 use App\Models\Project;
 use App\Models\Registry;
+use App\Models\Training;
 use App\Models\Workspace;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -111,6 +113,30 @@ class WorkspaceController extends Controller
             'workspaceRegistriesIds' => $workspace->registries->pluck('id')->toArray(),
             'registries' => RegistryResource::collection($registries),
             'registriesIds' => $registriesIds,
+            'filters' => $request->all(['search', 'field', 'direction']),
+        ]);
+    }
+
+    public function indexTrainings(Request $request, Workspace $workspace): Response
+    {
+        $this->authorize('update', $workspace);
+
+        $trainingsIds = Training::where('project_id', $workspace->project_id)
+            ->orWhereNull('project_id')->pluck('id')->toArray();
+
+        $trainings = Training::where('project_id', $workspace->project_id)
+            ->orWhereNull('project_id')
+//            ->with('cerificates')
+            ->with('workspaces')
+            ->applyFilters($request)
+            ->paginate(10)
+            ->withQueryString();
+
+        return inertia('Projects/Workspaces/IndexTrainings', [
+            'workspace' => WorkspaceResource::make($workspace),
+            'workspaceTrainingsIds' => $workspace->trainings->pluck('id')->toArray(),
+            'trainings' => TrainingResource::collection($trainings),
+            'trainingsIds' => $trainingsIds,
             'filters' => $request->all(['search', 'field', 'direction']),
         ]);
     }

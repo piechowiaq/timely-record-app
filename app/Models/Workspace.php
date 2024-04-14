@@ -54,6 +54,14 @@ class Workspace extends Model
         return $this->belongsToMany(Registry::class);
     }
 
+    /**
+     * The registries that belong to the workspace.
+     */
+    public function trainings(): BelongsToMany
+    {
+        return $this->belongsToMany(Training::class);
+    }
+
     public function scopeApplyFilters(Builder $query, Request $request): Builder
     {
         $search = $request->input('search');

@@ -68,6 +68,8 @@ Route::middleware('auth', 'verified', 'web')->group(function () {
     Route::resource('/workspaces', WorkspaceController::class);
     Route::get('/workspaces/{workspace}/index-registries', [WorkspaceController::class, 'indexRegistries'])->name('workspaces.index-registries');
     Route::put('/workspaces/{workspace}/sync-registries', [WorkspaceController::class, 'syncRegistries'])->name('workspaces.sync-registries');
+    Route::get('/workspaces/{workspace}/index-trainings', [WorkspaceController::class, 'indexTrainings'])->name('workspaces.index-trainings');
+    Route::put('/workspaces/{workspace}/sync-trainings', [WorkspaceController::class, 'syncTrainings'])->name('workspaces.sync-trainings');
 
     Route::get('/workspaces/{workspace:id}/dashboard', [WorkspaceDashboardController::class, 'dashboard'])->name('workspaces.dashboard');
 
