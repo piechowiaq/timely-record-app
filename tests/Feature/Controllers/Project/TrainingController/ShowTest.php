@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Resources\RegistryResource;
+use App\Http\Resources\TrainingResource;
 use App\Models\Registry;
+use App\Models\Training;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 
@@ -10,7 +11,7 @@ use function Pest\Laravel\get;
 
 it('requires authentication', function () {
 
-    get(route('registries.show', Registry::factory()->create()))
+    get(route('trainings.show', Registry::factory()->create()))
         ->assertRedirect(route('login'));
 });
 
@@ -26,21 +27,21 @@ it('returns a correct component', function () {
         $user->assignRole($role);
 
         actingAs($user)
-            ->get(route('registries.show', Registry::factory()->create()))
-            ->assertComponent('Registries/Show');
+            ->get(route('trainings.show', Training::factory()->create()))
+            ->assertComponent('Projects/Trainings/Show');
     }
 });
 
-it('passes correct registry to the view', function () {
+it('passes correct training to the view', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
 
     $user = User::factory()->create();
     $user->assignRole('admin');
 
-    $registry = Registry::factory()->create(['project_id' => $user->project_id]);
+    $training = Training::factory()->create(['project_id' => $user->project_id]);
 
     actingAs($user)->
-    get(route('registries.show', $registry->id))
-        ->assertHasResource('registry', RegistryResource::make($registry));
+    get(route('trainings.show', $training->id))
+        ->assertHasResource('training', TrainingResource::make($training));
 });

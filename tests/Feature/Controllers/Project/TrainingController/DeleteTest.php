@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Registry;
+use App\Models\Training;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 
@@ -9,7 +9,7 @@ use function Pest\Laravel\delete;
 
 it('requires authentication', function () {
 
-    delete(route('registries.destroy', Registry::factory()->create(
+    delete(route('trainings.destroy', Training::factory()->create(
     )))
         ->assertRedirect(route('login'));
 
@@ -25,42 +25,42 @@ it('requires authorization', function () {
         $user = User::factory()->create();
         $user->assignRole($role);
 
-        $registry = Registry::factory()->create(['project_id' => $user->project_id]);
+        $training = Training::factory()->create(['project_id' => $user->project_id]);
 
         actingAs($user)
-            ->delete(route('registries.destroy', $registry->id))
+            ->delete(route('trainings.destroy', $training->id))
             ->assertForbidden();
     }
 });
 
-it('deletes a registry', function () {
+it('deletes a training', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
 
     $user = User::factory()->create();
     $user->assignRole('admin');
 
-    $registry = Registry::factory()->create(['project_id' => $user->project_id]);
+    $training = Training::factory()->create(['project_id' => $user->project_id]);
 
-    actingAs($user)->delete(route('registries.destroy', $registry->id), [
+    actingAs($user)->delete(route('trainings.destroy', $training->id), [
         'password' => PASSWORD,
     ]);
 
-    $this->assertModelMissing($registry);
+    $this->assertModelMissing($training);
 
 });
 
-it('redirects to the registry index page', function () {
+it('redirects to the training index page', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
 
     $user = User::factory()->create();
     $user->assignRole('admin');
 
-    $registry = Registry::factory()->create(['project_id' => $user->project_id]);
+    $training = Training::factory()->create(['project_id' => $user->project_id]);
 
-    actingAs($user)->delete(route('registries.destroy', $registry->id), [
+    actingAs($user)->delete(route('trainings.destroy', $training->id), [
         'password' => PASSWORD,
-    ])->assertRedirect(route('registries.index'));
+    ])->assertRedirect(route('trainings.index'));
 
 });

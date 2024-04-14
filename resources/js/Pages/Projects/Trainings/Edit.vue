@@ -6,20 +6,20 @@ import TextInput from "@/Components/TextInput.vue";
 import { Head, useForm, usePage } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import TextArea from "@/Components/TextArea.vue";
-import DeleteRegistryForm from "@/Pages/Registries/Partials/DeleteRegistryForm.vue";
+import DeleteTrainingForm from "@/Pages/Projects/Trainings/Partials/DeleteTrainingForm.vue";
 
-const props = defineProps(["registry"]);
+const props = defineProps(["training"]);
 
 const projectId = usePage().props.projectId;
 
 const form = useForm({
-    name: props.registry.name,
-    description: props.registry.description,
-    validity_period: props.registry.validity_period,
+    name: props.training.name,
+    description: props.training.description,
+    validity_period: props.training.validity_period,
 });
 
 function submit() {
-    form.patch(route("registries.update", props.registry.id), {
+    form.patch(route("trainings.update", props.training.id), {
         preserveScroll: true,
     });
 }
@@ -30,7 +30,7 @@ function submit() {
 
     <AuthenticatedLayout>
         <template #header>
-            <h2>Create Custom Registry</h2>
+            <h2>Create Custom Training</h2>
         </template>
 
         <div class="px-2 pb-2">
@@ -41,13 +41,13 @@ function submit() {
                             <h2
                                 class="text-lg font-medium text-gray-900 dark:text-gray-100"
                             >
-                                Registry Information
+                                Training Information
                             </h2>
 
                             <p
                                 class="mt-1 text-sm text-gray-600 dark:text-gray-400"
                             >
-                                Your project's registry information.
+                                Your project's training information.
                             </p>
                         </header>
 
@@ -136,8 +136,8 @@ function submit() {
                                         </p>
                                     </Transition>
                                 </div>
-                                <DeleteRegistryForm
-                                    :registry="registry"
+                                <DeleteTrainingForm
+                                    :training="training"
                                     class="max-w-xl"
                                 />
                             </div>

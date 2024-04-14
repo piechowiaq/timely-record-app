@@ -8,7 +8,7 @@ use function Pest\Laravel\get;
 
 it('requires authentication', function () {
 
-    get(route('registries.create'))
+    get(route('trainings.create'))
         ->assertRedirect(route('login'));
 });
 
@@ -23,7 +23,7 @@ it('requires authorization', function () {
         $user->assignRole($role);
 
         actingAs($user)
-            ->get(route('registries.create', $user->project_id))
+            ->get(route('trainings.create'))
             ->assertForbidden();
     }
 
@@ -38,6 +38,6 @@ it('returns a correct component', function () {
 
     actingAs($user)->
     get(route('trainings.create'))
-        ->assertComponent('Registries/Create');
+        ->assertComponent('Projects/Trainings/Create');
 
 });

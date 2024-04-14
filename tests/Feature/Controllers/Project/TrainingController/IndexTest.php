@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Resources\RegistryResource;
+use App\Http\Resources\TrainingResource;
 use App\Models\Project;
-use App\Models\Registry;
+use App\Models\Training;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 
@@ -55,14 +55,14 @@ it('passes projects registries as well as registries with project_id null', func
     $user->assignRole('admin');
     session(['project_id' => $user->project_id]);
 
-    Registry::factory(2)->create(['project_id' => $user->project_id]);
-    Registry::factory(2)->create(['project_id' => Project::factory()->create()->id]);
-    Registry::factory(2)->create();
+    Training::factory(2)->create(['project_id' => $user->project_id]);
+    Training::factory(2)->create(['project_id' => Project::factory()->create()->id]);
+    Training::factory(2)->create();
 
-    $registries = Registry::where('project_id', $user->project_id)->orWhereNull('project_id')->get();
+    $registries = Training::where('project_id', $user->project_id)->orWhereNull('project_id')->get();
 
     actingAs($user)->
-    get(route('registries.index'))
-        ->assertHasPaginatedResource('registries', RegistryResource::collection($registries));
+    get(route('trainings.index'))
+        ->assertHasPaginatedResource('trainings', TrainingResource::collection($registries));
 
 });

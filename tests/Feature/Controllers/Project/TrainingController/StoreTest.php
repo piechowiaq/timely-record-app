@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Registry;
+use App\Models\Training;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 
@@ -9,15 +10,15 @@ use function Pest\Laravel\post;
 
 beforeEach(function () {
     $this->validData = fn () => [
-        'name' => 'Health and Safety Policy',
-        'description' => 'Doe',
+        'name' => 'Fire Awareness',
+        'description' => 'Mandatory for all staff',
         'validity_period' => 6,
     ];
 });
 
 it('requires authentication', function () {
 
-    post(route('registries.store', Registry::factory()->create(
+    post(route('trainings.store', Registry::factory()->create(
     )))
         ->assertRedirect(route('login'));
 
@@ -34,13 +35,13 @@ it('requires authorization', function () {
         $user->assignRole($role);
 
         actingAs($user)
-            ->post(route('registries.store', Registry::factory()->create(
+            ->post(route('trainings.store', Training::factory()->create(
             )))
             ->assertForbidden();
     }
 });
 
-it('stores a registry', function () {
+it('stores a training', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
 
@@ -48,17 +49,17 @@ it('stores a registry', function () {
     $user->assignRole('admin');
     session(['project_id' => $user->project_id]);
 
-    $registryData = value($this->validData);
+    $trainingData = value($this->validData);
 
-    actingAs($user)->post(route('registries.store'), $registryData);
+    actingAs($user)->post(route('trainings.store'), $trainingData);
 
-    $this->assertDatabaseHas(Registry::class, [
-        ...$registryData,
+    $this->assertDatabaseHas(Training::class, [
+        ...$trainingData,
         'project_id' => $user->project_id,
     ]);
 });
 
-it('redirects to the registry index page', function () {
+it('redirects to the training index page', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
 
@@ -66,8 +67,8 @@ it('redirects to the registry index page', function () {
     $user->assignRole('admin');
     session(['project_id' => $user->project_id]);
 
-    $registryData = value($this->validData);
+    $trainingData = value($this->validData);
 
-    actingAs($user)->post(route('registries.store'), $registryData)
-        ->assertRedirect(route('registries.index'));
+    actingAs($user)->post(route('trainings.store'), $trainingData)
+        ->assertRedirect(route('trainings.index'));
 });

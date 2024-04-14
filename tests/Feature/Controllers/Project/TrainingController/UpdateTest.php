@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Registry;
+use App\Models\Training;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 
@@ -9,15 +9,15 @@ use function Pest\Laravel\patch;
 
 beforeEach(function () {
     $this->validData = fn () => [
-        'name' => 'Health and Safety Policy',
-        'description' => 'Doe',
+        'name' => 'Fire Awareness',
+        'description' => 'Mandatory for all staff',
         'validity_period' => 6,
     ];
 });
 
 it('requires authentication', function () {
 
-    patch(route('registries.update', Registry::factory()->create(
+    patch(route('trainings.update', Training::factory()->create(
     )))
         ->assertRedirect(route('login'));
 
@@ -34,13 +34,13 @@ it('requires authorization', function () {
         $user->assignRole($role);
 
         actingAs($user)
-            ->put(route('registries.update', Registry::factory()->create()))
+            ->put(route('trainings.update', Training::factory()->create()))
             ->assertForbidden();
     }
 
 });
 
-it('updates a registry', function () {
+it('updates a training', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
 
@@ -48,19 +48,19 @@ it('updates a registry', function () {
     $user->assignRole('admin');
     session(['project_id' => $user->project_id]);
 
-    $registry = Registry::factory()->create(['project_id' => $user->project_id]);
+    $training = Training::factory()->create(['project_id' => $user->project_id]);
 
-    $registryData = value($this->validData);
+    $trainingData = value($this->validData);
 
-    actingAs($user)->patch(route('registries.update', $registry->id), $registryData);
+    actingAs($user)->patch(route('trainings.update', $training->id), $trainingData);
 
-    $this->assertDatabaseHas(Registry::class, [
-        ...$registryData,
+    $this->assertDatabaseHas(Training::class, [
+        ...$trainingData,
         'project_id' => $user->project_id,
     ]);
 });
 
-it('redirects to the registry edit page', function () {
+it('redirects to the training edit page', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
 
@@ -68,10 +68,10 @@ it('redirects to the registry edit page', function () {
     $user->assignRole('admin');
     session(['project_id' => $user->project_id]);
 
-    $registry = Registry::factory()->create(['project_id' => $user->project_id]);
+    $training = Training::factory()->create(['project_id' => $user->project_id]);
 
-    $registryData = value($this->validData);
+    $trainingData = value($this->validData);
 
-    actingAs($user)->patch(route('registries.update', $registry->id), $registryData)
-        ->assertRedirect(route('registries.edit', $registry->id));
+    actingAs($user)->patch(route('trainings.update', $training->id), $trainingData)
+        ->assertRedirect(route('trainings.edit', $training->id));
 });

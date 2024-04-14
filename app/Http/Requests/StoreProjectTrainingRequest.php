@@ -4,15 +4,14 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class TrainingRequest extends FormRequest
+class StoreProjectTrainingRequest extends FormRequest
 {
     public function rules(): array
     {
         return [
-            'name' => ['required'],
+            'name' => ['required', 'max:255'],
             'description' => ['nullable'],
-            'validity_period' => ['nullable', 'integer'],
-            'project_id' => ['nullable', 'exists:projects'],
+            'validity_period' => ['required', 'integer'],
         ];
     }
 

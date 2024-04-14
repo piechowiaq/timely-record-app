@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Resources\RegistryResource;
-use App\Models\Registry;
+use App\Http\Resources\TrainingResource;
+use App\Models\Training;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 
@@ -10,7 +10,7 @@ use function Pest\Laravel\get;
 
 it('requires authentication', function () {
 
-    get(route('registries.edit', Registry::factory()->create()))
+    get(route('trainings.edit', Training::factory()->create()))
         ->assertRedirect(route('login'));
 });
 
@@ -25,7 +25,7 @@ it('requires authorization', function () {
         $user->assignRole($role);
 
         actingAs($user)
-            ->get(route('registries.edit', Registry::factory()->create()))
+            ->get(route('trainings.edit', Training::factory()->create()))
             ->assertForbidden();
     }
 
@@ -38,24 +38,24 @@ it('returns a correct component', function () {
     $user = User::factory()->create();
     $user->assignRole('admin');
 
-    $registry = Registry::factory()->create(['project_id' => $user->project_id]);
+    $training = Training::factory()->create(['project_id' => $user->project_id]);
 
     actingAs($user)->
-    get(route('registries.edit', $registry->id))
-        ->assertComponent('Registries/Edit');
+    get(route('trainings.edit', $training->id))
+        ->assertComponent('Projects/Trainings/Edit');
 
 });
 
-it('passes correct registry to the view', function () {
+it('passes correct training view', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
 
     $user = User::factory()->create();
     $user->assignRole('admin');
 
-    $registry = Registry::factory()->create(['project_id' => $user->project_id]);
+    $training = Training::factory()->create(['project_id' => $user->project_id]);
 
     actingAs($user)->
-    get(route('registries.edit', $registry->id))
-        ->assertHasResource('registry', RegistryResource::make($registry));
+    get(route('trainings.edit', $training->id))
+        ->assertHasResource('training', TrainingResource::make($training));
 });

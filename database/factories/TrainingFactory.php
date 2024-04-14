@@ -18,7 +18,7 @@ class TrainingFactory extends Factory
             'updated_at' => Carbon::now(),
             'name' => $this->faker->name(),
             'description' => $this->faker->text(),
-            'validity_period' => $this->faker->randomNumber(),
+            'validity_period' => $this->faker->randomElement([1, 3, 6, 12, 24]),
 
             'project_id' => Project::factory(),
         ];

@@ -16,18 +16,18 @@ const form = useForm({
 });
 
 function submit() {
-    form.post(route("registries.store"), {
+    form.post(route("trainings.store"), {
         preserveScroll: true,
     });
 }
 </script>
 
 <template>
-    <Head title="Workspace" />
+    <Head title="Create Custom Training" />
 
     <AuthenticatedLayout>
         <template #header>
-            <h2>Create Custom Registry</h2>
+            <h2>Create Custom Training</h2>
         </template>
 
         <div class="px-2 pb-2">
@@ -38,13 +38,13 @@ function submit() {
                             <h2
                                 class="text-lg font-medium text-gray-900 dark:text-gray-100"
                             >
-                                Registry Information
+                                Training Information
                             </h2>
 
                             <p
                                 class="mt-1 text-sm text-gray-600 dark:text-gray-400"
                             >
-                                Your project's registry information.
+                                Your project's training information.
                             </p>
                         </header>
 
@@ -116,8 +116,8 @@ function submit() {
 
                             <div class="flex items-center gap-4">
                                 <PrimaryButton :disabled="form.processing"
-                                    >Save</PrimaryButton
-                                >
+                                    >Save
+                                </PrimaryButton>
 
                                 <Transition
                                     enter-active-class="transition ease-in-out"
