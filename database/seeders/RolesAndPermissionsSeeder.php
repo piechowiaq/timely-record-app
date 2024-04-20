@@ -47,6 +47,12 @@ class RolesAndPermissionsSeeder extends Seeder
         Permission::create(['name' => 'update training']);
         Permission::create(['name' => 'delete training']);
 
+        // Departments
+        Permission::create(['name' => 'view department']);
+        Permission::create(['name' => 'create department']);
+        Permission::create(['name' => 'update department']);
+        Permission::create(['name' => 'delete department']);
+
         // Reports
         Permission::create(['name' => 'view report']);
         Permission::create(['name' => 'create report']);
@@ -85,6 +91,11 @@ class RolesAndPermissionsSeeder extends Seeder
                 'create training',
                 'update training',
                 'delete training',
+                // Department permissions
+                'view department',
+                'create department',
+                'update department',
+                'delete department',
                 // Report permissions
                 'view report',
                 'create report',
@@ -117,6 +128,11 @@ class RolesAndPermissionsSeeder extends Seeder
                 'create training',
                 'update training',
                 'delete training',
+                // Department permissions
+                'view department',
+                'create department',
+                'update department',
+                'delete department',
                 // Report permissions
                 'view report',
                 'create report',
@@ -137,6 +153,8 @@ class RolesAndPermissionsSeeder extends Seeder
                 'view registry',
                 // Training permissions
                 'view training',
+                // Department permissions
+                'view department',
                 // Report permissions
                 'view report',
                 'create report',
@@ -157,6 +175,8 @@ class RolesAndPermissionsSeeder extends Seeder
                 'view registry',
                 // Training permissions
                 'view training',
+                // Department permissions
+                'view department',
                 // Report permissions
                 'view report',
 

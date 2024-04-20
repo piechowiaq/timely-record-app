@@ -5,7 +5,7 @@ use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 
 use function Pest\Laravel\actingAs;
-use function Pest\Laravel\post;
+use function Pest\Laravel\patch;
 
 beforeEach(function () {
     $this->validData = fn () => [
@@ -17,7 +17,7 @@ beforeEach(function () {
 
 it('requires authentication', function () {
 
-    post(route('trainings.store', Training::factory()->create(
+    patch(route('trainings.update', Training::factory()->create(
     )))
         ->assertRedirect(route('login'));
 
@@ -34,13 +34,13 @@ it('requires authorization', function () {
         $user->assignRole($role);
 
         actingAs($user)
-            ->post(route('trainings.store', Training::factory()->create(
-            )))
+            ->put(route('trainings.update', Training::factory()->create()))
             ->assertForbidden();
     }
+
 });
 
-it('stores a training', function () {
+it('updates a training', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
 
@@ -48,9 +48,11 @@ it('stores a training', function () {
     $user->assignRole('admin');
     session(['project_id' => $user->project_id]);
 
+    $training = Training::factory()->create(['project_id' => $user->project_id]);
+
     $trainingData = value($this->validData);
 
-    actingAs($user)->post(route('trainings.store'), $trainingData);
+    actingAs($user)->patch(route('trainings.update', $training->id), $trainingData);
 
     $this->assertDatabaseHas(Training::class, [
         ...$trainingData,
@@ -58,7 +60,7 @@ it('stores a training', function () {
     ]);
 });
 
-it('redirects to the training index page', function () {
+it('redirects to the training edit page', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
 
@@ -66,8 +68,10 @@ it('redirects to the training index page', function () {
     $user->assignRole('admin');
     session(['project_id' => $user->project_id]);
 
+    $training = Training::factory()->create(['project_id' => $user->project_id]);
+
     $trainingData = value($this->validData);
 
-    actingAs($user)->post(route('trainings.store'), $trainingData)
-        ->assertRedirect(route('trainings.index'));
+    actingAs($user)->patch(route('trainings.update', $training->id), $trainingData)
+        ->assertRedirect(route('trainings.edit', $training->id));
 });
