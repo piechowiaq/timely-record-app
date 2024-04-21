@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Training;
+use App\Models\Department;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 
@@ -9,15 +9,13 @@ use function Pest\Laravel\patch;
 
 beforeEach(function () {
     $this->validData = fn () => [
-        'name' => 'Fire Awareness',
-        'description' => 'Mandatory for all staff',
-        'validity_period' => 6,
+        'name' => 'Kitchen',
     ];
 });
 
 it('requires authentication', function () {
 
-    patch(route('trainings.update', Training::factory()->create(
+    patch(route('departments.update', Department::factory()->create(
     )))
         ->assertRedirect(route('login'));
 
@@ -34,13 +32,13 @@ it('requires authorization', function () {
         $user->assignRole($role);
 
         actingAs($user)
-            ->put(route('trainings.update', Training::factory()->create()))
+            ->put(route('departments.update', Department::factory()->create()))
             ->assertForbidden();
     }
 
 });
 
-it('updates a training', function () {
+it('updates a department', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
 
@@ -48,19 +46,19 @@ it('updates a training', function () {
     $user->assignRole('admin');
     session(['project_id' => $user->project_id]);
 
-    $training = Training::factory()->create(['project_id' => $user->project_id]);
+    $department = Department::factory()->create(['project_id' => $user->project_id]);
 
-    $trainingData = value($this->validData);
+    $departmentData = value($this->validData);
 
-    actingAs($user)->patch(route('trainings.update', $training->id), $trainingData);
+    actingAs($user)->patch(route('departments.update', $department->id), $departmentData);
 
-    $this->assertDatabaseHas(Training::class, [
-        ...$trainingData,
+    $this->assertDatabaseHas(Department::class, [
+        ...$departmentData,
         'project_id' => $user->project_id,
     ]);
 });
 
-it('redirects to the training edit page', function () {
+it('redirects to the department edit page', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
 
@@ -68,10 +66,10 @@ it('redirects to the training edit page', function () {
     $user->assignRole('admin');
     session(['project_id' => $user->project_id]);
 
-    $training = Training::factory()->create(['project_id' => $user->project_id]);
+    $department = Department::factory()->create(['project_id' => $user->project_id]);
 
-    $trainingData = value($this->validData);
+    $departmentData = value($this->validData);
 
-    actingAs($user)->patch(route('trainings.update', $training->id), $trainingData)
-        ->assertRedirect(route('trainings.edit', $training->id));
+    actingAs($user)->patch(route('departments.update', $department->id), $departmentData)
+        ->assertRedirect(route('departments.edit', $department->id));
 });

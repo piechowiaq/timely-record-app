@@ -86,8 +86,14 @@ class DepartmentController extends Controller
         ]);
     }
 
-    public function update(Request $request, $id)
+    public function update(Department $department, DepartmentRequest $request)
     {
+        $department->update([
+            'name' => $request->name,
+        ]);
+
+        return redirect()->route('departments.edit', $department->id)
+            ->with('success', 'Department updated successfully.');
     }
 
     public function destroy($id)
