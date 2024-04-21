@@ -79,8 +79,11 @@ class DepartmentController extends Controller
     {
     }
 
-    public function edit($id)
+    public function edit(Department $department)
     {
+        return inertia('Projects/Departments/Edit', [
+            'department' => DepartmentResource::make($department),
+        ]);
     }
 
     public function update(Request $request, $id)

@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Department;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Foundation\Auth\User;
 
@@ -17,5 +18,10 @@ class DepartmentPolicy
     public function create(User $user): bool
     {
         return $user->hasPermissionTo('create department');
+    }
+
+    public function update(User $user, Department $department): bool
+    {
+        return $user->hasPermissionTo('update department');
     }
 }

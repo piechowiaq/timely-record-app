@@ -5,21 +5,18 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Head, useForm, usePage } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import TextArea from "@/Components/TextArea.vue";
-import DeleteTrainingForm from "@/Pages/Projects/Trainings/Partials/DeleteTrainingForm.vue";
+import DeleteDepartmentForm from "@/Pages/Projects/Departments/Partials/DeleteDepartmentForm.vue";
 
-const props = defineProps(["training"]);
+const props = defineProps(["department"]);
 
 const projectId = usePage().props.projectId;
 
 const form = useForm({
-    name: props.training.name,
-    description: props.training.description,
-    validity_period: props.training.validity_period,
+    name: props.department.name,
 });
 
 function submit() {
-    form.patch(route("trainings.update", props.training.id), {
+    form.patch(route("departments.update", props.department.id), {
         preserveScroll: true,
     });
 }
@@ -30,7 +27,7 @@ function submit() {
 
     <AuthenticatedLayout>
         <template #header>
-            <h2>Create Custom Training</h2>
+            <h2>Edit Department</h2>
         </template>
 
         <div class="px-2 pb-2">
@@ -41,13 +38,13 @@ function submit() {
                             <h2
                                 class="text-lg font-medium text-gray-900 dark:text-gray-100"
                             >
-                                Training Information
+                                Department Information
                             </h2>
 
                             <p
                                 class="mt-1 text-sm text-gray-600 dark:text-gray-400"
                             >
-                                Your project's training information.
+                                Your project's department information.
                             </p>
                         </header>
 
@@ -75,47 +72,6 @@ function submit() {
                                 />
                             </div>
 
-                            <div>
-                                <InputLabel
-                                    for="description"
-                                    value="Description"
-                                />
-
-                                <TextArea
-                                    id="description"
-                                    type="text"
-                                    class="mt-1 block w-full"
-                                    v-model="form.description"
-                                    autofocus
-                                    autocomplete="location"
-                                />
-
-                                <InputError
-                                    class="mt-2"
-                                    :message="form.errors.description"
-                                />
-                            </div>
-
-                            <div>
-                                <InputLabel
-                                    for="validity"
-                                    value="Validity period in months"
-                                />
-
-                                <TextInput
-                                    id="validity"
-                                    type="number"
-                                    class="mt-1 block w-full"
-                                    v-model="form.validity_period"
-                                    autofocus
-                                    autocomplete="validity_period"
-                                />
-
-                                <InputError
-                                    class="mt-2"
-                                    :message="form.errors.validity_period"
-                                />
-                            </div>
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-4">
                                     <PrimaryButton :disabled="form.processing"
@@ -136,8 +92,8 @@ function submit() {
                                         </p>
                                     </Transition>
                                 </div>
-                                <DeleteTrainingForm
-                                    :training="training"
+                                <DeleteDepartmentForm
+                                    :department="department"
                                     class="max-w-xl"
                                 />
                             </div>

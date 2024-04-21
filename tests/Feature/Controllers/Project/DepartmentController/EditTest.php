@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Resources\TrainingResource;
-use App\Models\Training;
+use App\Http\Resources\DepartmentResource;
+use App\Models\Department;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 
@@ -10,7 +10,7 @@ use function Pest\Laravel\get;
 
 it('requires authentication', function () {
 
-    get(route('trainings.edit', Training::factory()->create()))
+    get(route('departments.edit', Department::factory()->create()))
         ->assertRedirect(route('login'));
 });
 
@@ -25,7 +25,7 @@ it('requires authorization', function () {
         $user->assignRole($role);
 
         actingAs($user)
-            ->get(route('trainings.edit', Training::factory()->create()))
+            ->get(route('departments.edit', Department::factory()->create()))
             ->assertForbidden();
     }
 
@@ -38,24 +38,24 @@ it('returns a correct component', function () {
     $user = User::factory()->create();
     $user->assignRole('admin');
 
-    $training = Training::factory()->create(['project_id' => $user->project_id]);
+    $department = Department::factory()->create(['project_id' => $user->project_id]);
 
     actingAs($user)->
-    get(route('trainings.edit', $training->id))
-        ->assertComponent('Projects/Trainings/Edit');
+    get(route('departments.edit', $department->id))
+        ->assertComponent('Projects/Departments/Edit');
 
 });
 
-it('passes correct training view', function () {
+it('passes correct department to view', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
 
     $user = User::factory()->create();
     $user->assignRole('admin');
 
-    $training = Training::factory()->create(['project_id' => $user->project_id]);
+    $department = Department::factory()->create(['project_id' => $user->project_id]);
 
     actingAs($user)->
-    get(route('trainings.edit', $training->id))
-        ->assertHasResource('training', TrainingResource::make($training));
+    get(route('departments.edit', $department->id))
+        ->assertHasResource('department', DepartmentResource::make($department));
 });
