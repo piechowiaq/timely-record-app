@@ -62,6 +62,11 @@ class Workspace extends Model
         return $this->belongsToMany(Training::class);
     }
 
+    public function departments(): BelongsToMany
+    {
+        return $this->belongsToMany(Department::class);
+    }
+
     public function scopeApplyFilters(Builder $query, Request $request): Builder
     {
         $search = $request->input('search');

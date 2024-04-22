@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Training;
+use App\Models\Department;
 use App\Models\User;
 use App\Models\Workspace;
 use Database\Seeders\RolesAndPermissionsSeeder;
@@ -10,7 +10,7 @@ use function Pest\Laravel\put;
 
 it('requires authentication', function () {
 
-    put(route('workspaces.sync-trainings', Workspace::factory()->create(
+    put(route('workspaces.sync-departments', Workspace::factory()->create(
     )))
         ->assertRedirect(route('login'));
 
@@ -27,13 +27,13 @@ it('requires authorization', function () {
         $user->assignRole($role);
 
         actingAs($user)
-            ->put(route('workspaces.sync-trainings', Workspace::factory()->create(['project_id' => $user->project_id])->id))
+            ->put(route('workspaces.sync-departments', Workspace::factory()->create(['project_id' => $user->project_id])->id))
             ->assertForbidden();
     }
 
 });
 
-it('updates a workspace trainings', function () {
+it('updates a workspace departments', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
 
@@ -42,16 +42,16 @@ it('updates a workspace trainings', function () {
 
     $workspace = $user->workspaces->first();
 
-    $trainingsIds = Training::factory(2)->create()->pluck('id')->toArray();
+    $departmentsIds = Department::factory(2)->create()->pluck('id')->toArray();
 
-    actingAs($user)->put(route('workspaces.sync-trainings', $workspace->id), $trainingsIds);
+    actingAs($user)->put(route('workspaces.sync-registries', $workspace->id), $departmentsIds);
 
-    $workspace->trainings()->sync($trainingsIds);
+    $workspace->departments()->sync($departmentsIds);
 
-    $workspaceTrainingsIds = $workspace->trainings->pluck('id')->toArray();
+    $workspaceDepartmentsIds = $workspace->departments->pluck('id')->toArray();
 
-    foreach ($trainingsIds as $trainingId) {
-        expect($workspaceTrainingsIds)->toContain($trainingId);
+    foreach ($departmentsIds as $departmentId) {
+        expect($workspaceDepartmentsIds)->toContain($departmentId);
     }
 
 });
@@ -65,8 +65,8 @@ it('redirects to the workspace edit page', function () {
 
     $workspace = $user->workspaces->first();
 
-    $trainingsIds = Training::factory(2)->create()->pluck('id')->toArray();
+    $departmentsIds = Department::factory(2)->create()->pluck('id')->toArray();
 
-    actingAs($user)->put(route('workspaces.sync-trainings', $workspace->id), $trainingsIds)
-        ->assertRedirect(route('workspaces.index-trainings', $workspace->id));
+    actingAs($user)->put(route('workspaces.sync-departments', $workspace->id), $departmentsIds)
+        ->assertRedirect(route('workspaces.index-departments', $workspace->id));
 });

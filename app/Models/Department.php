@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Http\Request;
 
 class Department extends Model
@@ -22,9 +23,9 @@ class Department extends Model
         return $this->belongsTo(Project::class);
     }
 
-    protected function workspace(): BelongsTo
+    public function workspaces(): BelongsToMany
     {
-        return $this->belongsTo(Workspace::class);
+        return $this->belongsToMany(Workspace::class);
     }
 
     public function scopeApplyFilters(Builder $query, Request $request): Builder

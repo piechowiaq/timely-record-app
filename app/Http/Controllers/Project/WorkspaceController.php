@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Project;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreWorkspaceRequest;
 use App\Http\Requests\UpdateWorkspaceRequest;
+use App\Http\Resources\DepartmentResource;
 use App\Http\Resources\ProjectResource;
 use App\Http\Resources\RegistryResource;
 use App\Http\Resources\TrainingResource;
 use App\Http\Resources\WorkspaceResource;
+use App\Models\Department;
 use App\Models\Project;
 use App\Models\Registry;
 use App\Models\Training;
@@ -141,6 +143,30 @@ class WorkspaceController extends Controller
         ]);
     }
 
+    public function indexDepartments(Request $request, Workspace $workspace): Response
+    {
+        $this->authorize('update', $workspace);
+
+        $departmentsIds = Department::where('project_id', $workspace->project_id)
+            ->orWhereNull('project_id')->pluck('id')->toArray();
+
+        $departments = Department::where('project_id', $workspace->project_id)
+            ->orWhereNull('project_id')
+//            ->with('positions')
+            ->with('workspaces')
+            ->applyFilters($request)
+            ->paginate(10)
+            ->withQueryString();
+
+        return inertia('Projects/Workspaces/IndexDepartments', [
+            'workspace' => WorkspaceResource::make($workspace),
+            'workspaceDepartmentsIds' => $workspace->departments->pluck('id')->toArray(),
+            'departments' => DepartmentResource::collection($departments),
+            'departmentsIds' => $departmentsIds,
+            'filters' => $request->all(['search', 'field', 'direction']),
+        ]);
+    }
+
     /**
      * Update the specified resource in storage.
      */
@@ -161,6 +187,24 @@ class WorkspaceController extends Controller
         $workspace->registries()->sync($request->registriesIds);
 
         return to_route('workspaces.index-registries', $workspace->id)->with('success', 'Workspace updated.');
+    }
+
+    public function syncTrainings(Request $request, Workspace $workspace): RedirectResponse
+    {
+        $this->authorize('update', $workspace);
+
+        $workspace->trainings()->sync($request->trainingsIds);
+
+        return to_route('workspaces.index-trainings', $workspace->id)->with('success', 'Workspace updated.');
+    }
+
+    public function syncDepartments(Request $request, Workspace $workspace): RedirectResponse
+    {
+        $this->authorize('update', $workspace);
+
+        $workspace->departments()->sync($request->departmetnsIds);
+
+        return to_route('workspaces.index-departments', $workspace->id)->with('success', 'Workspace updated.');
     }
 
     /**

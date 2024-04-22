@@ -15,6 +15,11 @@ class DepartmentPolicy
         return $user->hasPermissionTo('view department');
     }
 
+    public function view(User $user, Department $department): bool
+    {
+        return $user->hasPermissionTo('view department');
+    }
+
     public function create(User $user): bool
     {
         return $user->hasPermissionTo('create department');
@@ -23,5 +28,10 @@ class DepartmentPolicy
     public function update(User $user, Department $department): bool
     {
         return $user->hasPermissionTo('update department');
+    }
+
+    public function delete(User $user, Department $department): bool
+    {
+        return $user->hasPermissionTo('delete department');
     }
 }

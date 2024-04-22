@@ -4,54 +4,56 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import Pagination from "@/Components/Pagination.vue";
-import { useTrainingsStore } from "@/Stores/TrainingsStore.js";
 import { computed, ref, watch } from "vue";
 import { debounce } from "lodash";
 import Search from "@/Components/Search.vue";
+import { useDepartmentsStore } from "@/Stores/DepartmentsStore.js";
 
 const props = defineProps([
     "workspace",
-    "trainings",
+    "departments",
     "filters",
-    "trainingsIds",
-    "workspaceTrainingsIds",
+    "departmentsIds",
+    "workspaceDepartmentsIds",
 ]);
 
 const projectId = usePage().props.projectId;
 
 const page = usePage();
 
-const trainingsStore = useTrainingsStore();
+const departmentsStore = useDepartmentsStore();
 
-if (trainingsStore.initialized === false) {
-    trainingsStore.updateForm({ trainingsIds: props.workspaceTrainingsIds });
+if (departmentsStore.initialized === false) {
+    departmentsStore.updateForm({
+        departmentsIds: props.workspaceDepartmentsIds,
+    });
 }
 
 const form = useForm({
-    trainingsIds: trainingsStore.form.trainingsIds,
+    departmentsIds: departmentsStore.form.departmentsIds,
 });
 
-const trainingsIds = computed({
-    get: () => form.trainingsIds,
+const departmentsIds = computed({
+    get: () => form.departmentsIds,
     set: (value) => {
-        form.trainingsIds = value;
-        trainingsStore.updateForm({
-            ...trainingsStore.form,
-            trainingsIds: value,
+        form.departmentsIds = value;
+        departmentsStore.updateForm({
+            ...departmentsStore.form,
+            departmentsIds: value,
         });
     },
 });
 
 const selectAll = computed({
-    get: () => form.trainingsIds.length === props.trainings.meta.total,
+    get: () => form.departmentsIds.length === props.departments.meta.total,
     set: (value) => {
-        form.trainingsIds = value ? [...props.trainingsIds] : [];
-        trainingsStore.updateForm({ trainingsIds: form.trainingsIds });
+        form.departmentsIds = value ? [...props.departmentsIds] : [];
+        departmentsStore.updateForm({ departmentsIds: form.departmentsIds });
     },
 });
 
 function submit() {
-    form.put(route("workspaces.sync-trainings", props.workspace.id), {
+    form.put(route("workspaces.sync-departments", props.workspace.id), {
         preserveScroll: true,
     });
 }
@@ -64,7 +66,7 @@ watch(
     index.value,
     debounce(() => {
         router.get(
-            route("workspaces.index-trainings", props.workspace.id),
+            route("workspaces.index-departments", props.workspace.id),
             index.value,
             {
                 // preserveState: true,
@@ -96,9 +98,9 @@ const getSortIconClass = (field) => {
 router.on("start", (event) => {
     if (
         event.detail.visit.url.pathname !==
-        `/workspaces/${props.workspace.id}/index-trainings`
+        `/workspaces/${props.workspace.id}/index-departments`
     ) {
-        trainingsStore.$reset();
+        departmentsStore.$reset();
     }
 });
 </script>
@@ -112,7 +114,7 @@ router.on("start", (event) => {
                 <Link :href="route('workspaces.edit', workspace.id)"
                     >Edit Workspace &lt
                 </Link>
-                Sync Workspace Trainings
+                Sync Workspace Departments
             </h2>
         </template>
 
@@ -123,13 +125,13 @@ router.on("start", (event) => {
                         <h2
                             class="text-lg font-medium text-gray-900 dark:text-gray-100"
                         >
-                            Workspace Trainings
+                            Workspace Departments
                         </h2>
 
                         <p
                             class="mt-1 text-sm text-gray-600 dark:text-gray-400"
                         >
-                            Synchronize workspace Trainings.
+                            Synchronize workspace Departments.
                         </p>
                     </header>
 
@@ -178,21 +180,6 @@ router.on("start", (event) => {
 
                                         <th
                                             scope="col"
-                                            class="px-6 py-2"
-                                            @click="sort('validity_period')"
-                                        >
-                                            Valid | in months
-                                            <i
-                                                :class="
-                                                    getSortIconClass(
-                                                        'validity_period',
-                                                    )
-                                                "
-                                            ></i>
-                                        </th>
-
-                                        <th
-                                            scope="col"
                                             class="px-6 py-2 text-center"
                                             @click="sort('project_id')"
                                         >
@@ -210,14 +197,14 @@ router.on("start", (event) => {
                                 <tbody>
                                     <template
                                         v-for="(
-                                            training, index
-                                        ) in trainings.data"
-                                        :key="training.id"
+                                            department, index
+                                        ) in departments.data"
+                                        :key="department.id"
                                         :class="{
                                             'bg-white dark:bg-gray-800': true,
                                             'border-b dark:border-gray-700':
                                                 index !==
-                                                trainings.data.length - 1,
+                                                departments.data.length - 1,
                                         }"
                                     >
                                         <tr>
@@ -227,42 +214,30 @@ router.on("start", (event) => {
                                             >
                                                 <input
                                                     type="checkbox"
-                                                    :id="`checkbox-${training.id}`"
-                                                    v-model="trainingsIds"
-                                                    :value="training.id"
+                                                    :id="`checkbox-${department.id}`"
+                                                    v-model="departmentsIds"
+                                                    :value="department.id"
                                                     class="border-gray-300 font-medium text-cyan-600 shadow-sm focus:ring-transparent"
                                                 />
                                             </th>
                                             <th
                                                 scope="row"
                                                 class="w-16 whitespace-nowrap text-center font-medium text-gray-900 dark:text-white"
-                                            >
-                                                <!--                                    <i :class="{-->
-                                                <!--                  'fa-solid': true,-->
-                                                <!--                  'fa-circle-info': true,-->
-                                                <!--                  'hover:text-amber-400': true,-->
-                                                <!--                  'text-amber-400': selectedRegistryId === registry.id,-->
-                                                <!--                  'text-amber-200': selectedRegistryId !== registry.id-->
-                                                <!--                }"-->
-                                                <!--                                       @click="() => toggleDescription(registry.id)"></i>-->
-                                            </th>
+                                            ></th>
 
                                             <th
                                                 scope="row"
                                                 class="whitespace-nowrap px-6 py-2 font-medium text-gray-900 dark:text-white"
                                             >
-                                                {{ training.name }}
+                                                {{ department.name }}
                                             </th>
 
-                                            <td class="w-1/6 px-6 py-2">
-                                                {{ training.validity_period }}
-                                            </td>
                                             <td
                                                 class="flex justify-center px-6 py-2 text-center"
                                             >
                                                 <ApplicationLogo
                                                     v-if="
-                                                        training.project_id ===
+                                                        department.project_id ===
                                                         null
                                                     "
                                                     class="h-4 w-4 fill-white stroke-2"
@@ -275,11 +250,6 @@ router.on("start", (event) => {
                                                 </p>
                                             </td>
                                         </tr>
-                                        <!--                            <tr v-if="selectedRegistryId === registry.id">-->
-                                        <!--                                <td colspan="5" class="px-6 py-2 bg-gray-50 text-xs text-justify">-->
-                                        <!--                                    {{ registry.description }}-->
-                                        <!--                                </td>-->
-                                        <!--                            </tr>-->
                                     </template>
                                 </tbody>
                             </table>
@@ -305,7 +275,7 @@ router.on("start", (event) => {
                                 </div>
 
                                 <Pagination
-                                    :links="trainings.meta.links"
+                                    :links="departments.meta.links"
                                     class="flex items-center justify-end py-2"
                                 ></Pagination>
                             </div>

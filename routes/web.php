@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Project\DepartmentController;
+use App\Http\Controllers\Project\PositionController;
 use App\Http\Controllers\Project\RegistryController;
 use App\Http\Controllers\Project\TrainingController;
 use App\Http\Controllers\Project\UserController;
@@ -65,12 +66,15 @@ Route::middleware('auth', 'verified', 'web')->group(function () {
     Route::resource('/registries', RegistryController::class);
     Route::resource('/trainings', TrainingController::class);
     Route::resource('/departments', DepartmentController::class);
+    Route::resource('/positions', PositionController::class);
 
     Route::resource('/workspaces', WorkspaceController::class);
     Route::get('/workspaces/{workspace}/index-registries', [WorkspaceController::class, 'indexRegistries'])->name('workspaces.index-registries');
     Route::put('/workspaces/{workspace}/sync-registries', [WorkspaceController::class, 'syncRegistries'])->name('workspaces.sync-registries');
     Route::get('/workspaces/{workspace}/index-trainings', [WorkspaceController::class, 'indexTrainings'])->name('workspaces.index-trainings');
     Route::put('/workspaces/{workspace}/sync-trainings', [WorkspaceController::class, 'syncTrainings'])->name('workspaces.sync-trainings');
+    Route::get('/workspaces/{workspace}/index-departments', [WorkspaceController::class, 'indexDepartments'])->name('workspaces.index-departments');
+    Route::put('/workspaces/{workspace}/sync-departments', [WorkspaceController::class, 'syncDepartments'])->name('workspaces.sync-departments');
 
     Route::get('/workspaces/{workspace:id}/dashboard', [WorkspaceDashboardController::class, 'dashboard'])->name('workspaces.dashboard');
 

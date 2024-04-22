@@ -5,11 +5,17 @@ use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 
 use function Pest\Laravel\actingAs;
-use function Pest\Laravel\delete;
+use function Pest\Laravel\patch;
+
+beforeEach(function () {
+    $this->validData = fn () => [
+        'name' => 'Kitchen',
+    ];
+});
 
 it('requires authentication', function () {
 
-    delete(route('departments.destroy', Department::factory()->create(
+    patch(route('departments.update', Department::factory()->create(
     )))
         ->assertRedirect(route('login'));
 
@@ -25,42 +31,45 @@ it('requires authorization', function () {
         $user = User::factory()->create();
         $user->assignRole($role);
 
-        $department = Department::factory()->create(['project_id' => $user->project_id]);
-
         actingAs($user)
-            ->delete(route('departments.destroy', $department->id))
+            ->put(route('departments.update', Department::factory()->create()))
             ->assertForbidden();
     }
+
 });
 
-it('deletes a department', function () {
+it('updates a department', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
 
     $user = User::factory()->create();
     $user->assignRole('admin');
+    session(['project_id' => $user->project_id]);
 
     $department = Department::factory()->create(['project_id' => $user->project_id]);
 
-    actingAs($user)->delete(route('departments.destroy', $department->id), [
-        'password' => PASSWORD,
+    $departmentData = value($this->validData);
+
+    actingAs($user)->patch(route('departments.update', $department->id), $departmentData);
+
+    $this->assertDatabaseHas(Department::class, [
+        ...$departmentData,
+        'project_id' => $user->project_id,
     ]);
-
-    $this->assertModelMissing($department);
-
 });
 
-it('redirects to the department index page', function () {
+it('redirects to the department edit page', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
 
     $user = User::factory()->create();
     $user->assignRole('admin');
+    session(['project_id' => $user->project_id]);
 
     $department = Department::factory()->create(['project_id' => $user->project_id]);
 
-    actingAs($user)->delete(route('departments.destroy', $department->id), [
-        'password' => PASSWORD,
-    ])->assertRedirect(route('departments.index'));
+    $departmentData = value($this->validData);
 
+    actingAs($user)->patch(route('departments.update', $department->id), $departmentData)
+        ->assertRedirect(route('departments.edit', $department->id));
 });

@@ -8,25 +8,25 @@ import TextInput from "@/Components/TextInput.vue";
 import { useForm, usePage } from "@inertiajs/vue3";
 import { nextTick, ref } from "vue";
 
-const confirmingTrainingDeletion = ref(false);
+const confirmingDepartmentDeletion = ref(false);
 const passwordInput = ref(null);
 
-const props = defineProps(["training"]);
+const props = defineProps(["department"]);
 
 const form = useForm({
     password: "",
 });
 
-const projectId = usePage().props.auth.user.project_id;
+const projectId = usePage().props.projectId;
 
-const confirmTrainingDeletion = () => {
-    confirmingTrainingDeletion.value = true;
+const confirmDepartmentDeletion = () => {
+    confirmingDepartmentDeletion.value = true;
 
     nextTick(() => passwordInput.value.focus());
 };
 
-const deleteTraining = () => {
-    form.delete(route("trainings.destroy", props.training.id), {
+const deleteDepartment = () => {
+    form.delete(route("departments.destroy", props.department.id), {
         preserveScroll: true,
         onSuccess: () => closeModal(),
         onError: () => passwordInput.value.focus(),
@@ -35,7 +35,7 @@ const deleteTraining = () => {
 };
 
 const closeModal = () => {
-    confirmingTrainingDeletion.value = false;
+    confirmingDepartmentDeletion.value = false;
 
     form.reset();
 };
@@ -43,16 +43,16 @@ const closeModal = () => {
 
 <template>
     <section>
-        <DangerButton @click="confirmTrainingDeletion"
-            >Delete Training
+        <DangerButton @click="confirmDepartmentDeletion"
+            >Delete Department
         </DangerButton>
 
-        <Modal :show="confirmingTrainingDeletion" @close="closeModal">
+        <Modal :show="confirmingDepartmentDeletion" @close="closeModal">
             <div class="p-6">
                 <h2
                     class="text-lg font-medium text-gray-900 dark:text-gray-100"
                 >
-                    Are you sure you want to delete this Training?
+                    Are you sure you want to delete this Department?
                 </h2>
 
                 <div class="mt-6">
@@ -69,7 +69,7 @@ const closeModal = () => {
                         type="password"
                         class="mt-1 block w-3/4"
                         placeholder="Password"
-                        @keyup.enter="deleteTraining"
+                        @keyup.enter="deleteDepartment"
                     />
 
                     <InputError :message="form.errors.password" class="mt-2" />
@@ -84,9 +84,9 @@ const closeModal = () => {
                         class="ml-3"
                         :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing"
-                        @click="deleteTraining"
+                        @click="deleteDepartment"
                     >
-                        Delete Training
+                        Delete Department
                     </DangerButton>
                 </div>
             </div>

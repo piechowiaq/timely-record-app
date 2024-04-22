@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Workspace;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateProjectRegistryRequest extends FormRequest
@@ -27,5 +29,10 @@ class UpdateProjectRegistryRequest extends FormRequest
             'description' => ['required', 'string'],
             'validity_period' => ['required', 'integer', 'min:1'],
         ];
+    }
+
+    public function workspaces(): BelongsToMany
+    {
+        return $this->belongsToMany(Workspace::class);
     }
 }

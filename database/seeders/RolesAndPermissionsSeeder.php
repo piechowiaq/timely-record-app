@@ -53,6 +53,12 @@ class RolesAndPermissionsSeeder extends Seeder
         Permission::create(['name' => 'update department']);
         Permission::create(['name' => 'delete department']);
 
+        // Positions
+        Permission::create(['name' => 'view position']);
+        Permission::create(['name' => 'create position']);
+        Permission::create(['name' => 'update position']);
+        Permission::create(['name' => 'delete position']);
+
         // Reports
         Permission::create(['name' => 'view report']);
         Permission::create(['name' => 'create report']);
@@ -96,6 +102,11 @@ class RolesAndPermissionsSeeder extends Seeder
                 'create department',
                 'update department',
                 'delete department',
+                // Position permissions
+                'view position',
+                'create position',
+                'update position',
+                'delete position',
                 // Report permissions
                 'view report',
                 'create report',
@@ -133,6 +144,11 @@ class RolesAndPermissionsSeeder extends Seeder
                 'create department',
                 'update department',
                 'delete department',
+                // Position permissions
+                'view position',
+                'create position',
+                'update position',
+                'delete position',
                 // Report permissions
                 'view report',
                 'create report',
@@ -155,6 +171,8 @@ class RolesAndPermissionsSeeder extends Seeder
                 'view training',
                 // Department permissions
                 'view department',
+                // Position permissions
+                'view position',
                 // Report permissions
                 'view report',
                 'create report',
@@ -177,6 +195,8 @@ class RolesAndPermissionsSeeder extends Seeder
                 'view training',
                 // Department permissions
                 'view department',
+                // Position permissions
+                'view position',
                 // Report permissions
                 'view report',
 

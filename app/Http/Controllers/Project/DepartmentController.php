@@ -75,8 +75,11 @@ class DepartmentController extends Controller
             ->with('success', 'Department created.');
     }
 
-    public function show($id)
+    public function show(Department $department)
     {
+        return inertia('Projects/Departments/Show', [
+            'department' => DepartmentResource::make($department),
+        ]);
     }
 
     public function edit(Department $department)
@@ -96,7 +99,14 @@ class DepartmentController extends Controller
             ->with('success', 'Department updated successfully.');
     }
 
-    public function destroy($id)
+    public function destroy(Department $department, Request $request)
     {
+        $request->validate([
+            'password' => ['required', 'current_password'],
+        ]);
+
+        $department->delete();
+
+        return to_route('departments.index')->with('success', 'Department deleted.');
     }
 }

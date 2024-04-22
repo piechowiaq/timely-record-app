@@ -1,18 +1,17 @@
 <?php
 
+use App\Http\Resources\DepartmentResource;
 use App\Models\Department;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 
 use function Pest\Laravel\actingAs;
-use function Pest\Laravel\delete;
+use function Pest\Laravel\get;
 
 it('requires authentication', function () {
 
-    delete(route('departments.destroy', Department::factory()->create(
-    )))
+    get(route('departments.edit', Department::factory()->create()))
         ->assertRedirect(route('login'));
-
 });
 
 it('requires authorization', function () {
@@ -25,15 +24,14 @@ it('requires authorization', function () {
         $user = User::factory()->create();
         $user->assignRole($role);
 
-        $department = Department::factory()->create(['project_id' => $user->project_id]);
-
         actingAs($user)
-            ->delete(route('departments.destroy', $department->id))
+            ->get(route('departments.edit', Department::factory()->create()))
             ->assertForbidden();
     }
+
 });
 
-it('deletes a department', function () {
+it('returns a correct component', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
 
@@ -42,15 +40,13 @@ it('deletes a department', function () {
 
     $department = Department::factory()->create(['project_id' => $user->project_id]);
 
-    actingAs($user)->delete(route('departments.destroy', $department->id), [
-        'password' => PASSWORD,
-    ]);
-
-    $this->assertModelMissing($department);
+    actingAs($user)->
+    get(route('departments.edit', $department->id))
+        ->assertComponent('Projects/Departments/Edit');
 
 });
 
-it('redirects to the department index page', function () {
+it('passes correct department to view', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
 
@@ -59,8 +55,7 @@ it('redirects to the department index page', function () {
 
     $department = Department::factory()->create(['project_id' => $user->project_id]);
 
-    actingAs($user)->delete(route('departments.destroy', $department->id), [
-        'password' => PASSWORD,
-    ])->assertRedirect(route('departments.index'));
-
+    actingAs($user)->
+    get(route('departments.edit', $department->id))
+        ->assertHasResource('department', DepartmentResource::make($department));
 });
