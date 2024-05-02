@@ -48,4 +48,9 @@ class Training extends Model
 
         return $query;
     }
+
+    public function positions(): BelongsToMany
+    {
+        return $this->belongsToMany(Position::class);
+    }
 }

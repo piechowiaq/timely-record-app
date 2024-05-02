@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Project;
-use App\Models\Training;
 use App\Models\User;
 use App\Models\Workspace;
 use Illuminate\Database\Seeder;
@@ -20,10 +19,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RegistrySeeder::class,
             RolesAndPermissionsSeeder::class,
+            DepartmentsAndPositionsSeeder::class,
+            TrainingAssignmentSeeder::class,
 
         ]);
-
-        Training::factory(10)->create(['project_id' => null]);
 
         $user = User::factory()->create([
             'first_name' => 'Bartosz',

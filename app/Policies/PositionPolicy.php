@@ -17,6 +17,7 @@ class PositionPolicy
 
     public function view(User $user, Position $position): bool
     {
+        return $user->hasPermissionTo('view position');
     }
 
     public function create(User $user): bool
