@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Resources\DepartmentResource;
-use App\Models\Department;
+use App\Http\Resources\PositionResource;
+use App\Models\Position;
 use App\Models\Project;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
@@ -42,12 +42,12 @@ it('returns a correct component', function () {
     session(['project_id' => $user->project_id]);
 
     actingAs($user)->
-    get(route('departments.index'))
-        ->assertComponent('Projects/Departments/Index');
+    get(route('positions.index'))
+        ->assertComponent('Projects/Positions/Index');
 
 });
 
-it('passes projects departments as well as departments with project_id null', function () {
+it('passes projects positions as well as positions with project_id null', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
 
@@ -55,15 +55,15 @@ it('passes projects departments as well as departments with project_id null', fu
     $user->assignRole('admin');
     session(['project_id' => $user->project_id]);
 
-    Department::factory(2)->create(['project_id' => $user->project_id]);
-    Department::factory(2)->create(['project_id' => Project::factory()->create()->id]);
-    Department::factory(2)->create();
+    Position::factory(2)->create(['project_id' => $user->project_id]);
+    Position::factory(2)->create(['project_id' => Project::factory()->create()->id]);
+    Position::factory(2)->create();
 
-    $departments = Department::where('project_id', $user->project_id)->orWhereNull('project_id')->get();
+    $positions = Position::where('project_id', $user->project_id)->with('department')->orWhereNull('project_id')->get();
 
     actingAs($user)->
-    get(route('departments.index'))
-        ->assertHasPaginatedResource('departments',
-            DepartmentResource::collection($departments));
+    get(route('positions.index'))
+        ->assertHasPaginatedResource('positions',
+            PositionResource::collection($positions));
 
 });

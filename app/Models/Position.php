@@ -23,7 +23,7 @@ class Position extends Model
         return $this->belongsTo(Project::class);
     }
 
-    protected function department(): BelongsTo
+    public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class);
     }

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Project;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\DepartmentResource;
 use App\Http\Resources\PositionResource;
 use App\Http\Resources\ProjectResource;
+use App\Models\Department;
 use App\Models\Position;
 use App\Models\Project;
 use Auth;
@@ -25,6 +27,7 @@ class PositionController extends Controller
 
         if (Auth::user()->isSuperAdmin()) {
             $positions = Position::applyFilters($request)
+                ->with('department')
                 ->paginate(10)
                 ->withQueryString();
 
@@ -33,6 +36,7 @@ class PositionController extends Controller
         } else {
             $positions = Position::where('project_id', $project->id)
                 ->orWhereNull('project_id')
+                ->with('department')
                 ->applyFilters($request)
                 ->paginate(10)
                 ->withQueryString();
@@ -41,7 +45,7 @@ class PositionController extends Controller
         }
 
         return inertia('Projects/Positions/Index', [
-            'positions' => PositionResource::collection($positions->with('department')),
+            'positions' => PositionResource::collection($positions),
             'filters' => $request->all(['search', 'field', 'direction']),
             'projects' => ProjectResource::collection($projects),
         ]);
@@ -50,10 +54,18 @@ class PositionController extends Controller
 
     public function create()
     {
+        $project = Project::find(session('project_id'));
+
+        $departments = Auth::user()->isSuperAdmin() ? Department::all() : Department::where('project_id', $project->id)->get();
+
+        return inertia('Projects/Positions/Create', [
+            'departments' => DepartmentResource::collection($departments),
+        ]);
     }
 
     public function store(Request $request)
     {
+        dd($request->all());
     }
 
     public function show($id)

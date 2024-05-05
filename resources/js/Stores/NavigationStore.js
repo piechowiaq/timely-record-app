@@ -67,6 +67,11 @@ export const useNavigationStore = defineStore("NavigationStore", {
                         iconName: "fa-sitemap",
                     },
                     {
+                        name: "Positions",
+                        route: "positions.index",
+                        iconName: "fa-users-viewfinder",
+                    },
+                    {
                         name: "Workspaces",
                         route: "workspaces.index",
                         iconName: "fa-building-shield",

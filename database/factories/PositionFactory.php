@@ -16,6 +16,7 @@ class PositionFactory extends Factory
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
             'name' => $this->faker->name(),
+            'department_id' => 1,
         ];
     }
 }
