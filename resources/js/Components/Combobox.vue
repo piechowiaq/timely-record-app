@@ -15,7 +15,7 @@ const emit = defineEmits(["update:selected"]);
 
 const list = props.list;
 
-let selected = ref(list[0]);
+let selected = ref(list.length > 0 ? list[0] : null);
 let query = ref("");
 
 let filteredList = computed(() =>
@@ -36,18 +36,22 @@ watchEffect(() => {
 
 <template>
     <div class="mt-1 block w-full">
-        <Combobox v-model="selected">
+        <Combobox v-model="selected" :disabled="list.length === 0">
             <div class="relative mt-1">
                 <div
                     class="relative w-full cursor-default overflow-hidden bg-white text-left sm:text-sm"
                 >
                     <ComboboxInput
                         class="w-full border-gray-300 py-2 pl-3 pr-10 leading-5 text-gray-900"
-                        :displayValue="(listItem) => listItem.name"
+                        :displayValue="
+                            (listItem) => (listItem ? listItem.name : '')
+                        "
                         @change="query = $event.target.value"
+                        :disabled="list.length === 0"
                     />
                     <ComboboxButton
                         class="absolute inset-y-0 right-0 flex items-center pr-2"
+                        :disabled="list.length === 0"
                     >
                         <ChevronUpDownIcon
                             class="h-5 w-5 text-gray-400"

@@ -5,7 +5,7 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Head, useForm, usePage } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { defineProps } from "vue";
+import { computed, defineProps } from "vue";
 import Combobox from "@/Components/Combobox.vue";
 
 const projectId = usePage().props.projectId;
@@ -17,6 +17,8 @@ const form = useForm({
     departmentId: "",
 });
 
+const isDepartmentSelected = computed(() => form.departmentId !== null);
+
 function submit() {
     form.post(route("positions.store"), {
         preserveScroll: true,
@@ -24,7 +26,7 @@ function submit() {
 }
 
 function handleSelection(department) {
-    form.departmentId = department.id;
+    form.departmentId = department ? department.id : null;
 }
 </script>
 
@@ -55,6 +57,7 @@ function handleSelection(department) {
                         </header>
 
                         <form
+                            v-if="isDepartmentSelected"
                             @submit.prevent="submit"
                             method="post"
                             class="mt-6 space-y-6"
@@ -104,6 +107,11 @@ function handleSelection(department) {
                                 </Transition>
                             </div>
                         </form>
+                        <div v-else>
+                            <p class="py-4 text-red-600 dark:text-gray-400">
+                                Please assign a department to project first.
+                            </p>
+                        </div>
                     </section>
                 </div>
             </div>
