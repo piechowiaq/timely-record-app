@@ -22,6 +22,7 @@ class PositionPolicy
 
     public function create(User $user): bool
     {
+        return $user->hasPermissionTo('create position');
     }
 
     public function update(User $user, Position $position): bool

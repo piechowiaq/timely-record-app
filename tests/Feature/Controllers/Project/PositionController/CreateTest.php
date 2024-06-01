@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Resources\DepartmentResource;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 
@@ -36,8 +37,27 @@ it('returns a correct component', function () {
     $user = User::factory()->create();
     $user->assignRole('admin');
 
+    session(['project_id' => $user->project_id]);
+
     actingAs($user)->
     get(route('positions.create'))
         ->assertComponent('Projects/Positions/Create');
+
+});
+
+it('passes auth user projects departments to the view', function () {
+
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $user = User::factory()->create();
+    $user->assignRole('admin');
+
+    session(['project_id' => $user->project_id]);
+
+    $departments = $user->project->departments;
+
+    actingAs($user)->
+    get(route('positions.create'))
+        ->assertHasResource('departments', DepartmentResource::collection($departments));
 
 });
