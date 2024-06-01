@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Resources\DepartmentResource;
+use App\Models\Department;
 use App\Models\User;
+use Database\Seeders\DepartmentsAndPositionsSeeder;
 use Database\Seeders\RolesAndPermissionsSeeder;
 
 use function Pest\Laravel\actingAs;
@@ -48,13 +50,16 @@ it('returns a correct component', function () {
 it('passes auth user projects departments to the view', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
+    $this->seed(DepartmentsAndPositionsSeeder::class);
 
     $user = User::factory()->create();
     $user->assignRole('admin');
 
     session(['project_id' => $user->project_id]);
 
-    $departments = $user->project->departments;
+    $departments = Department::where('project_id', $user->project_id)
+        ->orWhereNull('project_id')
+        ->get();
 
     actingAs($user)->
     get(route('positions.create'))

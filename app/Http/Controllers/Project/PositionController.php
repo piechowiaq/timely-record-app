@@ -56,15 +56,11 @@ class PositionController extends Controller
     {
         $project = Project::find(session('project_id'));
 
-        if (Auth::user()->isSuperAdmin()) {
-            $departments = Department::all();
-        } else {
-            $departments = Department::where('project_id', $project->id)->get();
-        }
-
-        if ($departments->isEmpty()) {
-            $departments = null;
-        }
+        $departments = Auth::user()->isSuperAdmin()
+            ? Department::all()
+            : Department::where('project_id', $project->id)
+                ->orWhereNull('project_id')
+                ->get();
 
         return inertia('Projects/Positions/Create', [
             'departments' => $departments ? DepartmentResource::collection($departments) : [],

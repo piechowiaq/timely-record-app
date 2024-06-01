@@ -299,7 +299,7 @@ const isSuperAdmin = usePage()
                                         "
                                         class="text-cyan-600 hover:text-cyan-700"
                                     >
-                                        {{ registry.nam }}
+                                        {{ registry.name }}
                                     </Link>
 
                                     <Link
