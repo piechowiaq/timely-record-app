@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Department;
+use App\Models\Position;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 
@@ -9,13 +10,14 @@ use function Pest\Laravel\post;
 
 beforeEach(function () {
     $this->validData = fn () => [
-        'name' => 'Kitchen',
+        'name' => 'General Manager',
+        'department_id' => Department::factory()->create()->id,
     ];
 });
 
 it('requires authentication', function () {
 
-    post(route('departments.store', Department::factory()->create(
+    post(route('positions.store', Position::factory()->create(
     )))
         ->assertRedirect(route('login'));
 
@@ -32,13 +34,13 @@ it('requires authorization', function () {
         $user->assignRole($role);
 
         actingAs($user)
-            ->post(route('departments.store', Department::factory()->create(
+            ->post(route('positions.store', Position::factory()->create(
             )))
             ->assertForbidden();
     }
 });
 
-it('stores a department', function () {
+it('stores a position', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
 
@@ -46,17 +48,17 @@ it('stores a department', function () {
     $user->assignRole('admin');
     session(['project_id' => $user->project_id]);
 
-    $departmentData = value($this->validData);
+    $positionData = value($this->validData);
 
-    actingAs($user)->post(route('departments.store'), $departmentData);
+    actingAs($user)->post(route('positions.store'), $positionData);
 
-    $this->assertDatabaseHas(Department::class, [
-        ...$departmentData,
+    $this->assertDatabaseHas(Position::class, [
+        ...$positionData,
         'project_id' => $user->project_id,
     ]);
 });
 
-it('redirects to the department index page', function () {
+it('redirects to the position index page', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
 
@@ -64,8 +66,8 @@ it('redirects to the department index page', function () {
     $user->assignRole('admin');
     session(['project_id' => $user->project_id]);
 
-    $departmentData = value($this->validData);
+    $positionData = value($this->validData);
 
-    actingAs($user)->post(route('departments.store'), $departmentData)
-        ->assertRedirect(route('departments.index'));
+    actingAs($user)->post(route('positions.store'), $positionData)
+        ->assertRedirect(route('positions.index'));
 });

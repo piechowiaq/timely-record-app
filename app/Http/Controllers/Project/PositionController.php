@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Project;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PositionRequest;
 use App\Http\Resources\DepartmentResource;
 use App\Http\Resources\PositionResource;
 use App\Http\Resources\ProjectResource;
@@ -67,9 +68,27 @@ class PositionController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(PositionRequest $request)
     {
-        dd($request->all());
+        if (session('project_id') === null) {
+            Position::create([
+                'name' => $request->name,
+                'project_id' => null,
+                'department_id' => $request->department_id,
+            ]);
+        } else {
+            $project = Project::find(session('project_id'));
+
+            Position::create([
+                'name' => $request->name,
+                'project_id' => $project->id,
+                'department_id' => $request->department_id,
+            ]);
+
+        }
+
+        return redirect()->route('positions.index')
+            ->with('success', 'Position created.');
     }
 
     public function show($id)
