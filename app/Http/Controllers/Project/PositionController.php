@@ -91,8 +91,11 @@ class PositionController extends Controller
             ->with('success', 'Position created.');
     }
 
-    public function show($id)
+    public function show(Position $position)
     {
+        return inertia('Projects/Positions/Show', [
+            'position' => PositionResource::make($position),
+        ]);
     }
 
     public function edit($id)

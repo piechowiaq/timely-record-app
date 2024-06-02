@@ -1,8 +1,7 @@
 <?php
 
-use App\Http\Resources\TrainingResource;
-use App\Models\Registry;
-use App\Models\Training;
+use App\Http\Resources\DepartmentResource;
+use App\Models\Department;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 
@@ -11,7 +10,7 @@ use function Pest\Laravel\get;
 
 it('requires authentication', function () {
 
-    get(route('trainings.show', Registry::factory()->create()))
+    get(route('departments.show', Department::factory()->create()))
         ->assertRedirect(route('login'));
 });
 
@@ -27,21 +26,21 @@ it('returns a correct component', function () {
         $user->assignRole($role);
 
         actingAs($user)
-            ->get(route('trainings.show', Training::factory()->create()))
-            ->assertComponent('Projects/Trainings/Show');
+            ->get(route('departments.show', Department::factory()->create()))
+            ->assertComponent('Projects/Departments/Show');
     }
 });
 
-it('passes correct training to the view', function () {
+it('passes correct department to the view', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
 
     $user = User::factory()->create();
     $user->assignRole('admin');
 
-    $training = Training::factory()->create(['project_id' => $user->project_id]);
+    $department = Department::factory()->create(['project_id' => $user->project_id]);
 
     actingAs($user)->
-    get(route('trainings.show', $training->id))
-        ->assertHasResource('training', TrainingResource::make($training));
+    get(route('departments.show', $department->id))
+        ->assertHasResource('department', DepartmentResource::make($department));
 });
