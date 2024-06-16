@@ -74,7 +74,7 @@ class PositionController extends Controller
             Position::create([
                 'name' => $request->name,
                 'project_id' => null,
-                'department_id' => $request->department_id,
+                'department_id' => $request->departmentId,
             ]);
         } else {
             $project = Project::find(session('project_id'));
@@ -82,7 +82,7 @@ class PositionController extends Controller
             Position::create([
                 'name' => $request->name,
                 'project_id' => $project->id,
-                'department_id' => $request->department_id,
+                'department_id' => $request->departmentId,
             ]);
 
         }
@@ -98,8 +98,11 @@ class PositionController extends Controller
         ]);
     }
 
-    public function edit($id)
+    public function edit(Position $position)
     {
+        return inertia('Projects/Positions/Edit', [
+            'position' => PositionResource::make($position),
+        ]);
     }
 
     public function update(Request $request, $id)

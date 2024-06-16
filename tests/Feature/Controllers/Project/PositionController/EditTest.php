@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Resources\DepartmentResource;
-use App\Models\Department;
+use App\Http\Resources\PositionResource;
+use App\Models\Position;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 
@@ -10,7 +10,7 @@ use function Pest\Laravel\get;
 
 it('requires authentication', function () {
 
-    get(route('departments.edit', Department::factory()->create()))
+    get(route('positions.edit', Position::factory()->create()))
         ->assertRedirect(route('login'));
 });
 
@@ -25,7 +25,7 @@ it('requires authorization', function () {
         $user->assignRole($role);
 
         actingAs($user)
-            ->get(route('departments.edit', Department::factory()->create()))
+            ->get(route('positions.edit', Position::factory()->create()))
             ->assertForbidden();
     }
 
@@ -38,24 +38,24 @@ it('returns a correct component', function () {
     $user = User::factory()->create();
     $user->assignRole('admin');
 
-    $department = Department::factory()->create(['project_id' => $user->project_id]);
+    $position = Position::factory()->create(['project_id' => $user->project_id]);
 
     actingAs($user)->
-    get(route('departments.edit', $department->id))
-        ->assertComponent('Projects/Departments/Edit');
+    get(route('positions.edit', $position->id))
+        ->assertComponent('Projects/Positions/Edit');
 
 });
 
-it('passes correct department to view', function () {
+it('passes correct position to view', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
 
     $user = User::factory()->create();
     $user->assignRole('admin');
 
-    $department = Department::factory()->create(['project_id' => $user->project_id]);
+    $position = Position::factory()->create(['project_id' => $user->project_id]);
 
     actingAs($user)->
-    get(route('departments.edit', $department->id))
-        ->assertHasResource('department', DepartmentResource::make($department));
+    get(route('positions.edit', $position->id))
+        ->assertHasResource('position', PositionResource::make($position));
 });

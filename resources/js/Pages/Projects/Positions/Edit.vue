@@ -5,18 +5,18 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Head, useForm, usePage } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import DeleteDepartmentForm from "@/Pages/Projects/Departments/Partials/DeleteDepartmentForm.vue";
+import DeletePositionForm from "@/Pages/Projects/Positions/Partials/DeletePositionForm.vue";
 
-const props = defineProps(["department"]);
+const props = defineProps(["position"]);
 
 const projectId = usePage().props.projectId;
 
 const form = useForm({
-    name: props.department.name,
+    name: props.position.name,
 });
 
 function submit() {
-    form.patch(route("departments.update", props.department.id), {
+    form.patch(route("positions.update", props.position.id), {
         preserveScroll: true,
     });
 }
@@ -27,7 +27,7 @@ function submit() {
 
     <AuthenticatedLayout>
         <template #header>
-            <h2>Edit Department</h2>
+            <h2>Edit position</h2>
         </template>
 
         <div class="px-2 pb-2">
@@ -38,13 +38,13 @@ function submit() {
                             <h2
                                 class="text-lg font-medium text-gray-900 dark:text-gray-100"
                             >
-                                Department Information
+                                Position Information
                             </h2>
 
                             <p
                                 class="mt-1 text-sm text-gray-600 dark:text-gray-400"
                             >
-                                Your project's department information.
+                                Your project's position information.
                             </p>
                         </header>
 
@@ -92,8 +92,8 @@ function submit() {
                                         </p>
                                     </Transition>
                                 </div>
-                                <DeleteDepartmentForm
-                                    :department="department"
+                                <DeletePositionForm
+                                    :position="position"
                                     class="max-w-xl"
                                 />
                             </div>

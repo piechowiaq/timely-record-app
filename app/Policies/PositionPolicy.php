@@ -27,6 +27,7 @@ class PositionPolicy
 
     public function update(User $user, Position $position): bool
     {
+        return $user->hasPermissionTo('update position');
     }
 
     public function delete(User $user, Position $position): bool
