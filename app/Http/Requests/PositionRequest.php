@@ -10,7 +10,7 @@ class PositionRequest extends FormRequest
     {
         return [
             'name' => 'required|string',
-            'departmentId' => 'required|exists:departments,id',
+            'department_id' => 'required|exists:departments,id',
         ];
     }
 

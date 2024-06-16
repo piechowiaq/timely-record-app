@@ -74,7 +74,7 @@ class PositionController extends Controller
             Position::create([
                 'name' => $request->name,
                 'project_id' => null,
-                'department_id' => $request->departmentId,
+                'department_id' => $request->department_id,
             ]);
         } else {
             $project = Project::find(session('project_id'));
@@ -82,7 +82,7 @@ class PositionController extends Controller
             Position::create([
                 'name' => $request->name,
                 'project_id' => $project->id,
-                'department_id' => $request->departmentId,
+                'department_id' => $request->department_id,
             ]);
 
         }

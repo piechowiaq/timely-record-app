@@ -46,6 +46,7 @@ it('stores a position', function () {
 
     $user = User::factory()->create();
     $user->assignRole('admin');
+
     session(['project_id' => $user->project_id]);
 
     $positionData = value($this->validData);

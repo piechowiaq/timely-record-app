@@ -14,10 +14,10 @@ const props = defineProps(["departments"]);
 
 const form = useForm({
     name: "",
-    departmentId: "",
+    department_id: "",
 });
 
-const isDepartmentSelected = computed(() => form.departmentId !== null);
+const isDepartmentSelected = computed(() => form.department_id !== null);
 
 function submit() {
     form.post(route("positions.store"), {
@@ -26,7 +26,7 @@ function submit() {
 }
 
 function handleSelection(department) {
-    form.departmentId = department ? department.id : null;
+    form.department_id = department ? department.id : null;
 }
 </script>
 
