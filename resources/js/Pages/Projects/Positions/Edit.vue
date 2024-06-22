@@ -6,13 +6,16 @@ import TextInput from "@/Components/TextInput.vue";
 import { Head, useForm, usePage } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import DeletePositionForm from "@/Pages/Projects/Positions/Partials/DeletePositionForm.vue";
+import Combobox from "@/Components/Combobox.vue";
+import { ref, watchEffect } from "vue";
 
-const props = defineProps(["position"]);
+const props = defineProps(["position", "departments"]);
 
 const projectId = usePage().props.projectId;
 
 const form = useForm({
     name: props.position.name,
+    department_id: props.position.department_id,
 });
 
 function submit() {
@@ -20,6 +23,18 @@ function submit() {
         preserveScroll: true,
     });
 }
+
+function handleSelection(department) {
+    form.department_id = department ? department.id : null;
+}
+
+const initialDepartment = ref(null);
+
+watchEffect(() => {
+    initialDepartment.value = props.departments.find(
+        (department) => department.id === props.position.department_id,
+    );
+});
 </script>
 
 <template>
@@ -29,7 +44,13 @@ function submit() {
         <template #header>
             <h2>Edit position</h2>
         </template>
+        props positon {{ props.position }} <br />
+        props position department_id {{ props.position.department_id }} <br />
 
+        dd {{ handleSelection }} <br />
+        initialDepartment
+        {{ initialDepartment }} <br />
+        {{ props.position.department }} <br />
         <div class="px-2 pb-2">
             <div class="space-y-2 dark:bg-gray-700 dark:text-gray-400">
                 <div class="bg-white p-4 shadow dark:bg-gray-800 sm:p-8">
@@ -70,6 +91,13 @@ function submit() {
                                     class="mt-2"
                                     :message="form.errors.name"
                                 />
+                            </div>
+                            <div>
+                                <Combobox
+                                    :list="departments"
+                                    :selected="initialDepartment"
+                                    @update:selected="handleSelection"
+                                ></Combobox>
                             </div>
 
                             <div class="flex items-center justify-between">

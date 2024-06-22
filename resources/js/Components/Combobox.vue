@@ -10,12 +10,12 @@ import {
 } from "@headlessui/vue";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/vue/20/solid";
 
-const props = defineProps(["list"]);
+const props = defineProps(["list", "selected"]);
 const emit = defineEmits(["update:selected"]);
 
 const list = props.list;
 
-let selected = ref(list.length > 0 ? list[0] : null);
+let selected = ref(props.selected || (list.length > 0 ? list[0] : null));
 let query = ref("");
 
 let filteredList = computed(() =>

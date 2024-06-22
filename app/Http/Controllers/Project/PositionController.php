@@ -100,13 +100,26 @@ class PositionController extends Controller
 
     public function edit(Position $position)
     {
+        $project = Project::find(session('project_id'));
+
+        $departments = Auth::user()->isSuperAdmin()
+            ? Department::all()
+            : Department::where('project_id', $project->id)
+                ->orWhereNull('project_id')
+                ->get();
+
         return inertia('Projects/Positions/Edit', [
-            'position' => PositionResource::make($position),
+            'position' => PositionResource::make($position->load('department')),
+            'departments' => $departments ? DepartmentResource::collection($departments) : [],
         ]);
     }
 
-    public function update(Request $request, $id)
+    public function update(Position $position, PositionRequest $request)
     {
+        $position->update([
+            'name' => $request->name,
+            'department_id' => $request->department_id,
+        ]);
     }
 
     public function destroy($id)

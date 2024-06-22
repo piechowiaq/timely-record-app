@@ -15,7 +15,7 @@ class PositionResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'project_id' => $this->project_id,
-
+            'department_id' => $this->department_id,
             'department' => new DepartmentResource($this->whenLoaded('department')),
         ];
     }
