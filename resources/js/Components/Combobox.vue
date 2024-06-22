@@ -14,8 +14,7 @@ const props = defineProps(["list", "selected"]);
 const emit = defineEmits(["update:selected"]);
 
 const list = props.list;
-
-let selected = ref(props.selected || (list.length > 0 ? list[0] : null));
+let selected = ref(props.selected || null);
 let query = ref("");
 
 let filteredList = computed(() =>
@@ -30,7 +29,9 @@ let filteredList = computed(() =>
 );
 
 watchEffect(() => {
-    emit("update:selected", selected.value);
+    if (selected.value) {
+        emit("update:selected", selected.value);
+    }
 });
 </script>
 

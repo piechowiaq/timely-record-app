@@ -116,10 +116,27 @@ class PositionController extends Controller
 
     public function update(Position $position, PositionRequest $request)
     {
-        $position->update([
-            'name' => $request->name,
-            'department_id' => $request->department_id,
-        ]);
+        if (session('project_id') === null) {
+
+            $position->update([
+                'name' => $request->name,
+                'department_id' => $request->department_id,
+                'project_id' => null,
+            ]);
+
+        } else {
+            $project = Project::find(session('project_id'));
+
+            $position->update([
+                'name' => $request->name,
+                'department_id' => $request->department_id,
+                'project_id' => $project->id,
+            ]);
+        }
+
+        return redirect()->route('positions.edit', $position->id)
+            ->with('success', 'Position updated successfully.');
+
     }
 
     public function destroy($id)

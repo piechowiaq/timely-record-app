@@ -80,11 +80,21 @@ function handleSelection(department) {
                                     :message="form.errors.name"
                                 />
                             </div>
+
                             <div>
+                                <InputLabel
+                                    for="department"
+                                    value="Department"
+                                />
                                 <Combobox
+                                    id="department"
                                     :list="departments"
                                     @update:selected="handleSelection"
                                 ></Combobox>
+                                <InputError
+                                    class="mt-2"
+                                    :message="form.errors.department_id"
+                                />
                             </div>
 
                             <div class="flex items-center gap-4">

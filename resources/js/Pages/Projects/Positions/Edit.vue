@@ -31,9 +31,13 @@ function handleSelection(department) {
 const initialDepartment = ref(null);
 
 watchEffect(() => {
-    initialDepartment.value = props.departments.find(
-        (department) => department.id === props.position.department_id,
-    );
+    initialDepartment.value =
+        props.departments.find(
+            (department) => department.id === props.position.department_id,
+        ) || null;
+    if (initialDepartment.value) {
+        handleSelection(initialDepartment.value);
+    }
 });
 </script>
 
@@ -44,13 +48,7 @@ watchEffect(() => {
         <template #header>
             <h2>Edit position</h2>
         </template>
-        props positon {{ props.position }} <br />
-        props position department_id {{ props.position.department_id }} <br />
 
-        dd {{ handleSelection }} <br />
-        initialDepartment
-        {{ initialDepartment }} <br />
-        {{ props.position.department }} <br />
         <div class="px-2 pb-2">
             <div class="space-y-2 dark:bg-gray-700 dark:text-gray-400">
                 <div class="bg-white p-4 shadow dark:bg-gray-800 sm:p-8">
@@ -61,7 +59,6 @@ watchEffect(() => {
                             >
                                 Position Information
                             </h2>
-
                             <p
                                 class="mt-1 text-sm text-gray-600 dark:text-gray-400"
                             >
@@ -76,7 +73,6 @@ watchEffect(() => {
                         >
                             <div>
                                 <InputLabel for="name" value="Name" />
-
                                 <TextInput
                                     id="name"
                                     type="text"
@@ -86,18 +82,26 @@ watchEffect(() => {
                                     autofocus
                                     autocomplete="name"
                                 />
-
                                 <InputError
                                     class="mt-2"
                                     :message="form.errors.name"
                                 />
                             </div>
                             <div>
+                                <InputLabel
+                                    for="department"
+                                    value="Department"
+                                />
                                 <Combobox
-                                    :list="departments"
+                                    id="department"
+                                    :list="props.departments"
                                     :selected="initialDepartment"
                                     @update:selected="handleSelection"
-                                ></Combobox>
+                                />
+                                <InputError
+                                    class="mt-2"
+                                    :message="form.errors.department_id"
+                                />
                             </div>
 
                             <div class="flex items-center justify-between">
@@ -121,7 +125,7 @@ watchEffect(() => {
                                     </Transition>
                                 </div>
                                 <DeletePositionForm
-                                    :position="position"
+                                    :position="props.position"
                                     class="max-w-xl"
                                 />
                             </div>

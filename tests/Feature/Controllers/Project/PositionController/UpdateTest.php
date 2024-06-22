@@ -53,7 +53,7 @@ it('updates a position', function () {
 
     actingAs($user)->patch(route('positions.update', $position->id), $positionData);
 
-    $this->assertDatabaseHas(Department::class, [
+    $this->assertDatabaseHas(Position::class, [
         ...$positionData,
         'project_id' => $user->project_id,
     ]);
