@@ -139,7 +139,14 @@ class PositionController extends Controller
 
     }
 
-    public function destroy($id)
+    public function destroy(Position $position, Request $request)
     {
+        $request->validate([
+            'password' => ['required', 'current_password'],
+        ]);
+
+        $position->delete();
+
+        return to_route('positions.index')->with('success', 'Position deleted.');
     }
 }

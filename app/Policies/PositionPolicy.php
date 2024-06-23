@@ -32,6 +32,7 @@ class PositionPolicy
 
     public function delete(User $user, Position $position): bool
     {
+        return $user->hasPermissionTo('delete position');
     }
 
     public function restore(User $user, Position $position): bool

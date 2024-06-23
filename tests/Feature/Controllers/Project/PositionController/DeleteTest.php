@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Department;
+use App\Models\Position;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 
@@ -9,7 +9,7 @@ use function Pest\Laravel\delete;
 
 it('requires authentication', function () {
 
-    delete(route('departments.destroy', Department::factory()->create(
+    delete(route('positions.destroy', Position::factory()->create(
     )))
         ->assertRedirect(route('login'));
 
@@ -25,42 +25,42 @@ it('requires authorization', function () {
         $user = User::factory()->create();
         $user->assignRole($role);
 
-        $department = Department::factory()->create(['project_id' => $user->project_id]);
+        $position = Position::factory()->create(['project_id' => $user->project_id]);
 
         actingAs($user)
-            ->delete(route('departments.destroy', $department->id))
+            ->delete(route('positions.destroy', $position->id))
             ->assertForbidden();
     }
 });
 
-it('deletes a department', function () {
+it('deletes a position', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
 
     $user = User::factory()->create();
     $user->assignRole('admin');
 
-    $department = Department::factory()->create(['project_id' => $user->project_id]);
+    $position = Position::factory()->create(['project_id' => $user->project_id]);
 
-    actingAs($user)->delete(route('departments.destroy', $department->id), [
+    actingAs($user)->delete(route('positions.destroy', $position->id), [
         'password' => PASSWORD,
     ]);
 
-    $this->assertModelMissing($department);
+    $this->assertModelMissing($position);
 
 });
 
-it('redirects to the department index page', function () {
+it('redirects to the position index page', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
 
     $user = User::factory()->create();
     $user->assignRole('admin');
 
-    $department = Department::factory()->create(['project_id' => $user->project_id]);
+    $position = Position::factory()->create(['project_id' => $user->project_id]);
 
-    actingAs($user)->delete(route('departments.destroy', $department->id), [
+    actingAs($user)->delete(route('positions.destroy', $position->id), [
         'password' => PASSWORD,
-    ])->assertRedirect(route('departments.index'));
+    ])->assertRedirect(route('positions.index'));
 
 });

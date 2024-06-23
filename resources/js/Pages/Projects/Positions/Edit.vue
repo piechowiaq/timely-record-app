@@ -125,7 +125,7 @@ watchEffect(() => {
                                     </Transition>
                                 </div>
                                 <DeletePositionForm
-                                    :position="props.position"
+                                    :position="position"
                                     class="max-w-xl"
                                 />
                             </div>

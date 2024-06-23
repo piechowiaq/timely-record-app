@@ -11,6 +11,7 @@ use function Pest\Laravel\patch;
 beforeEach(function () {
     $this->validData = fn () => [
         'name' => 'Executive Chef',
+        'department_id' => Department::factory()->create()->id,
     ];
 });
 
@@ -67,10 +68,10 @@ it('redirects to the department edit page', function () {
     $user->assignRole('admin');
     session(['project_id' => $user->project_id]);
 
-    $department = Department::factory()->create(['project_id' => $user->project_id]);
+    $position = Position::factory()->create(['project_id' => $user->project_id]);
 
-    $departmentData = value($this->validData);
+    $positionData = value($this->validData);
 
-    actingAs($user)->patch(route('departments.update', $department->id), $departmentData)
-        ->assertRedirect(route('departments.edit', $department->id));
+    actingAs($user)->patch(route('positions.update', $position->id), $positionData)
+        ->assertRedirect(route('positions.edit', $position->id));
 });
