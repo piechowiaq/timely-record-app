@@ -67,3 +67,25 @@ it('passes projects positions as well as positions with project_id null', functi
             PositionResource::collection($positions));
 
 });
+
+it('passes positions with project_id null when super-admin logged in', function () {
+
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $user = User::factory()->create();
+    $user->assignRole('super-admin');
+
+    $user2 = User::factory()->create();
+
+    Position::factory(2)->create(['project_id' => $user2->project_id]);
+    Position::factory(2)->create(['project_id' => Project::factory()->create()->id]);
+    Position::factory(2)->create();
+
+    $positions = Position::whereNull('project_id')->with('department')->get();
+
+    actingAs($user)->
+    get(route('positions.index'))
+        ->assertHasPaginatedResource('positions',
+            PositionResource::collection($positions));
+
+});

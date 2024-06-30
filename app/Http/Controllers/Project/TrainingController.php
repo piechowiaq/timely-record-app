@@ -27,6 +27,7 @@ class TrainingController extends Controller
 
         if (Auth::user()->isSuperAdmin()) {
             $trainings = Training::applyFilters($request)
+                ->whereNull('project_id')
                 ->paginate(10)
                 ->withQueryString();
 

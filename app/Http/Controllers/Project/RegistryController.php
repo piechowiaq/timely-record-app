@@ -33,6 +33,7 @@ class RegistryController extends Controller
 
         if (Auth::user()->isSuperAdmin()) {
             $registries = Registry::applyFilters($request)
+                ->whereNull('project_id')
                 ->paginate(10)
                 ->withQueryString();
 

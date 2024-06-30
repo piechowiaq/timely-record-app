@@ -28,6 +28,7 @@ class PositionController extends Controller
 
         if (Auth::user()->isSuperAdmin()) {
             $positions = Position::applyFilters($request)
+                ->whereNull('project_id')
                 ->with('department')
                 ->paginate(10)
                 ->withQueryString();
@@ -58,7 +59,7 @@ class PositionController extends Controller
         $project = Project::find(session('project_id'));
 
         $departments = Auth::user()->isSuperAdmin()
-            ? Department::all()
+            ? Department::whereNull('project_id')->get()
             : Department::where('project_id', $project->id)
                 ->orWhereNull('project_id')
                 ->get();
@@ -103,7 +104,7 @@ class PositionController extends Controller
         $project = Project::find(session('project_id'));
 
         $departments = Auth::user()->isSuperAdmin()
-            ? Department::all()
+            ? Department::whereNull('project_id')->get()
             : Department::where('project_id', $project->id)
                 ->orWhereNull('project_id')
                 ->get();

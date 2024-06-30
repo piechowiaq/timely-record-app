@@ -67,3 +67,26 @@ it('passes projects departments as well as departments with project_id null', fu
             DepartmentResource::collection($departments));
 
 });
+
+it('passes departments with project_id null when super-admin logged', function () {
+
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $user = User::factory()->create();
+    $user->assignRole('super-admin');
+    session(['project_id' => null]);
+
+    $user2 = User::factory()->create();
+
+    Department::factory(2)->create(['project_id' => $user2->project_id]);
+    Department::factory(2)->create(['project_id' => Project::factory()->create()->id]);
+    Department::factory(2)->create();
+
+    $departments = Department::whereNull('project_id')->get();
+
+    actingAs($user)->
+    get(route('departments.index'))
+        ->assertHasPaginatedResource('departments',
+            DepartmentResource::collection($departments));
+
+});
