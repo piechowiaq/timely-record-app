@@ -5,12 +5,38 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Head, useForm, usePage } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import Pagination from "@/Components/Pagination.vue";
+import { useUserStore } from "@/Stores/UserStore.js";
+import { computed } from "vue";
+
+const props = defineProps(["workspaces", "workspacesIds"]);
 
 const projectId = usePage().props.projectId;
 
+const userStore = useUserStore();
+
 const form = useForm({
     name: "",
+    workspacesIds: userStore.form.workspacesIds,
 });
+
+const workspacesIds = computed({
+    get: () => form.workspacesIds,
+    set: (value) => {
+        form.workspacesIds = value;
+        userStore.updateForm({ ...userStore.form, workspacesIds: value });
+    },
+});
+
+const selectAll = computed({
+    get: () => form.workspacesIds.length === props.workspaces.meta.total,
+    set: (value) => {
+        form.workspacesIds = value ? [...props.workspacesIds] : [];
+        userStore.updateForm({ workspacesIds: form.workspacesIds });
+    },
+});
+
+const superAdmin = computed(() => projectId === null);
 
 function submit() {
     form.post(route("departments.store"), {
@@ -66,6 +92,78 @@ function submit() {
                                 <InputError
                                     class="mt-2"
                                     :message="form.errors.name"
+                                />
+                            </div>
+                            <div v-if="!superAdmin">
+                                <InputLabel
+                                    for="workspaces"
+                                    value="Workspaces"
+                                />
+                                <div class="mt-1 border px-2 shadow-sm">
+                                    <div
+                                        class="flex items-center justify-between pb-4 pt-2"
+                                    >
+                                        <div class="flex">
+                                            <input
+                                                type="checkbox"
+                                                id="select-all"
+                                                v-model="selectAll"
+                                                class="border-gray-300 font-medium text-cyan-600 shadow-sm focus:ring-transparent"
+                                            />
+                                            <label
+                                                for="select-all"
+                                                class="ml-2 text-sm"
+                                            >
+                                                Select All
+                                            </label>
+                                        </div>
+
+                                        <Pagination
+                                            :links="workspaces.meta.links"
+                                            class="flex items-center justify-end py-2"
+                                        ></Pagination>
+                                    </div>
+
+                                    <div
+                                        v-for="(
+                                            workspace, index
+                                        ) in workspaces.data"
+                                        :key="workspace.id"
+                                        :class="{
+                                            'border-b':
+                                                index !==
+                                                workspaces.data.length - 1,
+                                        }"
+                                        class="flex items-center py-2"
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            :id="`checkbox-${workspace.id}`"
+                                            v-model="workspacesIds"
+                                            :value="workspace.id"
+                                            class="border-gray-300 font-medium text-cyan-600 shadow-sm focus:ring-transparent"
+                                        />
+                                        <div
+                                            class="flex flex-col justify-center text-sm"
+                                        >
+                                            <label
+                                                :for="`checkbox-${workspace.id}`"
+                                                class="ml-2 font-medium text-gray-900 dark:text-gray-300"
+                                            >
+                                                {{ workspace.name }}
+                                                <span
+                                                    v-if="workspace.location"
+                                                    class="text-xs font-normal text-gray-500 dark:text-gray-300"
+                                                >
+                                                    {{ workspace.location }}
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <InputError
+                                    class="mt-2"
+                                    :message="form.errors.workspacesIds"
                                 />
                             </div>
 

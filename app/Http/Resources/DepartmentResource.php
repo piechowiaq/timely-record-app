@@ -15,7 +15,10 @@ class DepartmentResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'project_id' => $this->project_id,
-
+            'workspacesIds' => $this->whenLoaded('workspaces', function () {
+                return $this->workspaces->pluck('id')->toArray();
+            }),
         ];
+
     }
 }

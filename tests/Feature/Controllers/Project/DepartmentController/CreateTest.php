@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Resources\WorkspaceResource;
 use App\Models\User;
+use Database\Seeders\DatabaseSeeder;
 use Database\Seeders\RolesAndPermissionsSeeder;
 
 use function Pest\Laravel\actingAs;
@@ -29,6 +31,19 @@ it('requires authorization', function () {
 
 });
 
+it('returns a correct component for super-admin', function () {
+
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $user = User::factory()->create();
+    $user->assignRole('super-admin');
+
+    actingAs($user)->
+    get(route('departments.create'))
+        ->assertComponent('Projects/Departments/Create');
+
+});
+
 it('returns a correct component', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
@@ -39,5 +54,17 @@ it('returns a correct component', function () {
     actingAs($user)->
     get(route('departments.create'))
         ->assertComponent('Projects/Departments/Create');
+
+});
+
+it('passes auth user workspaces to the view', function () {
+
+    $this->seed(DatabaseSeeder::class);
+
+    $user = User::role('admin')->first();
+
+    actingAs($user)->
+    get(route('departments.create'))
+        ->assertHasPaginatedResource('workspaces', WorkspaceResource::collection($user->workspaces));
 
 });

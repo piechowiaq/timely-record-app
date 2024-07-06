@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class DepartmentRequest extends FormRequest
 {
@@ -10,6 +11,11 @@ class DepartmentRequest extends FormRequest
     {
         return [
             'name' => ['required'],
+            'workspacesIds' => ['sometimes', 'array'],
+            'workspacesIds.*' => ['sometimes',
+                Rule::exists('workspaces', 'id')->where(function ($query) {
+                    $query->where('project_id', $this->session()->get('project_id'));
+                })],
         ];
     }
 

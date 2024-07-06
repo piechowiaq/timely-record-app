@@ -59,3 +59,17 @@ it('passes correct department to view', function () {
     get(route('departments.edit', $department->id))
         ->assertHasResource('department', DepartmentResource::make($department));
 });
+
+it('passes department with project_id null when super-admin logged in to view', function () {
+
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $user = User::factory()->create();
+    $user->assignRole('super-admin');
+
+    $department = Department::factory()->create();
+
+    actingAs($user)->
+    get(route('departments.edit', $department->id))
+        ->assertHasResource('department', DepartmentResource::make($department));
+});

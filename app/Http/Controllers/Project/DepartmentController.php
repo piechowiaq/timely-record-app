@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\DepartmentRequest;
 use App\Http\Resources\DepartmentResource;
 use App\Http\Resources\ProjectResource;
+use App\Http\Resources\WorkspaceResource;
 use App\Models\Department;
 use App\Models\Project;
+use App\Models\Workspace;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -52,7 +54,17 @@ class DepartmentController extends Controller
 
     public function create()
     {
-        return inertia('Projects/Departments/Create');
+        $workspacesIds = auth()->user()->workspaces->pluck('id')->toArray();
+
+        $workspaces = Workspace::whereIn('id', $workspacesIds)
+            ->paginate(5)
+            ->withQueryString();
+
+        return inertia('Projects/Departments/Create', [
+            'workspaces' => WorkspaceResource::collection($workspaces),
+            'workspacesIds' => $workspacesIds,
+        ]);
+
     }
 
     public function store(DepartmentRequest $request)
@@ -65,10 +77,12 @@ class DepartmentController extends Controller
         } else {
             $project = Project::find(session('project_id'));
 
-            Department::create([
+            $department = Department::create([
                 'name' => $request->name,
                 'project_id' => $project->id,
             ]);
+
+            $department->workspaces()->sync($request->workspacesIds);
 
         }
 
@@ -85,8 +99,16 @@ class DepartmentController extends Controller
 
     public function edit(Department $department)
     {
+        $authUserWorkspacesIds = auth()->user()->workspaces->pluck('id')->toArray();
+
+        $workspaces = Workspace::whereIn('id', $authUserWorkspacesIds)
+            ->paginate(5)
+            ->withQueryString();
+
         return inertia('Projects/Departments/Edit', [
-            'department' => DepartmentResource::make($department),
+            'department' => DepartmentResource::make($department)->load('workspaces'),
+            'workspaces' => WorkspaceResource::collection($workspaces),
+            'workspacesIds' => $authUserWorkspacesIds,
         ]);
     }
 

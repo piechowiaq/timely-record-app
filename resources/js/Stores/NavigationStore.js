@@ -52,6 +52,11 @@ export const useNavigationStore = defineStore("NavigationStore", {
                         iconName: "fa-users",
                     },
                     {
+                        name: "Workspaces",
+                        route: "workspaces.index",
+                        iconName: "fa-building-shield",
+                    },
+                    {
                         name: "Registries",
                         route: "registries.index",
                         iconName: "fa-box-archive",
@@ -70,11 +75,6 @@ export const useNavigationStore = defineStore("NavigationStore", {
                         name: "Positions",
                         route: "positions.index",
                         iconName: "fa-users-viewfinder",
-                    },
-                    {
-                        name: "Workspaces",
-                        route: "workspaces.index",
-                        iconName: "fa-building-shield",
                     },
                 ];
             } else {
