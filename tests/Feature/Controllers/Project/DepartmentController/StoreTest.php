@@ -2,7 +2,7 @@
 
 use App\Models\Department;
 use App\Models\User;
-use Database\Seeders\DatabaseSeeder;
+use App\Models\Workspace;
 use Database\Seeders\RolesAndPermissionsSeeder;
 
 use function Pest\Laravel\actingAs;
@@ -17,8 +17,7 @@ beforeEach(function () {
 it('requires authentication', function () {
 
     post(route('departments.store', Department::factory()->create(
-    )))
-        ->assertRedirect(route('login'));
+    )))->assertRedirect(route('login'));
 
 });
 
@@ -43,63 +42,74 @@ it('stores a department', function () {
 
     $this->seed(RolesAndPermissionsSeeder::class);
 
-    $user = User::factory()->create();
-    $user->assignRole('admin');
-    session(['project_id' => $user->project_id]);
+    $roles = ['super-admin', 'project-admin', 'admin'];
 
-    $departmentData = value($this->validData);
+    foreach ($roles as $role) {
+        $user = User::factory()->create();
+        $user->assignRole($role);
 
-    actingAs($user)->post(route('departments.store'), $departmentData);
+        session(['project_id' => $user->project_id]);
 
-    $this->assertDatabaseHas(Department::class, [
-        ...$departmentData,
-        'project_id' => $user->project_id,
-    ]);
+        $departmentData = value($this->validData);
+
+        actingAs($user)->post(route('departments.store'), $departmentData);
+
+        $this->assertDatabaseHas(Department::class, [
+            ...$departmentData,
+            'project_id' => $user->project_id,
+        ]);
+    }
+
 });
 
-it('sync workspaces with department', function () {
+it('syncs workspaces with the created department for project-admin', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
 
-    $this->seed(DatabaseSeeder::class);
+    $user = User::factory()->create();
+    $user->assignRole('project-admin');
 
-    $user = User::role('admin')->first();
     session(['project_id' => $user->project_id]);
 
-    $workspaces = $user->workspaces->pluck('id')->toArray();
+    $workspaces = Workspace::factory(5)->create(['project_id' => $user->project_id]);
 
-    $data = value($this->validData);
+    $user->workspaces()->attach($workspaces->take(2));
+    $assignedWorkspaceIds = $user->workspaces->pluck('id')->toArray();
 
     $departmentData = [
-        ...$data,
-        'workspacesIds' => $workspaces,
+        ...value($this->validData),
+        'workspacesIds' => $assignedWorkspaceIds,
     ];
 
     actingAs($user)->post(route('departments.store'), $departmentData);
 
-    $newDepartment = Department::where('name', 'Kitchen')->first()->fresh();
+    $newDepartment = Department::where('name', 'Kitchen')->first();
+    $newDepartmentWorkspaceIds = $newDepartment->workspaces->pluck('id')->toArray();
 
-    $newDepartmentWorkspacesIds = $newDepartment->workspaces->pluck('id')->toArray();
-
-    foreach ($workspaces as $workspace) {
-        expect($newDepartmentWorkspacesIds)->toContain($workspace);
-    }
+    expect($newDepartmentWorkspaceIds)->toEqual($assignedWorkspaceIds);
 });
 
-it('stores a department for super-admin', function () {
-
+it('syncs workspaces with the created department for admin', function () {
     $this->seed(RolesAndPermissionsSeeder::class);
 
     $user = User::factory()->create();
-    $user->assignRole('super-admin');
-    session(['project_id' => null]);
+    $user->assignRole('admin');
 
-    $departmentData = value($this->validData);
+    session(['project_id' => $user->project_id]);
+
+    $workspaces = Workspace::factory(5)->create(['project_id' => $user->project_id]);
+
+    $user->workspaces()->attach($workspaces->take(2));
+    $assignedWorkspaceIds = $user->workspaces->pluck('id')->toArray();
+
+    $departmentData = [
+        ...value($this->validData),
+        'workspacesIds' => $assignedWorkspaceIds,
+    ];
 
     actingAs($user)->post(route('departments.store'), $departmentData);
-
-    $this->assertDatabaseHas(Department::class, [
-        ...$departmentData,
-        'project_id' => null,
-    ]);
+    $newDepartment = Department::where('name', 'Kitchen')->first();
+    $newDepartmentWorkspaceIds = $newDepartment->workspaces->pluck('id')->toArray();
+    expect($newDepartmentWorkspaceIds)->toEqual($assignedWorkspaceIds);
 });
 
 it('redirects to the department index page', function () {

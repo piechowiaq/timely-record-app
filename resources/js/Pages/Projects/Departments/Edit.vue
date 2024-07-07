@@ -6,30 +6,41 @@ import TextInput from "@/Components/TextInput.vue";
 import { Head, router, useForm, usePage } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import DeleteDepartmentForm from "@/Pages/Projects/Departments/Partials/DeleteDepartmentForm.vue";
-import { useUserStore } from "@/Stores/UserStore.js";
 import { computed } from "vue";
 import Pagination from "@/Components/Pagination.vue";
+import { useDepartmentStore } from "@/Stores/DepartmentStore.js";
 
 const props = defineProps(["department", "workspaces", "workspacesIds"]);
 
 const projectId = usePage().props.projectId;
 
-const userStore = useUserStore();
+const departmentStore = useDepartmentStore();
 
-if (userStore.initialized === false) {
-    userStore.updateForm(props.user);
+if (departmentStore.initialized === false) {
+    departmentStore.updateForm(props.department);
 }
 
 const form = useForm({
-    name: props.department.name,
-    workspacesIds: userStore.form.workspacesIds,
+    name: departmentStore.form.name,
+    workspacesIds: departmentStore.form.workspacesIds,
+});
+
+const departmentName = computed({
+    get: () => form.name,
+    set: (value) => {
+        form.name = value;
+        departmentStore.updateForm({ ...departmentStore.form, name: value });
+    },
 });
 
 const workspacesIds = computed({
     get: () => form.workspacesIds,
     set: (value) => {
         form.workspacesIds = value;
-        userStore.updateForm({ ...userStore.form, workspacesIds: value });
+        departmentStore.updateForm({
+            ...departmentStore.form,
+            workspacesIds: value,
+        });
     },
 });
 
@@ -37,7 +48,7 @@ const selectAll = computed({
     get: () => form.workspacesIds.length === props.workspaces.meta.total,
     set: (value) => {
         form.workspacesIds = value ? [...props.workspacesIds] : [];
-        userStore.updateForm({ workspacesIds: form.workspacesIds });
+        departmentStore.updateForm({ workspacesIds: form.workspacesIds });
     },
 });
 
@@ -54,7 +65,7 @@ router.on("start", (event) => {
         event.detail.visit.url.pathname !==
         `/departments/${props.department.id}/edit`
     ) {
-        userStore.$reset();
+        departmentStore.$reset();
     }
 });
 </script>
@@ -97,7 +108,7 @@ router.on("start", (event) => {
                                     id="name"
                                     type="text"
                                     class="mt-1 block w-full"
-                                    v-model="form.name"
+                                    v-model="departmentName"
                                     required
                                     autofocus
                                     autocomplete="name"
@@ -108,6 +119,7 @@ router.on("start", (event) => {
                                     :message="form.errors.name"
                                 />
                             </div>
+
                             <div v-if="!superAdmin">
                                 <InputLabel
                                     for="workspaces"

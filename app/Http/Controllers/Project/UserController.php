@@ -121,7 +121,6 @@ class UserController extends Controller
             $authUserWorkspacesIds = auth()->user()->workspaces->pluck('id')->toArray();
 
         }
-
         $workspaces = Workspace::whereIn('id', $authUserWorkspacesIds)
             ->paginate(5)
             ->withQueryString();

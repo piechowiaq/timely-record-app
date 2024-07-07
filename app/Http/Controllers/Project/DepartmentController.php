@@ -54,17 +54,27 @@ class DepartmentController extends Controller
 
     public function create()
     {
-        $workspacesIds = auth()->user()->workspaces->pluck('id')->toArray();
+        if (Auth::user()->isSuperAdmin()) {
+            $workspacesIds = [];
+            $workspaces = collect();
+        } else {
+            $workspacesIds = Auth::user()->workspaces->pluck('id')->toArray();
 
-        $workspaces = Workspace::whereIn('id', $workspacesIds)
-            ->paginate(5)
-            ->withQueryString();
+            if (Auth::user()->hasRole('project-admin')) {
+                // If the user is a project-admin, get all project workspaces
+                $projectWorkspacesIds = Auth::user()->project->workspaces->pluck('id')->toArray();
+                $workspacesIds = array_merge($workspacesIds, $projectWorkspacesIds);
+            }
+
+            $workspaces = Workspace::whereIn('id', $workspacesIds)
+                ->paginate(5)
+                ->withQueryString();
+        }
 
         return inertia('Projects/Departments/Create', [
             'workspaces' => WorkspaceResource::collection($workspaces),
             'workspacesIds' => $workspacesIds,
         ]);
-
     }
 
     public function store(DepartmentRequest $request)
@@ -105,8 +115,10 @@ class DepartmentController extends Controller
             ->paginate(5)
             ->withQueryString();
 
+        $department->load('workspaces');
+
         return inertia('Projects/Departments/Edit', [
-            'department' => DepartmentResource::make($department)->load('workspaces'),
+            'department' => DepartmentResource::make($department),
             'workspaces' => WorkspaceResource::collection($workspaces),
             'workspacesIds' => $authUserWorkspacesIds,
         ]);
